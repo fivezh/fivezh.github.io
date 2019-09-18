@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 12.86px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 14.29px;">Life</a> <a href="/tags/Linux/" style="font-size: 15.71px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.43px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 15.71px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -186,11 +186,11 @@ var _hmt = _hmt || [];
 
       <div class="body-wrap">
   
-    <article id="post-chaset-encoding-things" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-go-compiler-intrinsics" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2019/09/18/chaset-encoding-things/" class="article-date">
-  	<time datetime="2019-09-18T07:01:07.000Z" itemprop="datePublished">2019-09-18</time>
+      <a href="/2019/09/09/go-compiler-intrinsics/" class="article-date">
+  	<time datetime="2019-09-09T10:44:03.000Z" itemprop="datePublished">2019-09-09</time>
 </a>
     </div>
   
@@ -203,7 +203,73 @@ var _hmt = _hmt || [];
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2019/09/18/chaset-encoding-things/">PHP中编码检测</a>
+      <a class="article-title" href="/2019/09/09/go-compiler-intrinsics/">[译]Go compiler intrinsics Go编译器内建函数</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>原文地址：<a href="https://dave.cheney.net/2019/08/20/go-compiler-intrinsics" target="_blank" rel="noopener">https://dave.cheney.net/2019/08/20/go-compiler-intrinsics</a></li>
+<li>原文作者：<a href="https://dave.cheney.net/" target="_blank" rel="noopener">Dave Cheney</a></li>
+<li>译文出处：<a href="https://dave.cheney.net/" target="_blank" rel="noopener">https://dave.cheney.net/</a></li>
+<li>本文永久链接：<a href="https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md" target="_blank" rel="noopener">https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md</a></li>
+<li>译者：<a href="https://github.com/fivezh" target="_blank" rel="noopener">fivezh</a>、<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
+<li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2019/09/09/go-compiler-intrinsics/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-chaset-encoding-things" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/09/06/chaset-encoding-things/" class="article-date">
+  	<time datetime="2019-09-06T07:01:07.000Z" itemprop="datePublished">2019-09-06</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/09/06/chaset-encoding-things/">PHP中编码检测</a>
     </h1>
   
 
@@ -232,7 +298,7 @@ var _hmt = _hmt || [];
 
       
         <p class="article-more-link">
-          <a  href="/2019/09/18/chaset-encoding-things/#more">more >></a>
+          <a  href="/2019/09/06/chaset-encoding-things/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
@@ -729,70 +795,6 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a  href="/2018/04/03/2017-review-md/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-how-to-get-client-ip" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2018/01/15/how-to-get-client-ip/" class="article-date">
-  	<time datetime="2018-01-15T04:20:30.000Z" itemprop="datePublished">2018-01-15</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/01/15/how-to-get-client-ip/">不同网络拓扑下如何正确获取客户端ip?</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>先说结论：</p>
-<ul>
-<li><strong>说明：</strong>一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。</li>
-<li>根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP</li>
-<li>剔除可信IP列表</li>
-<li>从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求</li>
-<li>Laravel/Nginx-realip均按上述逻辑来处理的</li>
-</ul>
-<h2 id="网络拓扑模型"><a href="#网络拓扑模型" class="headerlink" title="网络拓扑模型"></a>网络拓扑模型</h2><p><img src="/assets/post_images/network_slb_nginx.png" alt><br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2018/01/15/how-to-get-client-ip/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>

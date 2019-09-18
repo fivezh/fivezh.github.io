@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 12.86px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 14.29px;">Life</a> <a href="/tags/Linux/" style="font-size: 15.71px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.43px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 15.71px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,70 @@ var _hmt = _hmt || [];
 </nav>
 
       <div class="body-wrap">
+  
+    <article id="post-how-to-get-client-ip" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/01/15/how-to-get-client-ip/" class="article-date">
+  	<time datetime="2018-01-15T04:20:30.000Z" itemprop="datePublished">2018-01-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/01/15/how-to-get-client-ip/">不同网络拓扑下如何正确获取客户端ip?</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先说结论：</p>
+<ul>
+<li><strong>说明：</strong>一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。</li>
+<li>根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP</li>
+<li>剔除可信IP列表</li>
+<li>从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求</li>
+<li>Laravel/Nginx-realip均按上述逻辑来处理的</li>
+</ul>
+<h2 id="网络拓扑模型"><a href="#网络拓扑模型" class="headerlink" title="网络拓扑模型"></a>网络拓扑模型</h2><p><img src="/assets/post_images/network_slb_nginx.png" alt><br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2018/01/15/how-to-get-client-ip/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
   
     <article id="post-MySQL-InnoDB-online-DDL" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -755,70 +819,6 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a  href="/2017/04/16/2016-review/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-xdebug-windows-remote-debug" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/01/15/xdebug-windows-remote-debug/" class="article-date">
-  	<time datetime="2017-01-15T05:34:08.000Z" itemprop="datePublished">2017-01-15</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/01/15/xdebug-windows-remote-debug/">xdebug远程调试</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="开发环境："><a href="#开发环境：" class="headerlink" title="开发环境："></a>开发环境：</h2><ul>
-<li>Windows笔记本：日常开发使用机器，安装PHPStrom</li>
-<li>Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182</li>
-<li>【注意】，Windows<strong>通过vpn访问到Linux服务器</strong>，也就是说Windows-&gt;Linux是可以通过IP直接访问的，而Linux-&gt;Windows无法直接连通，因为对Linux而言，Windows开发机的IP只有VPN的网关地址</li>
-<li>Windows和Linux之前通过PhpStorm的sftp进行代码同步</li>
-</ul>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
-<li>远程调试（remote debug）：也就是在windows本地调试远程服务器（Linux）上的代码</li>
-<li>日常开发用Windows中在PhpStorm中设置断点，可调试远程Linux远程服务器（172.16.0.182）的代码
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2017/01/15/xdebug-windows-remote-debug/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
