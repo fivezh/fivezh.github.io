@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="小武的博客">
 <meta property="og:description" content="原文地址：https://dave.cheney.net/2019/08/20/go-compiler-intrinsics 原文作者：Dave Cheney 译文出处：https://dave.cheney.net/ 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2019-09-18T10:47:13.967Z">
+<meta property="og:updated_time" content="2019-09-18T10:51:34.164Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="[译]Go compiler intrinsics Go编译器内建函数">
 <meta name="twitter:description" content="原文地址：https://dave.cheney.net/2019/08/20/go-compiler-intrinsics 原文作者：Dave Cheney 译文出处：https://dave.cheney.net/ 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md">
@@ -232,8 +232,9 @@ var _hmt = _hmt || [];
 <li>本文永久链接：<a href="https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md" target="_blank" rel="noopener">https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md</a></li>
 <li>译者：<a href="https://github.com/fivezh" target="_blank" rel="noopener">fivezh</a>、<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
 <li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a><a id="more"></a>
-如有需要，Go 允许使用者通过汇来编写函数。这被称作 <em>stub</em> 或 <em>forward</em> 声明.</li>
+</li>
 </ul>
+<p>如有需要，Go 允许使用者通过汇来编写函数。这被称作 <em>stub</em> 或 <em>forward</em> 声明.</p>
 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> asm</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add returns the sum of a and b.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Add</span><span class="params">(a <span class="keyword">int64</span>, b <span class="keyword">int64</span>)</span> <span class="title">int64</span></span></span><br></pre></td></tr></table></figure>
 <p>这里，我们声明了 <code>Add</code> 函数，其接受 2 个 <code>int64</code> 类型入参，并返回二者之和。<code>Add</code> 函数相较于 Go 常见形式的函数声明，缺少了函数体部分。</p>
 <p>如果我们尝试编译这个包时，编译器自然是会给出警告信息的：</p>
