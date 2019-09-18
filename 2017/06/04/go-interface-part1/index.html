@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>深入理解Golang中的interface(一) | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文地址：https://medium.com/golangspec/interfaces-in-go-part-i-4ae53a97479c 要点：  接口是系列方法的集合 单个类型可以实现多个方法 同一个接口可以被多种类型实现 接口声明可内嵌其他接口，导入内嵌接口的所有方法(可导出方法+不可导出方法)，多层内嵌接口也将全部被导入到接口声明中 禁止接口的循环内嵌 接口内方法名必须唯一：自定义方法">
+<meta name="keywords" content="Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Golang中的interface(一)">
+<meta property="og:url" content="http://fivezh.github.io/2017/06/04/go-interface-part1/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="原文地址：https://medium.com/golangspec/interfaces-in-go-part-i-4ae53a97479c 要点：  接口是系列方法的集合 单个类型可以实现多个方法 同一个接口可以被多种类型实现 接口声明可内嵌其他接口，导入内嵌接口的所有方法(可导出方法+不可导出方法)，多层内嵌接口也将全部被导入到接口声明中 禁止接口的循环内嵌 接口内方法名必须唯一：自定义方法">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.779Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="深入理解Golang中的interface(一)">
+<meta name="twitter:description" content="原文地址：https://medium.com/golangspec/interfaces-in-go-part-i-4ae53a97479c 要点：  接口是系列方法的集合 单个类型可以实现多个方法 同一个接口可以被多种类型实现 接口声明可内嵌其他接口，导入内嵌接口的所有方法(可导出方法+不可导出方法)，多层内嵌接口也将全部被导入到接口声明中 禁止接口的循环内嵌 接口内方法名必须唯一：自定义方法">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-go-interface-part1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/04/go-interface-part1/" class="article-date">
+  	<time datetime="2017-06-04T14:55:33.000Z" itemprop="datePublished">2017-06-04</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      深入理解Golang中的interface(一)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>原文地址：<a href="https://medium.com/golangspec/interfaces-in-go-part-i-4ae53a97479c" target="_blank" rel="noopener">https://medium.com/golangspec/interfaces-in-go-part-i-4ae53a97479c</a></p>
+<p>要点：</p>
+<ul>
+<li>接口是系列方法的集合</li>
+<li>单个类型可以实现多个方法</li>
+<li>同一个接口可以被多种类型实现</li>
+<li>接口声明可内嵌其他接口，导入内嵌接口的所有方法(可导出方法+不可导出方法)，多层内嵌接口也将全部被导入到接口声明中</li>
+<li>禁止接口的循环内嵌</li>
+<li>接口内方法名必须唯一：自定义方法和内嵌接口包含方法，名称必须唯一</li>
+<li>接口变量可以保存所有实现了此接口的所有类型的值：抽象的理论实现</li>
+<li>静态类型VS动态类型：接口类型的变量可以被实现了其接口的类型间相互赋值，动态类型</li>
+<li>接口类型变量：动态类型、动态值，只有二者均为零值nil时此接口类型的变量才为nil</li>
+<li>空接口：可以承载任何类型的变量，也可以说任何类型都实现(满足)了空接口</li>
+<li>接口实现：类型定义了包含某接口声明的所有方法(方法名+签名一致)</li>
+<li>接口类型值只能访问接口自身定义的方法，原类型的其他变量无法访问：行为的抽象，联想对比Java中子类赋值给父类时多态特性</li>
+</ul>
+<a id="more"></a>
+<p>关键词：接口(interface)，类型(type)，方法(method)，函数(function)，方法签名(signature)，可导出方法(exported method)，满足(satisfy)，实现(implement)，</p>
+<p>接口(Interface)使得代码更具灵活性、扩展性，是Golang中<a href="https://en.wikipedia.org/wiki/Polymorphism_%28computer_science%29" target="_blank" rel="noopener">多态</a>的实现方式。接口允许指定只有一些行为是需要的，而不需要指定一种特定类型。<br>行为的定义就是一系列方法的集合，如下代码片段一：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    f1(name <span class="keyword">string</span>)</span><br><span class="line">    f2(name <span class="keyword">string</span>) (error, <span class="keyword">float32</span>)</span><br><span class="line">    f3() <span class="keyword">int64</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>并不需要强制的接口实现。我们说<strong>类型(type)实现或满足接口(interface)</strong>，只需要它<strong>定义了接口期望的方法名和签名(输入和返回参数)</strong>，如下代码段二：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">int64</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">f1</span><span class="params">(name <span class="keyword">string</span>)</span></span> &#123;</span><br><span class="line">    fmt.Println(name)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">f2</span><span class="params">(name <span class="keyword">string</span>)</span> <span class="params">(error, <span class="keyword">float32</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, <span class="number">10.2</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">f3</span><span class="params">()</span> <span class="title">int64</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个例子中<code>类型T</code>满足代码段一中定义的<code>接口I</code>，类型T的值可以作为参数传递给任何将<code>接口I</code>作为接收参数的方法。<br>如下<strong>代码段三</strong>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    M() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;</span><br><span class="line">    name <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t T)</span> <span class="title">M</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> t.name</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Hello</span><span class="params">(i I)</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"Hi, my name is %s\n"</span>, i.M())</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    Hello(T&#123;name: <span class="string">"Michał"</span>&#125;) <span class="comment">// "Hi, my name is Michał"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在<code>函数Hello</code>中，方法调用<code>i.M()</code>通过特定的方式实现：当方法是类型满足的接口的实现时，不同类型的方法可以被调用。<br>Golang的重要特征：<code>接口是隐式实现的</code>，程序员不需要显示声明类型T实现了接口I。这项工作是由Go编译器自动完成的(永远不要让人去做机器应该做的事情)。这种行为的优雅实现使得如下这种方式成为可能：定义一个接口，这个接口被已经写好的类型自动实现(不需要对之前已完成的类型做修改)。<br><em>译者注：这种语言级的特性，可以在新增接口时，既有类型不修改，则自动实现了新的接口。这种多态的方式具有很好的灵活性。</em></p>
+<hr>
+<p>这一特性为接口提供了很大灵活性：<strong>单个类型可以实现多个接口</strong>，<a href="https://play.golang.org/p/cN6KrJab-l" target="_blank" rel="noopener">示例代码</a><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I1 <span class="keyword">interface</span> &#123;</span><br><span class="line">    M1()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> I2 <span class="keyword">interface</span> &#123;</span><br><span class="line">    M2()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M1</span><span class="params">()</span></span> &#123; fmt.Println(<span class="string">"T.M1"</span>) &#125; <span class="comment">// 类型T实现了接口I1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M2</span><span class="params">()</span></span> &#123; fmt.Println(<span class="string">"T.M2"</span>) &#125; <span class="comment">// 类型T实现了接口I2</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f1</span><span class="params">(i I1)</span></span> &#123; i.M1() &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f2</span><span class="params">(i I2)</span></span> &#123; i.M2() &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    t := T&#123;&#125;</span><br><span class="line">    f1(t) <span class="comment">// "T.M1"</span></span><br><span class="line">    f2(t) <span class="comment">// "T.M2"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>或者<strong>同一个接口可以被多种类型实现</strong>，<a href="https://play.golang.org/p/_7mkHdEilz" target="_blank" rel="noopener">示例代码</a><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    M()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T1 <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T1)</span> <span class="title">M</span><span class="params">()</span></span> &#123; fmt.Println(<span class="string">"T1.M"</span>) &#125; <span class="comment">// 类型T1实现了接口I</span></span><br><span class="line"><span class="keyword">type</span> T2 <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T2)</span> <span class="title">M</span><span class="params">()</span></span> &#123; fmt.Println(<span class="string">"T2.M"</span>) &#125; <span class="comment">// 类型T2实现了接口I</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(i I)</span></span> &#123; i.M() &#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    f(T1&#123;&#125;) <span class="comment">// "T1.M"</span></span><br><span class="line">    f(T2&#123;&#125;) <span class="comment">// "T2.M"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>除了一个或多个接口要求的方法，类型可以自由实现其他不同的方法。</p>
+</blockquote>
+<p>在Golang中，关于接口的两个概念：</p>
+<ol>
+<li>接口(Interface)：实现此接口必须的系列方法，通过关键词<code>interface</code>定义。</li>
+<li>接口类型(Interface type)：接口类型变量可以保存实现了任何特定接口的类型值。<br>下面分别展开讨论这两个概念。<h2 id="定义一个接口"><a href="#定义一个接口" class="headerlink" title="定义一个接口"></a>定义一个接口</h2><h3 id="接口定义：方法、内嵌其他接口"><a href="#接口定义：方法、内嵌其他接口" class="headerlink" title="接口定义：方法、内嵌其他接口"></a>接口定义：方法、内嵌其他接口</h3>接口的声明指定了属于此接口的方法，方法定义则通过其名称和签名(输入和返回参数)完成，如下：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123; <span class="comment">// 定义了一个接口I，它包含四个方法</span></span><br><span class="line">    m1()</span><br><span class="line">    m2(<span class="keyword">int</span>)</span><br><span class="line">    m3(<span class="keyword">int</span>) <span class="keyword">int</span></span><br><span class="line">    m4() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>接口中除了包含方法，也允许内嵌(embedded)其他接口-同一个包内定义或已被导入，此时接口将内嵌接口的所有方法导入到自己的定义中，如下示例：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">     m1()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    m2()</span><br><span class="line">    I</span><br><span class="line">    fmt.Stringer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>接口J包含的方法集为：</p>
+<ul>
+<li>m1() - 来自内嵌的接口I</li>
+<li>m2() - 自定义方法</li>
+<li>String() - 来自<a href="https://golang.org/pkg/fmt/#Stringer" target="_blank" rel="noopener">fmt.Stringer</a>接口的String()方法(此接口中只有这一个方法)<br>接口内方法顺序不关紧要，所以接口内可能出现方法和内嵌接口的交错出现的情况。<blockquote>
+<p>接口将导入内嵌接口的所有方法，包含可导出方法(首字母大写的方法)和非导出方法(首字母小写)。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="内嵌接口多层内嵌时，导入所有包含接口的方法"><a href="#内嵌接口多层内嵌时，导入所有包含接口的方法" class="headerlink" title="内嵌接口多层内嵌时，导入所有包含接口的方法"></a>内嵌接口多层内嵌时，导入所有包含接口的方法</h3><p>如果接口I嵌入了接口J，而接口又内嵌了其他接口K，则接口K的所有方法也将被加入到接口I的声明中，如下：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    J</span><br><span class="line">    i()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    K</span><br><span class="line">    j()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> K <span class="keyword">interface</span> &#123;</span><br><span class="line">    k()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>则<code>接口I</code>包含的方法为：<code>i()</code>, <code>j()</code>, <code>k()</code></p>
+<h3 id="禁止接口的循环内嵌"><a href="#禁止接口的循环内嵌" class="headerlink" title="禁止接口的循环内嵌"></a>禁止接口的循环内嵌</h3><p>Circular embedding of interfaces is disallowed and will be detected while compilation (source code):<br>接口的循环内嵌是被禁止的，正在编译阶段将被检测出错误，<a href="https://play.golang.org/p/zt3t-GUrYU" target="_blank" rel="noopener">如下代码</a>将产生error错误<code>interface type loop involving I</code>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    J</span><br><span class="line">    i()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    K</span><br><span class="line">    j()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> K <span class="keyword">interface</span> &#123;</span><br><span class="line">    k()</span><br><span class="line">    I</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="接口内的方法名必须唯一"><a href="#接口内的方法名必须唯一" class="headerlink" title="接口内的方法名必须唯一"></a>接口内的方法名必须唯一</h3><p><a href="https://play.golang.org/p/zt3t-GUrYU" target="_blank" rel="noopener">如下代码</a>中自定义方法和内嵌接口包含方法存在命名冲突，则将会抛出编译时错误error：<code>duplicate method i</code>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    J</span><br><span class="line">    i()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> J <span class="keyword">interface</span> &#123;</span><br><span class="line">    j()</span><br><span class="line">    i(<span class="keyword">int</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这种接口的组装形式贯穿标准库的各种定义，一个<a href="https://golang.org/pkg/io/#ReadWriter" target="_blank" rel="noopener">io.ReaderWriter</a>的例子：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ReadWriter <span class="keyword">interface</span> &#123;</span><br><span class="line">    Reader</span><br><span class="line">    Writer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>至此，我们已经知道了怎么新建一个接口，接下来介绍接口类型的变量(values of interface types)。</p>
+<h2 id="接口类型的变量"><a href="#接口类型的变量" class="headerlink" title="接口类型的变量"></a>接口类型的变量</h2><p>接口I类型的变量可以保存任何实现了接口I的值，<a href="https://play.golang.org/p/Zvaq5c97wp" target="_blank" rel="noopener">示例如下</a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    method1()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span>&#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">method1</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i I = T&#123;&#125; <span class="comment">// 变量i是接口类型I的变量, T实现了接口I, 则i可以保存类型为T的变量值</span></span><br><span class="line">    fmt.Println(i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="静态类型VS动态类型"><a href="#静态类型VS动态类型" class="headerlink" title="静态类型VS动态类型"></a>静态类型VS动态类型</h3><p>变量已有的类型在编译阶段被明确，在声明时指定变量类型，且永不改变，这种情况称为<code>静态类型(static type)</code>或直接简称<code>类型</code>。<br>接口类型的变量也有一种静态的类型，就是接口自身；他们额外还拥有<code>动态类型(dynamic type)</code>，这种类型是可赋值的类型。<br><a href="https://play.golang.org/p/UVMqqMNsb8" target="_blank" rel="noopener">示例代码</a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    M()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T1 <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T1)</span> <span class="title">M</span><span class="params">()</span></span> &#123;&#125; <span class="comment">// 类型T1实现了接口I</span></span><br><span class="line"><span class="keyword">type</span> T2 <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T2)</span> <span class="title">M</span><span class="params">()</span></span> &#123;&#125; <span class="comment">// 类型T2实现了接口I</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i I = T1&#123;&#125; <span class="comment">// 接口类型变量i，可以赋值为T1，也可以被赋值为类型T2</span></span><br><span class="line">    fmt.Printf(<span class="string">"%T\n"</span>, i) <span class="comment">// 输出main.T1</span></span><br><span class="line">    i = T2&#123;&#125;</span><br><span class="line">    fmt.Printf(<span class="string">"%T\n"</span>, i) <span class="comment">// 输出main.T2</span></span><br><span class="line">    _ = i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>变量i的静态类型是接口I，这是不会改变的。<br>另一方面，动态类型也就是动态变化的，第一次赋值后，i的动态类型为类型T1，然而这并不是固化的，第二次赋值将i的动态类型修改为类型T2。<br>当接口类型的变量值为空值nil时(接口的零值为nil)，则动态类型未被设置。</p>
+<h3 id="如何获取接口类型变量的动态类型"><a href="#如何获取接口类型变量的动态类型" class="headerlink" title="如何获取接口类型变量的动态类型"></a>如何获取接口类型变量的动态类型</h3><ol>
+<li><p><a href="https://golang.org/pkg/reflect/" target="_blank" rel="noopener">reflect</a>包提供获取动态类型的方法，<a href="https://play.golang.org/p/9cQ5JqSxL5" target="_blank" rel="noopener">示例代码</a>:<br>当变量为零值nil时，reflect包将报错runtime error。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fmt.Println(reflect.TypeOf(i).PkgPath(), reflect.TypeOf(i).Name())</span><br><span class="line">fmt.Println(reflect.TypeOf(i).String())</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><a href="https://golang.org/pkg/fmt/" target="_blank" rel="noopener">fmt</a>包通过格式化动词<code>%T</code>也可以获取变量的动态类型：<br>虽然fmt也是使用reflect来实现的，但当变量i为零值nil时也可以支持。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">"%T\n"</span>, i)</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h3 id="接口类型空值nil"><a href="#接口类型空值nil" class="headerlink" title="接口类型空值nil"></a>接口类型空值nil</h3><p>看如下的<a href="https://play.golang.org/p/kv9XUzIxBU" target="_blank" rel="noopener">代码示例</a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    M()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M</span><span class="params">()</span></span> &#123;&#125; <span class="comment">// 类型T实现了接口I</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> t *T <span class="comment">// 变量t必然是空值nil</span></span><br><span class="line">    <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"t is nil"</span>)  <span class="comment">// 输出这里</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"t is not nil"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">var</span> i I = t <span class="comment">// t是空值，但i呢？</span></span><br><span class="line">    <span class="keyword">if</span> i == <span class="literal">nil</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"i is nil"</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"i is not nil"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">t is nil</span><br><span class="line">i is not nil</span><br></pre></td></tr></table></figure></p>
+<p>这个输出结果显然有些吃惊，赋值给变量i的值是nil，但i并不等于nil，<strong>接口类型变量包含两个部分</strong>：</p>
+<ul>
+<li>动态类型(dynamic type)</li>
+<li>动态值(dynamic value)<br>动态类型在前面章节[动态类型VS静态类型]已介绍。<br>动态值是实际变量实际被赋值的值，在上面的例子中<code>var i I = t</code>，变量i的动态值是nil，但i的动态类型是<code>*T</code>。<br>通过<code>fmt.Printf(&quot;%T\n&quot;, i)</code>输出赋值后的变量i的动态类型为<code>*main.T</code>，<strong>接口类型变量为nil当且仅当动态类型和动态值均为nil</strong>。<br>这种情况下，即使接口类型的变量保存了一个空值指针(nil pointer)，但这个接口变量并不是nil。<br>已知的错误是从应该返回接口类型的函数返回未初始化、非接口类型的变量值，<a href="https://play.golang.org/p/4-M35Nc2JZ" target="_blank" rel="noopener">示例代码</a>：<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">F</span><span class="params">()</span> <span class="title">I</span></span> &#123; <span class="comment">// 函数F应该返回接口类型I，在此例中接口类型的返回值=返回类型为*T，值为nil</span></span><br><span class="line">    <span class="keyword">var</span> t *T</span><br><span class="line">    <span class="keyword">if</span> <span class="literal">false</span> &#123; <span class="comment">// not reachable but it actually sets value</span></span><br><span class="line">        t = &amp;T&#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> t <span class="comment">// 这里返回的变量t是空值nil</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"F() = %v\n"</span>, F()) <span class="comment">// 返回参数的动态值为nil</span></span><br><span class="line">    fmt.Printf(<span class="string">"F() is nil: %v\n"</span>, F() == <span class="literal">nil</span>) <span class="comment">// 返回参数为接口类型，此接口类型的值并不为nil</span></span><br><span class="line">    fmt.Printf(<span class="string">"type of F(): %T"</span>, F()) <span class="comment">// 返回参数类型为类型T</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>打印输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">F() = &lt;nil&gt;</span><br><span class="line">F() is nil: false</span><br><span class="line">type of F(): *main.T</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>just because interface type value returned from function has dynamic value set (*main.T), it isn’t equal to nil.</p>
+</blockquote>
+<p>就是因为函数返回的接口类型值的动态类型为<code>*main.T</code>，所有它不等于空值nil</p>
+<h2 id="空的接口"><a href="#空的接口" class="headerlink" title="空的接口"></a>空的接口</h2><p>接口的方法集可以完全为空，<a href="https://play.golang.org/p/V0GEG5nuW3" target="_blank" rel="noopener">示例代码</a>:<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i I = T&#123;&#125;</span><br><span class="line">    _ = i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>空接口自动被任何类型实现，所以任何类型都可以赋值给这种空接口类型的变量。<br>空接口的动态或静态类型的行为和非空接口一致。<br><a href="https://golang.org/pkg/fmt/#Println" target="_blank" rel="noopener">fmt.Println</a>函数中可变参数中空接口广泛使用。<br><em>TODO: 可变参数的实现原理？</em></p>
+<h2 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h2><p>实现方法所有方法的任何类型都自动满足(实现)这个接口。不需要想Java中那样显示声明类型实现了哪个接口。<br>Go编译器自动检测类型对接口的实现，这是Golang语言级的强大特性。<br><a href="https://play.golang.org/p/U4r6i2X5xb" target="_blank" rel="noopener">示例代码</a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"regexp"</span></span><br><span class="line">)</span><br><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    Find(b []<span class="keyword">byte</span>) []<span class="keyword">byte</span> <span class="comment">// 接口I包含方法Find，而Regexp实现包含此方法实现(方法名+签名)，则Regexp实现了接口I</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(i I)</span></span> &#123;</span><br><span class="line">    fmt.Printf(<span class="string">"%s\n"</span>, i.Find([]<span class="keyword">byte</span>(<span class="string">"abc"</span>)))</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> re = regexp.MustCompile(<span class="string">`b`</span>) <span class="comment">// 返回类型为*Regexp</span></span><br><span class="line">    f(re)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里我们定义了一个接口I，在没有修改内置的regexp模块的情况下，使得：<code>regexp.Regexp</code>类型实现了接口I。</p>
+<ul>
+<li>一个类型可以实现多个接口，一个接口可以被多个类型实现</li>
+<li>一个接口实现某接口，赋值给接口类型后，只能访问接口自身定义的方法</li>
+</ul>
+<h2 id="接口类型行为的抽象"><a href="#接口类型行为的抽象" class="headerlink" title="接口类型行为的抽象"></a>接口类型行为的抽象</h2><p>接口类型值只能访问此接口类型的方法，其隐藏原类型中包含的其他值，比如结构体、数组、scalar等等。<br><a href="https://play.golang.org/p/kCjgQFCsL_" target="_blank" rel="noopener">示例代码</a>：<br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> I <span class="keyword">interface</span> &#123;</span><br><span class="line">    M1()</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> T <span class="keyword">int64</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M1</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(T)</span> <span class="title">M2</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> i I = T(<span class="number">10</span>) <span class="comment">// 接口类型值i只能访问M1()方法</span></span><br><span class="line">    i.M1()</span><br><span class="line">    i.M2() <span class="comment">// i.M2 undefined (type I has no field or method M2)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="更多阅读"><a href="#更多阅读" class="headerlink" title="更多阅读"></a>更多阅读</h1><ul>
+<li><a href="https://golang.org/ref/spec#Interface_types" target="_blank" rel="noopener">The Go Programming Language Specification - The Go Programming Language</a></li>
+<li><a href="https://research.swtch.com/interfaces" target="_blank" rel="noopener">research!rsc: Go Data Structures: Interfaces</a></li>
+<li><a href="http://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go" target="_blank" rel="noopener">How to use interfaces in Go</a> </li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/06/11/api-slow-log-profile/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          一次接口性能优化的实例
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/05/24/Redis-cas/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Redis事务及CAS(Check-And-Set)机制</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

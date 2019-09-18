@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Python ssh switches control | 交换机SSH管理脚本 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="目前管理的交换机数量庞大，一些常用功能的配置往往需要多次、逐一登录交换机手动操作。为提高统一管理、配置的效率，采用Python写了这个小工具，实现了：  Python SSH操作，依赖于paramiko库 开启、关闭交换机分页显示功能 开启、关闭交换机特权模式 读取交换机列表文件、命令列表文件，批量执行 多线程并行的多台交换机同时配置 多线程进程数量自定义设置">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python ssh switches control | 交换机SSH管理脚本">
+<meta property="og:url" content="http://fivezh.github.io/2016/02/15/Python-ssh-switches-control/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="目前管理的交换机数量庞大，一些常用功能的配置往往需要多次、逐一登录交换机手动操作。为提高统一管理、配置的效率，采用Python写了这个小工具，实现了：  Python SSH操作，依赖于paramiko库 开启、关闭交换机分页显示功能 开启、关闭交换机特权模式 读取交换机列表文件、命令列表文件，批量执行 多线程并行的多台交换机同时配置 多线程进程数量自定义设置">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.776Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python ssh switches control | 交换机SSH管理脚本">
+<meta name="twitter:description" content="目前管理的交换机数量庞大，一些常用功能的配置往往需要多次、逐一登录交换机手动操作。为提高统一管理、配置的效率，采用Python写了这个小工具，实现了：  Python SSH操作，依赖于paramiko库 开启、关闭交换机分页显示功能 开启、关闭交换机特权模式 读取交换机列表文件、命令列表文件，批量执行 多线程并行的多台交换机同时配置 多线程进程数量自定义设置">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Python-ssh-switches-control" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/02/15/Python-ssh-switches-control/" class="article-date">
+  	<time datetime="2016-02-15T04:58:41.000Z" itemprop="datePublished">2016-02-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python ssh switches control | 交换机SSH管理脚本
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>目前管理的交换机数量庞大，一些常用功能的配置往往需要多次、逐一登录交换机手动操作。<br>为提高统一管理、配置的效率，采用Python写了这个小工具，实现了：</p>
+<ul>
+<li>Python SSH操作，依赖于paramiko库</li>
+<li>开启、关闭交换机分页显示功能</li>
+<li>开启、关闭交换机特权模式</li>
+<li>读取交换机列表文件、命令列表文件，批量执行</li>
+<li>多线程并行的多台交换机同时配置</li>
+<li>多线程进程数量自定义设置<a id="more"></a>
+<h1 id="paramiko库"><a href="#paramiko库" class="headerlink" title="paramiko库"></a>paramiko库</h1>官网：<a href="http://www.paramiko.org/" target="_blank" rel="noopener">http://www.paramiko.org/</a><blockquote>
+<p>Paramiko is a Python (2.6+, 3.3+) implementation of the SSHv2 protocol [1], providing both client and server functionality. While it leverages a Python C extension for low level cryptography (PyCrypto), Paramiko itself is a pure Python interface around SSH networking concepts.</p>
+</blockquote>
+</li>
+</ul>
+<p>简单的SSH连接、执行命令过程:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">client = SSHClient()</span><br><span class="line">client.load_system_host_keys()</span><br><span class="line">client.connect(&apos;ssh.example.com&apos;)</span><br><span class="line">stdin, stdout, stderr = client.exec_command(&apos;ls -l&apos;)</span><br><span class="line">print stdout.readlines()</span><br><span class="line">client.close()</span><br></pre></td></tr></table></figure></p>
+<p>该脚本在<strong>Linux SSH后执行单挑命令</strong>操作时，顺利执行，但如果SSH交换机后执行多条命令时，将抛出异常。<br>这是由于exec_command()命令执行后，Channel会在Channel.settimeout.settimeout时间内关闭。<br>如果需要多次交互的执行命令、获取返回信息，应使用invoke_shell()函数，代码更改如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">client = SSHClient()</span><br><span class="line">client.load_system_host_keys()</span><br><span class="line">client.connect(&apos;ssh.example.com&apos;)</span><br><span class="line">ssh_shell = client.invoke_shell()</span><br><span class="line">print ssh_shell.recv(1024)</span><br><span class="line">for cmd in cmd_list:</span><br><span class="line">    res = ssh_client.sendall(cmd.strip() + &apos;\n&apos;)</span><br><span class="line">    time.sleep(float(1))</span><br><span class="line">    print ssh_client.recv(1024)</span><br><span class="line">client.close()</span><br></pre></td></tr></table></figure></p>
+<h1 id="netlib库"><a href="#netlib库" class="headerlink" title="netlib库"></a>netlib库</h1><p>官网：<a href="https://github.com/jtdub/netlib" target="_blank" rel="noopener">jtdub/netlib</a></p>
+<blockquote>
+<p>netlib是pyRouterLib库的升级版，主要来实现对Cisco网络设备的SSH管理</p>
+</blockquote>
+<p>基本满足了对网络设备管理的功能，但由于设备厂商差异，部分交换机指令(paging、enable等)存在差异。</p>
+<hr>
+<p>因此在此基础上进一步封装，使得满足：1) 兼容国内主流网络设备(思科、华为、锐捷) 2) 实现自动no_paging, enable, save等管理功能 3) 读取配置文件，支持批量化执行配置命令<br>主要函数说明：</p>
+<blockquote>
+<p><strong>ssh_control.py</strong><br>threading_ssh: 多线程入口，ssh执行命令的线程<br>main: 主函数入口</p>
+<p><strong>ssh_client.py</strong><br>ssh_connect: ssh建立连接<br>ssh_exec_commands: 执行多条命令<br>ssh_enable: 进入特权模式<br>ssh_unpaging: 关闭交换机的分页显示功能<br>ssh_disable: 退出特权模式<br>ssh_paging: 开启交换机的分页显示功能<br>ssh_save: 保存交换机配置<br>ssh_disconnect: 关闭SSH连接</p>
+</blockquote>
+<p>ssh_control.py源码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line">import time</span><br><span class="line">import threading</span><br><span class="line">import ConfigParser</span><br><span class="line">import ssh_client</span><br><span class="line">from LogFile import Logger</span><br><span class="line">from LogFile import log_file</span><br><span class="line"></span><br><span class="line">&quot;&quot;&quot; Multi threading ssh function.</span><br><span class="line">&quot;&quot;&quot;</span><br><span class="line">def threading_ssh(sw_each, sw_type, cmd_list):</span><br><span class="line">    # config logging</span><br><span class="line">    logger = log_file(sw_each)</span><br><span class="line"></span><br><span class="line">    # print &quot;Begin to ssh for switch: &quot;, sw_each[&quot;sw_ip&quot;], &quot; in &quot;, threading.current_thread()</span><br><span class="line">    msg = &quot;Begin to ssh for switch: &quot;, sw_each[&quot;sw_ip&quot;], &quot; in &quot;, threading.current_thread()</span><br><span class="line">    logger.log(msg)</span><br><span class="line"></span><br><span class="line">    ssh = ssh_client.ssh_connect(sw_each, logger)</span><br><span class="line">    ssh_client.ssh_enable(ssh,  sw_type, logger)</span><br><span class="line">    ssh_client.ssh_unpaging(ssh, sw_type, logger)</span><br><span class="line">    ssh_client.ssh_exec_commands(ssh, cmd_list, logger)</span><br><span class="line">    ssh_client.ssh_paging(ssh, sw_type, logger)</span><br><span class="line">    # ssh_client.ssh_disable(ssh, sw_each, sw_type)   #no need to change to user mode</span><br><span class="line">    ssh_client.ssh_save(ssh, sw_type, logger)</span><br><span class="line">    ssh_client.ssh_disconnect(ssh, logger)</span><br><span class="line">    print &quot;Success to exec commands for switch: &quot;, sw_each[&quot;sw_ip&quot;]</span><br><span class="line">    msg = &quot;All comands have been executed for switch: &quot;, sw_each[&quot;sw_ip&quot;], &quot; in &quot;, threading.current_thread()</span><br><span class="line">    logger.log(msg)</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    # config running parameters.</span><br><span class="line">    conf = ConfigParser.ConfigParser()</span><br><span class="line">    sw_type = &quot;huawei&quot;</span><br><span class="line">    sw_list_file = &quot;sw_list&quot;</span><br><span class="line">    cmd_list_file = &quot;cmd_list&quot;</span><br><span class="line">    thread_count = 1</span><br><span class="line">    with open(&quot;config&quot;, &quot;r&quot;) as f:</span><br><span class="line">        conf.readfp(f)</span><br><span class="line">        sw_type = conf.get(&quot;Config&quot;, &quot;sw_type&quot;)</span><br><span class="line">        sw_list_file = conf.get(&quot;Config&quot;, &quot;sw_list_file&quot;)</span><br><span class="line">        # print &quot;sw_list_file:&quot;, sw_list_file</span><br><span class="line">        cmd_list_file = conf.get(&quot;Config&quot;, &quot;cmd_list_file&quot;)</span><br><span class="line">        thread_count = conf.get(&quot;Config&quot;, &quot;thread_count&quot;)</span><br><span class="line"></span><br><span class="line">    # sw_list stored all the switch data(ip,name,pwd)</span><br><span class="line">    sw_list = []</span><br><span class="line">    with open(sw_list_file, &quot;r&quot;) as f:</span><br><span class="line">        for line in f:</span><br><span class="line">            sw_ip, sw_name, sw_pwd = line.strip().split(&quot;\t&quot;)</span><br><span class="line">            sw_data = &#123;&quot;sw_ip&quot;:sw_ip, &quot;sw_name&quot;:sw_name, &quot;sw_pwd&quot;:sw_pwd&#125;</span><br><span class="line">            sw_list.append(sw_data)</span><br><span class="line"></span><br><span class="line">    # cmd_list store all the cmd which will be exec</span><br><span class="line">    cmd_list = []</span><br><span class="line">    with open(cmd_list_file, &quot;r&quot;) as f:</span><br><span class="line">        cmd = f.readline().strip()</span><br><span class="line">        cmd_list.append(cmd)</span><br><span class="line">    </span><br><span class="line">    threads = []</span><br><span class="line">    # print &quot;sw_list: &quot;, sw_list</span><br><span class="line">    for sw_each in sw_list:</span><br><span class="line">        t = threading.Thread(target=threading_ssh, args=(sw_each, sw_type, cmd_list))</span><br><span class="line">        t.setDaemon(True)</span><br><span class="line">        t.start()</span><br><span class="line">        threads.append(t)</span><br><span class="line"></span><br><span class="line">    for t in threads:</span><br><span class="line">        t.join()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &quot;__main__&quot;:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure></p>
+<p>项目地址：<a href="https://github.com/fivezh/netlib" target="_blank" rel="noopener">fivezh/netlib</a></p>
+<ul>
+<li>考虑将这些功能规划、封装，打包形成一个开源库</li>
+<li>兼容国内各主流交换机厂商(思科、华为、锐捷等) </li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/06/Life-is-the-all-the-time-of-now/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          相视一笑
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/23/LeetCode-322-Coin-Change/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[LeetCode] 322. Coin Change | 变换硬币</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

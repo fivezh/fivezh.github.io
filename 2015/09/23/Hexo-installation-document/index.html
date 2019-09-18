@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Hexo Installation Document | Hexo安装及部署GitHub | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="记录通过Hexo搭建Github博客的过程, 记录、分享部署环境：123ubuntu 14.04.3node.js: v0.10.37npm: 3.7.3  1. 安装node.js1234567sudo apt-get install python-software-propertiessudo add-apt-repository ppa:chris-lea/node.jssudo apt-">
+<meta name="keywords" content="Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo Installation Document | Hexo安装及部署GitHub">
+<meta property="og:url" content="http://fivezh.github.io/2015/09/23/Hexo-installation-document/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="记录通过Hexo搭建Github博客的过程, 记录、分享部署环境：123ubuntu 14.04.3node.js: v0.10.37npm: 3.7.3  1. 安装node.js1234567sudo apt-get install python-software-propertiessudo add-apt-repository ppa:chris-lea/node.jssudo apt-">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.761Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Hexo Installation Document | Hexo安装及部署GitHub">
+<meta name="twitter:description" content="记录通过Hexo搭建Github博客的过程, 记录、分享部署环境：123ubuntu 14.04.3node.js: v0.10.37npm: 3.7.3  1. 安装node.js1234567sudo apt-get install python-software-propertiessudo add-apt-repository ppa:chris-lea/node.jssudo apt-">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Hexo-installation-document" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/23/Hexo-installation-document/" class="article-date">
+  	<time datetime="2015-09-23T12:01:26.000Z" itemprop="datePublished">2015-09-23</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hexo Installation Document | Hexo安装及部署GitHub
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Hexo/">Hexo</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <blockquote>
+<p>记录通过Hexo搭建Github博客的过程, 记录、分享<br>部署环境：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ubuntu 14.04.3</span><br><span class="line">node.js: v0.10.37</span><br><span class="line">npm: 3.7.3</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h1 id="1-安装node-js"><a href="#1-安装node-js" class="headerlink" title="1. 安装node.js"></a>1. 安装node.js</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install python-software-properties</span><br><span class="line">sudo add-apt-repository ppa:chris-lea/node.js</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install nodejs</span><br><span class="line"></span><br><span class="line">five@master:~$ node --version</span><br><span class="line">v0.10.37</span><br></pre></td></tr></table></figure>
+<p>PS：由于网络原因可能导致无法下载安装脚本，请自行下载脚本后，执行<code>sudo sh install.sh</code>安装。</p>
+<h1 id="2-安装npm"><a href="#2-安装npm" class="headerlink" title="2. 安装npm"></a>2. 安装npm</h1><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">curl http://npmjs.org/install.sh | sudo sh</span><br><span class="line"></span><br><span class="line">five@master:~$ npm --version</span><br><span class="line">3.7.3</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h1 id="3-安装hexo"><a href="#3-安装hexo" class="headerlink" title="3. 安装hexo"></a>3. 安装hexo</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">five@master:~$ sudo npm install -g hexo</span><br><span class="line">[sudo] password for five: </span><br><span class="line">npm WARN deprecated graceful-fs@2.0.3: graceful-fs version 3 and before will fail on newer node releases. Please update to graceful-fs@^4.0.0 as soon as possible.</span><br><span class="line">/usr/bin/hexo -&gt; /usr/lib/node_modules/hexo/bin/hexo</span><br><span class="line"></span><br><span class="line">&gt; dtrace-provider@0.6.0 install /usr/lib/node_modules/hexo/node_modules/dtrace-provider</span><br><span class="line">&gt; node scripts/install.js</span><br><span class="line"></span><br><span class="line">/usr/lib</span><br><span class="line">└─┬ hexo@3.1.1 </span><br><span class="line">  ├── abbrev@1.0.7 </span><br><span class="line">  ├── archy@1.0.0 </span><br><span class="line"></span><br><span class="line">npm WARN optional Skipping failed optional dependency /hexo/chokidar/fsevents:</span><br><span class="line">npm WARN notsup Not compatible with your operating system or architecture: fsevents@1.0.8</span><br><span class="line">npm WARN optional Skipping failed optional dependency /hexo/nunjucks/chokidar/fsevents:</span><br><span class="line">npm WARN notsup Not compatible with your operating system or architecture: fsevents@0.3.8</span><br></pre></td></tr></table></figure>
+<h1 id="4-hexo-Step-by-Step"><a href="#4-hexo-Step-by-Step" class="headerlink" title="4. hexo Step by Step"></a>4. hexo Step by Step</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mkdir hexo-project</span><br><span class="line">cd hexo-project</span><br></pre></td></tr></table></figure>
+<h2 id="4-1-hexo-init"><a href="#4-1-hexo-init" class="headerlink" title="4.1 hexo init"></a>4.1 hexo init</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">five@master:~/github/hexo-fivezh$ hexo init</span><br><span class="line">INFO  Copying data to ~/github/hexo-fivezh</span><br><span class="line">INFO  You are almost done! Do not forget to run &apos;npm install&apos; before you start blogging with Hexo!</span><br><span class="line">five@master:~/github/hexo-fivezh$ ls</span><br><span class="line">_config.yml  package.json  scaffolds  source  themes</span><br></pre></td></tr></table></figure>
+<p><code>hexo init</code>: 新建文件夹（scaffolds, source, themes）和文件（_config.yml, package.json）</p>
+<h2 id="4-2-npm-install"><a href="#4-2-npm-install" class="headerlink" title="4.2 npm install"></a>4.2 npm install</h2><p><code>npm install</code>: 新建文件夹node_modules</p>
+<h2 id="4-3-hexo-server"><a href="#4-3-hexo-server" class="headerlink" title="4.3 hexo server"></a>4.3 hexo server</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">five@master:~/github/hexo-fivezh$ hexo server</span><br><span class="line">INFO  Hexo is running at http://0.0.0.0:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure>
+<p>这是可以通过浏览器访问<a href="http://0.0.0.0:4000/来查看初始效果。" target="_blank" rel="noopener">http://0.0.0.0:4000/来查看初始效果。</a></p>
+<h2 id="4-5-Create-new-post"><a href="#4-5-Create-new-post" class="headerlink" title="4.5 Create new post"></a>4.5 Create new post</h2><p>撰写文章前最好先停止hexo server，避免创建文章异常的问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">five@master:~/github/hexo-fivezh$ hexo new &quot;Hexo installation document&quot;</span><br><span class="line">INFO  Created: ~/github/hexo-fivezh/source/_posts/Hexo-installation-document.md</span><br></pre></td></tr></table></figure></p>
+<p>编辑文档(source/_posts/xxxx.md)后，保存。<br><a href="http://hexo.io/docs/writing.html" target="_blank" rel="noopener">More info: Writing</a></p>
+<h2 id="4-6-Run-server-本地服务器预览"><a href="#4-6-Run-server-本地服务器预览" class="headerlink" title="4.6 Run server, 本地服务器预览"></a>4.6 Run server, 本地服务器预览</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br><span class="line">访问：http://0.0.0.0:4000, 可预览文章效果</span><br></pre></td></tr></table></figure>
+<p><a href="http://hexo.io/docs/server.html" target="_blank" rel="noopener">More info: Server</a></p>
+<h2 id="4-7-Generate-static-files"><a href="#4-7-Generate-static-files" class="headerlink" title="4.7 Generate static files"></a>4.7 Generate static files</h2><p>生成文章静态页面(html, js, css)至publish目录，待发布、部署<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://hexo.io/docs/generating.html" target="_blank" rel="noopener">More info: Generating</a></p>
+<h2 id="4-8-Deploy-to-remote-sites-部署到远程服务器"><a href="#4-8-Deploy-to-remote-sites-部署到远程服务器" class="headerlink" title="4.8 Deploy to remote sites 部署到远程服务器"></a>4.8 Deploy to remote sites 部署到远程服务器</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>必须安装hexo-deployer-git, 新版本的hexo发布到git使用此部署。否则报错:<br><code>ERROR Deployer not found: github</code><br>部署GitHub，需要修改_config.yml文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: http://hexo.io/docs/deployment.html</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  resp: git@github.com:fivezh/fivezh.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure></p>
+<p><a href="http://hexo.io/docs/deployment.html" target="_blank" rel="noopener">More info: Deployment</a></p>
+<p>#命令汇总<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hexo new &quot;postName&quot; #新建文章</span><br><span class="line">hexo new page &quot;pageName&quot; #新建页面</span><br><span class="line">hexo generate #生成静态页面至public目录</span><br><span class="line">hexo server #开启预览访问端口（默认端口4000，&apos;ctrl + c&apos;关闭server）</span><br><span class="line">hexo deploy #将.deploy目录部署到GitHub</span><br><span class="line">hexo help  # 查看帮助</span><br><span class="line">hexo version  #查看Hexo的版本</span><br></pre></td></tr></table></figure></p>
+<p>简写命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo n == hexo new</span><br><span class="line">hexo g == hexo generate</span><br><span class="line">hexo s == hexo server</span><br><span class="line">hexo d == hexo deploy</span><br></pre></td></tr></table></figure></p>
+<p>快速复合命令：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate --deploy</span><br><span class="line">$ hexo deploy --generate</span><br><span class="line">上述两种表示作用相同</span><br></pre></td></tr></table></figure></p>
+<h1 id="官网教程"><a href="#官网教程" class="headerlink" title="官网教程"></a>官网教程</h1><p>由于hexo版本不一，命令及配置文件存在较大差异，结合官方文档安装、配置是最可靠的方式。<br><a href="https://hexo.io/docs/#Install_Hexo" target="_blank" rel="noopener">https://hexo.io/docs/#Install_Hexo</a><br>(网络原因无法打开，请自备梯子)</p>
+<h2 id="Install-git"><a href="#Install-git" class="headerlink" title="Install git"></a>Install git</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install git-core</span><br></pre></td></tr></table></figure>
+<h2 id="Install-nvm-Node-js"><a href="#Install-nvm-Node-js" class="headerlink" title="Install nvm + Node.js"></a>Install nvm + Node.js</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">安装nvm:</span><br><span class="line">curl https://raw.github.com/creationix/nvm/master/install.sh | sh</span><br><span class="line">或</span><br><span class="line">wget -qO- https://raw.github.com/creationix/nvm/master/install.sh | sh</span><br><span class="line"></span><br><span class="line">安装Node.js:</span><br><span class="line">nvm install 4</span><br></pre></td></tr></table></figure>
+<h2 id="Install-Hexo"><a href="#Install-Hexo" class="headerlink" title="Install Hexo"></a>Install Hexo</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<hr>
+<h3 id="首页文章关闭全文显示，而显示”more”的设置："><a href="#首页文章关闭全文显示，而显示”more”的设置：" class="headerlink" title="首页文章关闭全文显示，而显示”more”的设置："></a>首页文章关闭全文显示，而显示”more”的设置：</h3><p>theme/xxx/_config.yml中<code>excerpt_link: more</code>, 在文章正文中摘要部分增加<code>&lt;!--more--&gt;</code></p>
+<h3 id="hexo增加百度统计"><a href="#hexo增加百度统计" class="headerlink" title="hexo增加百度统计"></a>hexo增加百度统计</h3><p><a href="http://www.pmbuf.com/2015/09/15/hexo%E6%B7%BB%E5%8A%A0%E7%99%BE%E5%BA%A6%E7%BB%9F%E8%AE%A1/" target="_blank" rel="noopener">hexo增加百度统计</a> </p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="http://www.cnblogs.com/seanlv/archive/2011/09/24/2189719.html" target="_blank" rel="noopener">在Ubuntu上安装NPM(Node Package Manger)</a></li>
+<li><a href="https://hexo.io/docs/#Installation" target="_blank" rel="noopener">hexo.io Documentation: Hexo Installation</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/10/06/LeetCode-328-Odd-Even-Linked-List/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [LeetCode]328.Odd Even Linked List | 奇偶链表操作
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/09/22/LeetCode-172-Factorial-Trailing-Zeroes/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[LeetCode]172.Factorial Trailing Zeroes | 计算阶乘的尾数零的数量</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

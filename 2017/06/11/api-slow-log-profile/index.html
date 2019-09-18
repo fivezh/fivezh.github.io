@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>一次接口性能优化的实例 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="线上一个短信推送接口存在慢速响应继而雪崩效应导致整体服务异常，先看些统计数据：接口请求量统计：每天18点有批量推送, 且规律">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次接口性能优化的实例">
+<meta property="og:url" content="http://fivezh.github.io/2017/06/11/api-slow-log-profile/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="线上一个短信推送接口存在慢速响应继而雪崩效应导致整体服务异常，先看些统计数据：接口请求量统计：每天18点有批量推送, 且规律">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/api-profile_1.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/api-profile_3.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/api-profile_2.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/api-profile_5.png">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.777Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次接口性能优化的实例">
+<meta name="twitter:description" content="线上一个短信推送接口存在慢速响应继而雪崩效应导致整体服务异常，先看些统计数据：接口请求量统计：每天18点有批量推送, 且规律">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/api-profile_1.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-api-slow-log-profile" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/11/api-slow-log-profile/" class="article-date">
+  	<time datetime="2017-06-11T10:58:14.000Z" itemprop="datePublished">2017-06-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一次接口性能优化的实例
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>线上一个短信推送接口存在慢速响应继而雪崩效应导致整体服务异常，先看些统计数据：<br>接口请求量统计：每天18点有批量推送, 且规律<br><img src="/assets/post_images/api-profile_1.png" alt="api-profile_1.png"></p>
+<a id="more"></a>
+<p>服务器负载，显著毛刺现象：<br><img src="/assets/post_images/api-profile_3.png" alt="api-profile_3.png"></p>
+<p>DB连接数满：<br><img src="/assets/post_images/api-profile_2.png" alt="api-profile_2.png"></p>
+<h2 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h2><ul>
+<li>每日18点开始批量推送，负载飙升；到20点负载爆表，出现大量慢响应</li>
+<li>RDS连接数为什么满？存在慢查SQL导致历史任务不断堆积，在临界条件下并发数打满RDS的连接数。</li>
+<li>大量慢请求，导致负载急剧升高，CPU爆了！满请求的原因：<code>Token::mobileFilter()</code>中读库时读取16万条黑名单手机号，array_diff()函数效率不高。</li>
+<li>慢请求和RDS连接数满，之间谁是因，谁是果？慢请求是因，导致任务堆积，连接数累积，打满。</li>
+</ul>
+<h2 id="影响范围："><a href="#影响范围：" class="headerlink" title="影响范围："></a>影响范围：</h2><p>此接口耗时在1s以上，随时间积累最终20点后服务器CPU占有率100%</p>
+<h2 id="改进方法："><a href="#改进方法：" class="headerlink" title="改进方法："></a>改进方法：</h2><ul>
+<li>修改慢查SQL，只取当前手机号是否对应黑名单，读库记录数从16万—&gt; 请求手机号数N，读库耗时从1.3秒下降为60毫秒</li>
+<li>修改慢查SQL后，根据查询SQL可以给<code>blacklist_mobile</code>表增加mobile字段索引</li>
+<li>array_diff()在小数量下并无性能问题</li>
+</ul>
+<h2 id="反思："><a href="#反思：" class="headerlink" title="反思："></a>反思：</h2><ul>
+<li>排障步骤：框架日志—&gt; Nginx日志慢请求 —-&gt; PHP slow log —&gt; ECS/RDS负载，不同问题步骤不一，根据现象分析原因定位问题</li>
+<li>线上服务缺少接口耗时、框架ERROR日志监控</li>
+<li>其实黑名单表设计之初为解决用户投诉后屏蔽短信使用，但随着后续扩展了用户恢复TD后屏蔽营销短信的功能，导致该表记录增长迅速，慢SQL随着数据量增长情况恶化</li>
+</ul>
+<h2 id="优化后的效果："><a href="#优化后的效果：" class="headerlink" title="优化后的效果："></a>优化后的效果：</h2><ul>
+<li>上线后，短信推送量不变，接口性能从1.5s-&gt;400ms</li>
+<li>机器负载的毛刺现象消失，负载稳定在预期范围</li>
+<li>大量并发短信推送阶段，服务器负载稳定，送达率、成功率各项数据稳定<br>优化前后机器负载情况：(6月7日、8日的负载在高峰推送期间保持在较低水平-下图红色框中部分，无毛刺现象)<br><img src="/assets/post_images/api-profile_5.png" alt="api-profile_5.png"></li>
+</ul>
+<h2 id="相关代码："><a href="#相关代码：" class="headerlink" title="相关代码："></a>相关代码：</h2><p>从04-Jun-2017 19:51:40开始，大量<code>Token::mobileFilter()</code>函数慢请求，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">public static function mobileFilter($mobile, $token)&#123;</span><br><span class="line">    $res = \DB::table(&apos;xxxxxx&apos;)-&gt;select(&apos;blacklist_status&apos;)-&gt;where(&apos;token&apos;, $token)-&gt;first();</span><br><span class="line">    // 若该token的black_status值为0，则不需要经过电话黑名单校验</span><br><span class="line">    if (empty($res[&apos;blacklist_status&apos;])) &#123;</span><br><span class="line">        return $mobile;</span><br><span class="line">    &#125;</span><br><span class="line">    try &#123;</span><br><span class="line">        // 原始代码：</span><br><span class="line">        // $blacklist = \DB::table(&apos;blacklist_mobile&apos;)-&gt;where(&apos;status&apos;, self::BLACK_STATUS)-&gt;lists(&apos;mobile&apos;)</span><br><span class="line">        // 该表有16万条黑名单记录！</span><br><span class="line"></span><br><span class="line">        // 优化后代码：</span><br><span class="line">        $blacklist = \DB::table(&apos;blacklist_mobile&apos;)-&gt;where(&apos;status&apos;, self::BLACK_STATUS)-&gt;whereIn(&apos;mobile&apos;, $mobile)-&gt;lists(&apos;mobile&apos;);</span><br><span class="line">    &#125; catch (\RuntimeException $e) &#123;</span><br><span class="line">        Log::error(&quot;DB table blacklist_mobile error&quot; . $e-&gt;getMessage());</span><br><span class="line">        return $mobile;</span><br><span class="line">    &#125;</span><br><span class="line">    $mobile_send = array_diff($mobile, $blacklist); // 16万条记录的数组执行array_diff()</span><br><span class="line">    return $mobile_send;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>服务器Nginx请求日志，分钟级请求量：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat nginx_log/message.2017-06-04-access.log | grep -v HEAD | grep message | grep &quot;2017:20:00&quot; | awk -F[][] &apos;&#123;print $6&#125;&apos; | sort | uniq -c | sort -nr | head</span><br><span class="line">    162 04/Jun/2017:20:00:55 +0800 // 此时累计请求量已很大，导致负载飙高</span><br><span class="line">    161 04/Jun/2017:20:00:56 +0800</span><br><span class="line">     81 04/Jun/2017:20:00:54 +0800</span><br><span class="line">     64 04/Jun/2017:20:00:57 +0800</span><br><span class="line">     49 04/Jun/2017:20:00:48 +0800</span><br><span class="line">     42 04/Jun/2017:20:00:58 +0800</span><br><span class="line">     20 04/Jun/2017:20:00:53 +0800</span><br><span class="line">     18 04/Jun/2017:20:00:59 +0800</span><br><span class="line">     18 04/Jun/2017:20:00:49 +0800</span><br><span class="line">     12 04/Jun/2017:20:00:52 +0800</span><br></pre></td></tr></table></figure></p>
+<p>Nginx慢请求：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">remote_addr=[] http_x_forward=[] time=[04/Jun/2017:20:00:49 +0800] request=[POST /v1/message HTTP/1.0] status=[200] byte=[248] elapsed=[62.014] refer=[]  ua=[Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.63 Safari/535.7] cookie=[-]</span><br><span class="line">remote_addr=[] http_x_forward=[] time=[04/Jun/2017:20:00:49 +0800] request=[POST /v1/message HTTP/1.0] status=[200] byte=[248] elapsed=[59.037] refer=[]  ua=[Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.63 Safari/535.7] cookie=[-]</span><br><span class="line">remote_addr=[] http_x_forward=[] time=[04/Jun/2017:20:00:49 +0800] request=[POST /v1/message HTTP/1.0] status=[200] byte=[248] elapsed=[57.245] refer=[]  ua=[Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.63 Safari/535.7] cookie=[-]</span><br><span class="line">remote_addr=[] http_x_forward=[] time=[04/Jun/2017:20:00:49 +0800] request=[POST /v1/message HTTP/1.0] status=[200] byte=[248] elapsed=[66.404] refer=[]  ua=[Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.7 (KHTML, like Gecko) Chrome/16.0.912.63 Safari/535.7] cookie=[-]</span><br></pre></td></tr></table></figure></p>
+<p>php慢日志：</p>
+<ul>
+<li>Token::mobileFilter()函数慢，线上request_slowlog_timeout = 5<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">[04-Jun-2017 19:51:29]  [pool www] pid 106028</span><br><span class="line">script_filename = message/public/index.php</span><br><span class="line">[0x00007f5ac3b96888] array_diff() message/app/Models/Token.php:211</span><br><span class="line">[0x00007f5ac3b96730] mobileFilter() message/app/Http/Controllers/SmsController.php:195</span><br><span class="line">[0x00007f5ac3b965b8] mobileFilter() message/app/Http/Controllers/SmsController.php:163</span><br><span class="line">[0x00007f5ac3b96450] checkParams() message/app/Http/Controllers/SmsController.php:106</span><br><span class="line">[0x00007fff14beafc0] index() unknown:0</span><br><span class="line">[0x00007f5ac3b96300] call_user_func_array() message/vendor/laravel/framework/src/Illuminate/Routing/Controller.php:246</span><br><span class="line">[0x00007f5ac3b961c8] callAction() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:162</span><br><span class="line">[0x00007f5ac3b96088] call() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:107</span><br><span class="line">[0x00007fff14beb640] Illuminate\Routing\&#123;closure&#125;() unknown:0</span><br><span class="line">[0x00007f5ac3b95f60] call_user_func() message/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php:141</span><br><span class="line">[0x00007fff14beb9e0] Illuminate\Pipeline\&#123;closure&#125;() unknown:0</span><br><span class="line">[0x00007f5ac3b95de8] call_user_func() message/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php:101</span><br><span class="line">[0x00007f5ac3b95ca8] then() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:108</span><br><span class="line">[0x00007f5ac3b95b40] callWithinStack() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:67</span><br><span class="line">[0x00007f5ac3b959e8] dispatch() message/vendor/laravel/framework/src/Illuminate/Routing/Route.php:204</span><br><span class="line">[0x00007f5ac3b958b8] runWithCustomDispatcher() message/vendor/laravel/framework/src/Illuminate/Routing/Route.php:134</span><br><span class="line">[0x00007f5ac3b95760] run() message/vendor/laravel/framework/src/Illuminate/Routing/Router.php:701</span><br><span class="line">[0x00007fff14bec4b0] Illuminate\Routing\&#123;closure&#125;() unknown:0</span><br><span class="line">[0x00007f5ac3b95638] call_user_func() message/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php:141</span><br><span class="line">[0x00007fff14bec850] Illuminate\Pipeline\&#123;closure&#125;() unknown:0</span><br><span class="line"></span><br><span class="line">[04-Jun-2017 19:51:52]  [pool www] pid 106029</span><br><span class="line">script_filename = message/public/index.php</span><br><span class="line">[0x00007f5ac3b96f08] explode() message/vendor/laravel/framework/src/Illuminate/Support/helpers.php:404</span><br><span class="line">[0x00007f5ac3b96d80] data_get() message/vendor/laravel/framework/src/Illuminate/Support/Arr.php:303</span><br><span class="line">[0x00007f5ac3b96c30] pluck() message/vendor/laravel/framework/src/Illuminate/Support/helpers.php:257</span><br><span class="line">[0x00007f5ac3b96b30] array_pluck() message/vendor/laravel/framework/src/Illuminate/Support/Collection.php:368</span><br><span class="line">[0x00007f5ac3b969f8] lists() message/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php:1513</span><br><span class="line">[0x00007f5ac3b96888] lists() message/app/Models/Token.php:206</span><br><span class="line">[0x00007f5ac3b96730] mobileFilter() message/app/Http/Controllers/SmsController.php:195</span><br><span class="line">[0x00007f5ac3b965b8] mobileFilter() message/app/Http/Controllers/SmsController.php:163</span><br><span class="line">[0x00007f5ac3b96450] checkParams() message/app/Http/Controllers/SmsController.php:106</span><br><span class="line">[0x00007fff14beafc0] index() unknown:0</span><br><span class="line">[0x00007f5ac3b96300] call_user_func_array() message/vendor/laravel/framework/src/Illuminate/Routing/Controller.php:246</span><br><span class="line">[0x00007f5ac3b961c8] callAction() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:162</span><br><span class="line">[0x00007f5ac3b96088] call() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:107</span><br><span class="line">[0x00007fff14beb640] Illuminate\Routing\&#123;closure&#125;() unknown:0</span><br><span class="line">[0x00007f5ac3b95f60] call_user_func() message/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php:141</span><br><span class="line">[0x00007fff14beb9e0] Illuminate\Pipeline\&#123;closure&#125;() unknown:0</span><br><span class="line">[0x00007f5ac3b95de8] call_user_func() message/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php:101</span><br><span class="line">[0x00007f5ac3b95ca8] then() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:108</span><br><span class="line">[0x00007f5ac3b95b40] callWithinStack() message/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php:67</span><br><span class="line">[0x00007f5ac3b959e8] dispatch() message/vendor/laravel/framework/src/Illuminate/Routing/Route.php:204</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li>DB慢<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat php/log/www.log.slow | grep &quot;20:00:58&quot; -A2| grep execute</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br><span class="line">[0x00007f5ac3b970e0] execute() message/vendor/laravel/framework/src/Illuminate/Database/Connection.php:294</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>框架日志：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-rbash-4.2$ cat message/storage/logs/laravel-2017-06-04.log | grep ERROR | head</span><br><span class="line">[2017-06-04 19:53:37] production.ERROR: App\Exceptions\RrcPDOException: SQLSTATE[HY000] [1040] Too many connections in message/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47</span><br><span class="line">[2017-06-04 19:53:37] production.ERROR: App\Exceptions\RrcPDOException: SQLSTATE[HY000] [1040] Too many connections in message/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47</span><br><span class="line">[2017-06-04 19:53:37] production.ERROR: App\Exceptions\RrcPDOException: SQLSTATE[HY000] [1040] Too many connections in message/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47</span><br><span class="line">-rbash-4.2$ </span><br><span class="line">-rbash-4.2$ cat message/storage/logs/laravel-2017-06-04.log | grep ERROR | tail</span><br><span class="line">[2017-06-04 20:01:02] production.ERROR: App\Exceptions\RrcPDOException: SQLSTATE[HY000] [1040] Too many connections in message/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47</span><br><span class="line">[2017-06-04 20:01:02] production.ERROR: App\Exceptions\RrcPDOException: SQLSTATE[HY000] [1040] Too many connections in message/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:47</span><br></pre></td></tr></table></figure></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>黑名单表设计之初并未考虑大数据量，而随业务发展表规模不断膨胀，而代码逻辑未相应调整优化</li>
+<li>第一版代码存在过于原始的处理方式，2行优化代码完成SQL优化</li>
+<li>基础服务的监控应具有更高优先级，对系统资源的优化收益较大</li>
+<li>及早发现问题防患于未然，时刻对线上服务保持敬畏之心</li>
+<li>一个合格的工程师应严格要求自己，精益求精</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/06/18/centos-7-memory-available/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          探究CentOS 7可用内存
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/06/04/go-interface-part1/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">深入理解Golang中的interface(一)</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

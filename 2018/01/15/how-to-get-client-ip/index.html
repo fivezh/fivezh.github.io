@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>不同网络拓扑下如何正确获取客户端ip? | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="先说结论：  说明：一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。 根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP 剔除可信IP列表 从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求 Laravel/Nginx-realip均按上述逻辑来处理的  网络拓扑模型">
+<meta property="og:type" content="article">
+<meta property="og:title" content="不同网络拓扑下如何正确获取客户端ip?">
+<meta property="og:url" content="http://fivezh.github.io/2018/01/15/how-to-get-client-ip/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="先说结论：  说明：一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。 根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP 剔除可信IP列表 从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求 Laravel/Nginx-realip均按上述逻辑来处理的  网络拓扑模型">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/network_slb_nginx.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/slb_x-forwarded-for.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/network_slb_nginx.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/x_forwarded_for_slb_nginx.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/proxy_slb_nginx.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/fake_proxy_slb_nginx.png">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.779Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="不同网络拓扑下如何正确获取客户端ip?">
+<meta name="twitter:description" content="先说结论：  说明：一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。 根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP 剔除可信IP列表 从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求 Laravel/Nginx-realip均按上述逻辑来处理的  网络拓扑模型">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/network_slb_nginx.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 11.67px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 11.67px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-how-to-get-client-ip" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/01/15/how-to-get-client-ip/" class="article-date">
+  	<time datetime="2018-01-15T04:20:30.000Z" itemprop="datePublished">2018-01-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      不同网络拓扑下如何正确获取客户端ip?
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>先说结论：</p>
+<ul>
+<li><strong>说明：</strong>一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。</li>
+<li>根据网络拓扑当服务器架构中的设备IP加入可信IP列表，成本：持续维护可信IP区、与拓扑相关、增加防火墙WAF调整可信IP</li>
+<li>剔除可信IP列表</li>
+<li>从XFF头部倒序获取首个非可信IP作为客户端真实IP，防伪造XFF、防代理、保正常请求</li>
+<li>Laravel/Nginx-realip均按上述逻辑来处理的</li>
+</ul>
+<h2 id="网络拓扑模型"><a href="#网络拓扑模型" class="headerlink" title="网络拓扑模型"></a>网络拓扑模型</h2><p><img src="/assets/post_images/network_slb_nginx.png" alt><br><a id="more"></a></p>
+<p>前提：</p>
+<ul>
+<li>多用户公用wifi场景下，多用户公用出口IP，这种场景下无法区分用户ip</li>
+<li>通过vpn、匿名代理方式访问，只能获取到vpn的出口IP</li>
+<li>TCP有连接、三次握手的特性决定了TCP直连IP地址无法被篡改，在茫茫网络中可信的只有上一跳</li>
+<li>获取用户IP的目的一般为：精准推荐（如根据位置推荐信息）、反作弊（防刷）</li>
+</ul>
+<p>网络中几个节点及ip地址说明：</p>
+<ul>
+<li>Client：客户端，请求发起方，ip地址为ip0</li>
+<li>SLB：服务器负载均衡，在阿里云解决方案中负载均衡SLB提供传递客户真实ip到x-forwarded-for的设置<ul>
+<li>一般情况下，SLB是单IP入口，多IP出口（SLB的内部实现也是多台机器的集群，所以出口都是多IP的）</li>
+<li>SLB分公网SLB和私网SLB，二者表征基本一致，区别在于入口IP是否为公网IP：<ul>
+<li>SLB的出口IP（回源IP）一般是共享IP地址，如<code>100.109.22x.x</code></li>
+</ul>
+</li>
+<li>注意：SLB需要正确配置x-forwarded-for，才能透传用户ip信息</li>
+</ul>
+</li>
+</ul>
+<p><img src="/assets/post_images/slb_x-forwarded-for.png" alt></p>
+<ul>
+<li><p>Nginx：web server程序，将请求转发给不同的后端应用程序（php/java/go等）</p>
+<ul>
+<li>Nginx中<code>$remote_addr</code>：为Nginx建立TCP连接的直连IP地址（TCP三次握手情况下，无法伪造）</li>
+<li>Nginx中<code>$http_x_forwarded_for</code>：获取HTTP请求中x-forwarded-for头部</li>
+</ul>
+<p>通用的日志格式：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">log_format</span>  main  <span class="string">'remote_addr=[<span class="variable">$remote_addr</span>] http_x_forward=[<span class="variable">$http_x_forwarded_for</span>] time=[<span class="variable">$time_local</span>] request=[<span class="variable">$request</span>] '</span></span><br><span class="line">        <span class="string">'status=[<span class="variable">$status</span>] byte=[<span class="variable">$bytes_sent</span>] elapsed=[<span class="variable">$request_time</span>] refer=[<span class="variable">$http_referer</span>] body=[<span class="variable">$request_body</span>] '</span></span><br><span class="line">        <span class="string">'ua=[<span class="variable">$http_user_agent</span>] cookie=[<span class="variable">$http_cookie</span>] gzip=[<span class="variable">$gzip_ratio</span>] log_id=[<span class="variable">$hostname</span><span class="variable">$pid</span><span class="variable">$msec</span><span class="variable">$request_length</span><span class="variable">$http_x_forwarded_for</span><span class="variable">$connection</span>]'</span>;</span><br></pre></td></tr></table></figure>
+<p>​</p>
+</li>
+</ul>
+<h3 id="如何正确获取用户ip"><a href="#如何正确获取用户ip" class="headerlink" title="如何正确获取用户ip"></a>如何正确获取用户ip</h3><p><strong>说明：</strong>一切抛开网络拓扑提准确获取用户ip的通用方案都是耍流氓。</p>
+<p>在不同的网络拓扑下，不同网络设备的转发处理差异，都可能影响到最终获取用户ip的准确性。</p>
+<p>这里将用户请求分为四类：</p>
+<ul>
+<li>情形A：普通用户ip0-&gt;通过slb0-&gt;导致nginx，正常用户请求</li>
+<li>情形B：普通用户ip0-&gt;用户携带伪造的x-forwarded-for头部-&gt;通过slb0-&gt;导致nginx，正常用户请求</li>
+<li>情形C：普通用户ip0-&gt;用户使用代理-&gt;通过slb0-&gt;导致nginx，正常用户请求</li>
+<li>情形D：普通用户ip0-&gt;携带伪造x-forwarded-for-&gt;用户使用代理-&gt;通过slb0-&gt;导致nginx，正常用户请求</li>
+</ul>
+<h4 id="情形A-用户正常请求"><a href="#情形A-用户正常请求" class="headerlink" title="情形A: 用户正常请求"></a>情形A: 用户正常请求</h4><p>网络拓扑如下：</p>
+<p><img src="/assets/post_images/network_slb_nginx.png" alt></p>
+<p>各节点处理操作：</p>
+<ul>
+<li>Client：以ip0发起请求，和slb0地址建立连接</li>
+<li>SLB：入口slb0接收请求，出口slb-out转发至后端服务上；将用户ip0增加到x-forward-for头部</li>
+<li>Nginx：获取用户请求，按转发逻辑将请求发送给处理程序</li>
+</ul>
+<p>在这种情形下，以PHP为例，获取到的请求形式将如下：</p>
+<ul>
+<li>REMOTE_ADDR = slb-out</li>
+<li>X-FORWARDED-FOR = ip0</li>
+</ul>
+<p>所以在正常情况下，取<code>$_SERVER[&#39;HTTP_X_FORWARDED_FOR&#39;]</code>就是用户的真是ip0</p>
+<p><strong>特别注意：</strong>任何时候正常逻辑的处理都是比较容易实现的，但防范非正常用户才是重点。</p>
+<h4 id="情形B-用户携带伪造的x-forwared-for头部"><a href="#情形B-用户携带伪造的x-forwared-for头部" class="headerlink" title="情形B: 用户携带伪造的x-forwared-for头部"></a>情形B: 用户携带伪造的x-forwared-for头部</h4><p>携带伪造的x-forwarded-for，对发起请求放来说几乎无成本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -X GET http://127.0.0.1:9999/test -H 'x-forwarded-for: 1.2.3.4'</span><br></pre></td></tr></table></figure>
+<p>网络拓扑如下：</p>
+<p><img src="/assets/post_images/x_forwarded_for_slb_nginx.png" alt></p>
+<p>各节点处理操作：</p>
+<ul>
+<li><p>Client：以ip0发起请求，和slb0地址建立连接，同时发送HTTP HEADER：<code>x-forwarded-for: ipx</code></p>
+<ul>
+<li>注意：这里<code>ipx</code>可以是任意随机ip地址，一个、多个都可以</li>
+</ul>
+</li>
+<li><p>SLB：入口slb0接收请求，出口slb-out转发至后端服务上；将用户ip0追加到x-forward-for头部后</p>
+<ul>
+<li>此时的<code>x-forwarded-for=ipx, ip0</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remote_addr=[100.109.222.5] http_x_forward=[1.2.3.4, 2.2.2.2, 36.110.86.210] time=[09/Jan/2018:15:41:40 +0800] request=[GET /health?hello=99999 HTTP/1.0] status=[404] byte=[4728] elapsed=[0.004] refer=[-] body=[-] ua=[PostmanRuntime/7.1.1] cookie=[-] gzip=[-]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>IP地址<code>100.109.222.5</code>为SLB出口IP（又称回源IP）</li>
+<li>上述请求中携带了伪造的头部<code>x-forwarded-for: 1.2.3.4, 2.2.2.2</code></li>
+<li>IP地址<code>36.110.86.210</code>为本机的公网IP，通过VPN访问私网SLB时拿到IP为<code>10.51.64.132</code></li>
+</ul>
+</li>
+<li><p>Nginx：获取用户请求，按转发逻辑将请求发送给处理程序</p>
+</li>
+</ul>
+<p>在这种情形下，以PHP为例，获取到的请求形式将如下：</p>
+<ul>
+<li>REMOTE_ADDR = slb-out</li>
+<li>X-FORWARDED-FOR = <code>ipx, ip0</code></li>
+</ul>
+<p>在这种情形下，无论<code>REMOTE_ADDR</code>还是<code>XX-FORWARDED-FOR[0]</code>都不是用户有效ip，且<code>X-FORWARDED-FOR[0]</code>这种形式被伪造ipx欺骗，<strong>风险极大</strong>。</p>
+<h4 id="情形C-用户挂代理访问"><a href="#情形C-用户挂代理访问" class="headerlink" title="情形C: 用户挂代理访问"></a>情形C: 用户挂代理访问</h4><p><img src="/assets/post_images/proxy_slb_nginx.png" alt></p>
+<p>代理其实是反屏蔽的有效武器，所以要特别考虑这种情形：</p>
+<ul>
+<li>Proxy：入口ip为proxy0，出口为proxy-out<ul>
+<li>普通代理：将ip0增加到x-forwarded-for的Header中</li>
+<li>匿名代理：将用户请求的ip0抹掉，不做任何x-forwarded-for头部处理</li>
+</ul>
+</li>
+</ul>
+<p>在这种情况下，最终到达Nginx后的情形如下，匿名代理时由于用户ip已被代理抹去，所以只能获取到proxy-out地址（其实从反作弊的角度看，这就足够了）</p>
+<ul>
+<li>Nginx：<ul>
+<li>普通代理：<code>x-forwarded-for=ip0, proxy-out</code></li>
+<li>匿名代理：<code>x-forwarded-for=proxy-out</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="情形D-用户伪造x-forwarded-for请求头-挂代理"><a href="#情形D-用户伪造x-forwarded-for请求头-挂代理" class="headerlink" title="情形D: 用户伪造x-forwarded-for请求头+挂代理"></a>情形D: 用户伪造x-forwarded-for请求头+挂代理</h4><p><img src="/assets/post_images/fake_proxy_slb_nginx.png" alt></p>
+<ul>
+<li>Proxy：<ul>
+<li>普通代理：将ip0追加到x-forwarded-for的Header中，此时<code>x-forwarded-for=ipx, ip0</code></li>
+<li>匿名代理：将用户请求的ip0抹掉，不做任何x-forwarded-for头部处理</li>
+</ul>
+</li>
+</ul>
+<p>在这种情况下，最终到达Nginx后的情形如下，匿名代理时由于用户ip已被代理抹去，所以只能获取到proxy-out地址（其实从反作弊的角度看，这就足够了）</p>
+<ul>
+<li>Nginx：<ul>
+<li>普通代理：<code>x-forwarded-for=ipx, ip0, proxy-out</code></li>
+<li>匿名代理：<code>x-forwarded-for=proxy-out</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><p>在复杂网络环境下，伪造HTTP头部、挂代理、甚至是增加网络设备（如防火墙）都可能导致网络拓扑变化，从而影响到获取用户IP的有效性。</p>
+<p>（敲敲黑板）那么，什么方案才是获取用户ip的最佳方案呢？</p>
+<h3 id="Laravel方案"><a href="#Laravel方案" class="headerlink" title="Laravel方案"></a>Laravel方案</h3><ul>
+<li>结论：<ul>
+<li>Laravel中<code>getClientIp()</code>方案必须配合<code>Request::setTrustedProxies([&#39;1.1.1.1&#39;, &#39;2.2.2.2/18&#39;]);</code></li>
+<li>合理设置可信代理区(支持ip或CIDR形式)，将首个非可信IP地址作为用户IP</li>
+<li>x-forwarded-for=ip0, ip1, ip2, remote_addr=ip3</li>
+<li>则通过getClientIp()获取到的ip= [ip0, ip1, ip2, ip3]，假设可信代理ip=[ip2, ip3]，则删除可信ip后为[ip0, ip1]，做一次数组翻转，getClientIps()为[ip1, ip0]，getClientIp()返回ip=ip1</li>
+<li>好处：既考虑各种网络模型的影响，也兼顾代理、伪造x-forwarded-for头部的请求情况，是较为理想的方案</li>
+</ul>
+</li>
+<li>Laravel中提供的方式是$request-&gt;getClientIp()和getClientIps()函数<ul>
+<li><code>isFromTrustedProxy()</code>函数：判断remote_addr是否在可信代理列表中，不在则直接返回</li>
+<li><code>getTrustedValues()</code>函数：<ul>
+<li>默认TrustedHeader为<code>x-forwarded-for</code></li>
+<li>函数名叫获取可信值，其实做得事情是剥离可信代理，返回不可信的IP地址列表，吐槽下函数名+无注释</li>
+</ul>
+</li>
+<li><code>normalizeAndFilterClientIps(array $clientIps, $ip)</code>函数：<ul>
+<li>将remote_add追加到x-forwarded-for的尾部</li>
+<li>从前到后遍历x-forwarded-for字段，标记首个可信代理ip并最终移除可信代理IP</li>
+<li>现在结果将是ip0, proxy1, proxy2这种形式，至此只保留不信任IP和remote_addr</li>
+<li>最终将此结果做下array_reverse翻转操作，方便外层获取第0个元素作为最接近可信区的ip地址</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>主要处理逻辑</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the client IP addresses.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * In the returned array the most trusted IP address is first, and the</span></span><br><span class="line"><span class="comment">     * least trusted one last. The "real" client IP address is the last one,</span></span><br><span class="line"><span class="comment">     * but this is also the least trusted one. Trusted proxies are stripped.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * Use this method carefully; you should use getClientIp() instead.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> array The client IP addresses</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> getClientIp()</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getClientIps</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $ip = <span class="keyword">$this</span>-&gt;server-&gt;get(<span class="string">'REMOTE_ADDR'</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isFromTrustedProxy()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">array</span>($ip);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;getTrustedValues(<span class="keyword">self</span>::HEADER_CLIENT_IP, $ip) ?: <span class="keyword">array</span>($ip);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the client IP address.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * This method can read the client IP address from the "X-Forwarded-For" header</span></span><br><span class="line"><span class="comment">     * when trusted proxies were set via "setTrustedProxies()". The "X-Forwarded-For"</span></span><br><span class="line"><span class="comment">     * header value is a comma+space separated list of IP addresses, the left-most</span></span><br><span class="line"><span class="comment">     * being the original client, and each successive proxy that passed the request</span></span><br><span class="line"><span class="comment">     * adding the IP address where it received the request from.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * If your reverse proxy uses a different header name than "X-Forwarded-For",</span></span><br><span class="line"><span class="comment">     * ("Client-Ip" for instance), configure it via the $trustedHeaderSet</span></span><br><span class="line"><span class="comment">     * argument of the Request::setTrustedProxies() method instead.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> string|null The client IP address</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> getClientIps()</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@see</span> http://en.wikipedia.org/wiki/X-Forwarded-For</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getClientIp</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $ipAddresses = <span class="keyword">$this</span>-&gt;getClientIps();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> $ipAddresses[<span class="number">0</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getTrustedValues</span><span class="params">($type, $ip = null)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $clientValues = <span class="keyword">array</span>();</span><br><span class="line">        $forwardedValues = <span class="keyword">array</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>::$trustedHeaders[$type] &amp;&amp; <span class="keyword">$this</span>-&gt;headers-&gt;has(<span class="keyword">self</span>::$trustedHeaders[$type])) &#123;</span><br><span class="line">            <span class="keyword">foreach</span> (explode(<span class="string">','</span>, <span class="keyword">$this</span>-&gt;headers-&gt;get(<span class="keyword">self</span>::$trustedHeaders[$type])) <span class="keyword">as</span> $v) &#123;</span><br><span class="line">                $clientValues[] = (<span class="keyword">self</span>::HEADER_CLIENT_PORT === $type ? <span class="string">'0.0.0.0:'</span> : <span class="string">''</span>).trim($v);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">self</span>::$trustedHeaders[<span class="keyword">self</span>::HEADER_FORWARDED] &amp;&amp; <span class="keyword">$this</span>-&gt;headers-&gt;has(<span class="keyword">self</span>::$trustedHeaders[<span class="keyword">self</span>::HEADER_FORWARDED])) &#123;</span><br><span class="line">            $forwardedValues = <span class="keyword">$this</span>-&gt;headers-&gt;get(<span class="keyword">self</span>::$trustedHeaders[<span class="keyword">self</span>::HEADER_FORWARDED]);</span><br><span class="line">            $forwardedValues = preg_match_all(sprintf(<span class="string">'&#123;(?:%s)=(?:"?\[?)([a-zA-Z0-9\.:_\-/]*+)&#125;'</span>, <span class="keyword">self</span>::$forwardedParams[$type]), $forwardedValues, $matches) ? $matches[<span class="number">1</span>] : <span class="keyword">array</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> !== $ip) &#123;</span><br><span class="line">            $clientValues = <span class="keyword">$this</span>-&gt;normalizeAndFilterClientIps($clientValues, $ip);</span><br><span class="line">            $forwardedValues = <span class="keyword">$this</span>-&gt;normalizeAndFilterClientIps($forwardedValues, $ip);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ($forwardedValues === $clientValues || !$clientValues) &#123;</span><br><span class="line">            <span class="keyword">return</span> $forwardedValues;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!$forwardedValues) &#123;</span><br><span class="line">            <span class="keyword">return</span> $clientValues;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">$this</span>-&gt;isForwardedValid) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span> !== $ip ? <span class="keyword">array</span>(<span class="string">'0.0.0.0'</span>, $ip) : <span class="keyword">array</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;isForwardedValid = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConflictingHeadersException(sprintf(<span class="string">'The request has both a trusted "%s" header and a trusted "%s" header, conflicting with each other. You should either configure your proxy to remove one of them, or configure your project to distrust the offending one.'</span>, <span class="keyword">self</span>::$trustedHeaders[<span class="keyword">self</span>::HEADER_FORWARDED], <span class="keyword">self</span>::$trustedHeaders[$type]));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">normalizeAndFilterClientIps</span><span class="params">(array $clientIps, $ip)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!$clientIps) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">array</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        $clientIps[] = $ip; <span class="comment">// Complete the IP chain with the IP the request actually came from</span></span><br><span class="line">        $firstTrustedIp = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> ($clientIps <span class="keyword">as</span> $key =&gt; $clientIp) &#123;</span><br><span class="line">            <span class="comment">// Remove port (unfortunately, it does happen)</span></span><br><span class="line">            <span class="keyword">if</span> (preg_match(<span class="string">'&#123;((?:\d+\.)&#123;3&#125;\d+)\:\d+&#125;'</span>, $clientIp, $match)) &#123;</span><br><span class="line">                $clientIps[$key] = $clientIp = $match[<span class="number">1</span>];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (!filter_var($clientIp, FILTER_VALIDATE_IP)) &#123;</span><br><span class="line">                <span class="keyword">unset</span>($clientIps[$key]);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (IpUtils::checkIp($clientIp, <span class="keyword">self</span>::$trustedProxies)) &#123;</span><br><span class="line">                <span class="keyword">unset</span>($clientIps[$key]);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Fallback to this when the client IP falls into the range of trusted proxies</span></span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">null</span> === $firstTrustedIp) &#123;</span><br><span class="line">                    $firstTrustedIp = $clientIp;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Now the IP chain contains only untrusted proxies and the client IP</span></span><br><span class="line">        <span class="keyword">return</span> $clientIps ? array_reverse($clientIps) : <span class="keyword">array</span>($firstTrustedIp);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Nginx中realip模块"><a href="#Nginx中realip模块" class="headerlink" title="Nginx中realip模块"></a>Nginx中realip模块</h3><ul>
+<li>openresty增加realip模块</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">--with-http_realip_module</span><br></pre></td></tr></table></figure>
+<ul>
+<li>修改nginx.conf配置文件</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">    set_real_ip_from 0.0.0.0/0;</span><br><span class="line">    real_ip_header X-Forwarded-For;</span><br><span class="line">    include blockips.conf;</span><br><span class="line"></span><br><span class="line">// blockips.conf</span><br><span class="line">deny 120.26.57.4;</span><br></pre></td></tr></table></figure>
+<p>此时，Nginx将XFF作为real_ip_header头部信息，将从收到请求的XFF中获取真实IP</p>
+<ul>
+<li>取XFF</li>
+<li>从XFF中自后向前（从右向左），剔除set_real_ip_from的地址，如果设置了<code>real_ip_recursive on</code>，则继续剔除</li>
+<li>将首个不在<code>set_real_ip_from</code>中地址，写入<code>$remote_addr</code>，此时已经时首个非信任地址</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">remote_addr=[36.110.86.210] http_x_forward=[1.1.1.1, 36.110.86.210] time=[09/Jan/2018:17:18:45 +0800] request=[GET /?hello=99999 HTTP/1.0] status=[302] byte=[241] elapsed=[0.003] refer=[http://101.200.96.229/?hello=99999] body=[-] ua=[PostmanRuntime/7.1.1] cookie=[-] gzip=[-] msec=[1515489525.815] http_host=[101.200.96.229] http_accept=[*/*|gzip, deflate|-] upstream_response_time=[0.001] sent_http_set_cookie=[-] session_id=[-] rrc_tg=[-]</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>Laravel</code>和<code>Nginx realip</code>模块的处理逻辑如出一辙，都需要设置可信代理区的IP地址范围，从而反向获取首个非信任IP作为客户端IP，在各种伪造、攻击请求、代理的网络模型下均能相对正确的获取客户端IP。</p>
+<p><strong>特别注意</strong>：网络拓扑中拓扑变化时，需要及时更新可信IP代理区。</p>
+<p>比如，增加防火墙设备（如阿里云WAF应用防火墙）后，XFF中将增加一个WAF回源IP地址，也需要将防火墙的回源IP添加至可信IP代理内。</p>
+<h1 id="参考阅读"><a href="#参考阅读" class="headerlink" title="参考阅读"></a>参考阅读</h1><ul>
+<li><a href="/assets/post_images/https://www.alibabacloud.com/help/zh/doc-detail/54007.htm?spm=a3c0i.l27537zh.a3.44.5920d33bjwng8A">获取客户端真实IP</a></li>
+<li><a href="/assets/post_images/https://www.alibabacloud.com/help/zh/faq-detail/47456.htm?spm=a3c0i.p42196zh1.a3.5.5396fe867XWI2h">接入WAF后如何获取源站IP？</a></li>
+<li><a href="/assets/post_images/https://s.amaprd.cc/doc/document_detail/40535.html">DDoS 高防IP :获取客户端真实IP</a></li>
+<li><a href="/assets/post_images/https://leo108.com/pid-2132/">ngx_http_realip_module使用详解</a></li>
+<li><a href="/assets/post_images/ggwww.ttlsa.com/nginx/nginx-get-user-real-ip/">CDN下nginx获取用户真实IP地址</a></li>
+<li><a href="/assets/post_images/http://nginx.org/en/docs/http/ngx_http_realip_module.html">Module ngx_http_realip_module</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/04/03/2017-review-md/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          回顾2017
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/23/MySQL-InnoDB-online-DDL/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MySQL InnoDB在线调整表结构(online DDL)-新增字段篇</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2019 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
