@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/hash_layout.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/addToHash.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/phpZendArray.png">
-<meta property="og:updated_time" content="2019-09-18T06:45:46.779Z">
+<meta property="og:updated_time" content="2019-12-09T03:01:52.593Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP7源码中的优雅设计">
 <meta name="twitter:description" content="团队内分享PHP7源码，重读代码过程中发现其中不少优秀设计之处，整理一篇其源码中的优雅设计。">
@@ -262,7 +262,7 @@ var _hmt = _hmt || [];
 <li>通过位运算计算nIndex<code>nIndex = p-&gt;h | ht-&gt;nTableMask</code></li>
 <li><code>h</code>是<code>key</code>进行hash计算后的哈希值，与<code>nTableMask</code>(补码表示，<code>nTableSize</code>反码+1)或运算，取值范围<code>[0, nTableSize-1]</code></li>
 <li>实现效果与<code>nIndex = p-&gt;h % ht-&gt;nTableSize</code>相同，但<strong>位或运算效率比模运算高</strong>很多</li>
-<li>空间 VS 时间 效率的博弈，这里冗余一个字段，打打提升频繁<code>nIndex</code>计算的效率</li>
+<li>空间 VS 时间 效率的博弈，这里冗余一个字段，大大提升频繁<code>nIndex</code>计算的效率</li>
 </ul>
 </li>
 </ul>
