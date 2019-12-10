@@ -15,7 +15,7 @@
 <meta property="og:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/transaction_isolation_levels.png">
-<meta property="og:updated_time" content="2019-09-18T06:45:46.771Z">
+<meta property="og:updated_time" content="2019-12-10T12:21:28.856Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析MySQL事务隔离级别">
 <meta name="twitter:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
@@ -381,7 +381,10 @@ var _hmt = _hmt || [];
 </tr>
 </tbody>
 </table>
-<h2 id="附录：事务相关SQL命令"><a href="#附录：事务相关SQL命令" class="headerlink" title="附录：事务相关SQL命令"></a>附录：事务相关SQL命令</h2><ul>
+<h2 id="附录：事务相关SQL命令"><a href="#附录：事务相关SQL命令" class="headerlink" title="附录：事务相关SQL命令"></a>附录：事务相关SQL命令</h2><blockquote>
+<p>注：在MySQL 8.0中，事务相关变量名修改为<code>transaction_isolation</code></p>
+</blockquote>
+<ul>
 <li><p>设置自动提交</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 取消autocommit</span></span><br><span class="line"><span class="keyword">set</span> aucommit=<span class="number">0</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">"%autocommit%"</span>;</span><br></pre></td></tr></table></figure>
 </li>
