@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/multiColumnIndex.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-2phases.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-with-icp.png">
-<meta property="og:updated_time" content="2020-01-19T16:37:04.383Z">
+<meta property="og:updated_time" content="2020-01-20T01:55:50.713Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引下推">
 <meta name="twitter:description" content="MySQL 联合索引仅支持按「最左匹配」原则使用索引。在遇到范围查询情况时，会停止利用后面的索引字段。">
@@ -255,7 +255,7 @@ var _hmt = _hmt || [];
 </ul>
 </li>
 </ul>
-<p>可见，未开启 ICP 时，<code>不能完全利用索引树及索引上存储的信息</code>，而是愚笨的通过回表取数据（b 字段数据已在索引树上存在），通过<code>Using where</code>进行数据过滤。<br>显著的改进就是，利用索引树上的字段信息，进行查找过滤，减少回表IO数据。</p>
+<p>可见，未开启 ICP 时，<code>不能完全利用索引树及索引上存储的信息</code>，而是愚笨的通过回表取数据（b 字段数据已在索引树上存在），通过<code>Using where</code>进行数据过滤。<br>显著的改进：利用索引树上的字段信息，进行查找过滤，减少回表IO数据。</p>
 <h2 id="索引下推-ICP-原理"><a href="#索引下推-ICP-原理" class="headerlink" title="索引下推 ICP 原理"></a>索引下推 ICP 原理</h2><p>看下官方的这个例子：<br>联合索引包含<code>zipcode, lastname, firstname</code>三个字段，查询下述 SQL：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">INDEX (zipcode, lastname, firstname)</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> people</span><br><span class="line">  <span class="keyword">WHERE</span> zipcode=<span class="string">'95054'</span></span><br><span class="line">  <span class="keyword">AND</span> lastname <span class="keyword">LIKE</span> <span class="string">'%etrunia%'</span></span><br><span class="line">  <span class="keyword">AND</span> address <span class="keyword">LIKE</span> <span class="string">'%Main Street%'</span>;</span><br></pre></td></tr></table></figure>
 <p>在未开启 ICP 优化时，按「最左匹配原则」，上述查询 SQL 仅能利用联合索引中的<code>zipcode</code> 字段，剩余<code>lastname</code>和<code>address</code>仅能回表后通过 where 过滤数据。此时通过 explain 查看执行计划，Extra 字段为<code>Using where</code>。<br>我们通常认为，这种情况下并未充分发挥索引的利用率，因为所需三字段信息在索引树上均包含全部信息，但却仅利用了索引树上的<code>zipcode</code>一个字段；其他两个字段是通过回表后，过滤的数据。<br>既然，索引树已包含全部三个字段的信息，那为何不直接通过索引树的三个字段来完成查询，避免发生回表呢？原因是，联合索引原理中只能保证局部有序，一旦有非等值查询后，后续字段无法直接通过索引树确定范围。</p>
