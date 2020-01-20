@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/multiColumnIndex.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-2phases.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-with-icp.png">
-<meta property="og:updated_time" content="2020-01-20T01:55:50.713Z">
+<meta property="og:updated_time" content="2020-01-20T01:58:26.104Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引下推">
 <meta name="twitter:description" content="MySQL 联合索引仅支持按「最左匹配」原则使用索引。在遇到范围查询情况时，会停止利用后面的索引字段。">
@@ -262,7 +262,7 @@ var _hmt = _hmt || [];
 <p>但是，索引树上已包含所有字段信息，是否可在回表前进行过滤，确定或减少回表数据范围呢？<br>答案是可以的，这也是 MySQL 在5.6版本后加入的功能。</p>
 <ul>
 <li>未开启 ICP 时的查询<br><img src="/assets/post_images/index-access-2phases.png" alt="index-access-2phases"></li>
-<li>开启 ICP 时的查询，仅图中「红色箭头」标识部分发生回表，减少 IO 操作<br><img src="/assets/post_images/index-access-with-icp.png" alt="index-access-with-icp"></li>
+<li>开启 ICP 时的查询，仅图中「红色箭头」+「对勾√」标识部分发生回表，减少 IO 操作<br><img src="/assets/post_images/index-access-with-icp.png" alt="index-access-with-icp"></li>
 </ul>
 <p>开启 ICP，查看执行计划时，Extra 字段会有<code>Using index condition</code>说明，表示 ICP 生效，减少了回表数据。这会改善 IO 操作数，提升处理效率。</p>
 <h2 id="ICP-注意事项"><a href="#ICP-注意事项" class="headerlink" title="ICP 注意事项"></a>ICP 注意事项</h2><ul>
