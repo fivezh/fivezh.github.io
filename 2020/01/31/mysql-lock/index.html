@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>MySQL InnoDB 锁机制 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="MySQL InnoDB引擎锁机制主要有「共享锁Shared Lock」、「排他锁Exclusive Lock」，另外还有「意向锁Intention Lock」，从锁的粒度上来看我们主要关注表锁（Table Lock）、行锁（Row Lock）、以及通过意向锁实现更细粒度的锁。">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL InnoDB 锁机制">
+<meta property="og:url" content="http://fivezh.github.io/2020/01/31/mysql-lock/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="MySQL InnoDB引擎锁机制主要有「共享锁Shared Lock」、「排他锁Exclusive Lock」，另外还有「意向锁Intention Lock」，从锁的粒度上来看我们主要关注表锁（Table Lock）、行锁（Row Lock）、以及通过意向锁实现更细粒度的锁。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/SharedLock-ExclusiveLock.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/IS-IX-Lock.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/innodb_trx.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/innodb_locks.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/innodb_lock_waits.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/uniqKey_lock.png">
+<meta property="og:updated_time" content="2020-01-31T15:46:17.222Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL InnoDB 锁机制">
+<meta name="twitter:description" content="MySQL InnoDB引擎锁机制主要有「共享锁Shared Lock」、「排他锁Exclusive Lock」，另外还有「意向锁Intention Lock」，从锁的粒度上来看我们主要关注表锁（Table Lock）、行锁（Row Lock）、以及通过意向锁实现更细粒度的锁。">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/SharedLock-ExclusiveLock.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 13.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-mysql-lock" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/01/31/mysql-lock/" class="article-date">
+  	<time datetime="2020-01-31T15:46:17.000Z" itemprop="datePublished">2020-01-31</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      MySQL InnoDB 锁机制
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>MySQL InnoDB引擎锁机制主要有「共享锁Shared Lock」、「排他锁Exclusive Lock」，另外还有「意向锁Intention Lock」，从锁的粒度上来看我们主要关注表锁（Table Lock）、行锁（Row Lock）、以及通过意向锁实现更细粒度的锁。<br><a id="more"></a></p>
+<p>锁，是操作系统中用于「管理对共享资源的并发访问」的机制。存在「临界资源」的「并发读写访问」时，为保证数据一致性，锁是其中的一种重要手段。</p>
+<h2 id="一、不同类型的锁"><a href="#一、不同类型的锁" class="headerlink" title="一、不同类型的锁"></a>一、不同类型的锁</h2><h3 id="1-1-共享锁-Shared-Lock"><a href="#1-1-共享锁-Shared-Lock" class="headerlink" title="1.1 共享锁 Shared Lock"></a>1.1 共享锁 Shared Lock</h3><p>S锁，又称为「读锁Read Lock」，共享访问权限，或者说相互不会阻塞。<br>多个客户端在同一时刻可以同时读取同一个资源，而互不干扰。</p>
+<h3 id="1-2-排他锁-Exclusive-Lock"><a href="#1-2-排他锁-Exclusive-Lock" class="headerlink" title="1.2 排他锁 Exclusive Lock"></a>1.2 排他锁 Exclusive Lock</h3><p>X锁，又称为「写锁Write Lock」，特点是排他，一个写锁会阻塞其他的写锁和读锁。<br>这是出于安全的考虑，只有如此才能保证再给定时间内，只有一个用户执行写入，防止其他用户读取正在写入的统一资源。</p>
+<p><img src="/assets/post_images/SharedLock-ExclusiveLock.png" alt="SharedLock Vs ExclusiveLock"></p>
+<h3 id="1-3-意向锁-Intention-Lock"><a href="#1-3-意向锁-Intention-Lock" class="headerlink" title="1.3 意向锁 Intention Lock"></a>1.3 意向锁 Intention Lock</h3><p>上述两种锁对InnoDB而言，都是行锁级别的锁；而更细粒度的，可以允许事务同时在行级、表级加锁。<br>I锁，意向锁，又分为两类：意向共享锁（IS Lock）、意向排他锁（IX Lock），下面逐一详述。</p>
+<blockquote>
+<p>意向锁，是在表级设置的一种锁，意在表名当前事务将在行级上增加什么类型的锁（S锁或X锁）</p>
+</blockquote>
+<ul>
+<li>意向共享锁（IS Lock）：事务想要获得一张表中某几行的共享锁。</li>
+<li>意向排他锁（IX Lock）：事务想要获得一张表中某几行的排他锁。</li>
+</ul>
+<p>通过命令<code>show engine innodb status</code>查看存储引擎的锁请求情况，类似如下内容：<code>TABLE LOCK table xxx trx id 10080 lock mode IX</code></p>
+<p>意向锁的加锁规则：</p>
+<ul>
+<li>事务在获取行级S锁之前，必须获取其对应表的IS或IX锁</li>
+<li>事务在获取行级X锁之前，必须获取其对应表的IX锁</li>
+</ul>
+<p><img src="/assets/post_images/IS-IX-Lock.png" alt="不同锁兼容性"></p>
+<p>当事务申请锁和表、行已存在的锁兼容时，该锁被授权；否则，则锁等待。意向锁的主要目的是表明：存在请求正在或即将锁定此表的某行。意向锁除了全表请求（例如<code>LOCK TABLES ... WRITE</code>）外，不阻止任何其他内容。</p>
+<h2 id="InnoDB-锁相关的表"><a href="#InnoDB-锁相关的表" class="headerlink" title="InnoDB 锁相关的表"></a>InnoDB 锁相关的表</h2><p><code>infomation_schema</code>库中存在三张与锁有关的数据表，分别是：</p>
+<ul>
+<li>INNODB_TRX：事务信息表，记录事务完整信息<ul>
+<li>表结构：<img src="/assets/post_images/innodb_trx.png" alt="innodb_trx"></li>
+<li><code>INNODB_TRX.trx_requested_lock_id</code>：事务等待的锁id，也就是后文中<code>INNODB_LOCKS.lock_id</code></li>
+<li><code>INNODB_TRX.trx_state</code>：事务状态，<code>Lock Wait</code>表示锁等待状态</li>
+<li><code>INNODB_TRX.trx_query</code>：事务执行SQL</li>
+</ul>
+</li>
+<li>INNODB_LOCKS：锁信息表，记录锁完整信息<ul>
+<li><img src="/assets/post_images/innodb_locks.png" alt="innodb_locks"></li>
+<li><code>INNODB_LOCKS.lock_id</code>：锁id</li>
+<li><code>INNODB_LOCKS.lock_mode</code>：锁模式，S锁、X锁</li>
+<li><code>INNODB_LOCKS.lock_type</code>：锁类型，行锁、表锁</li>
+<li><code>INNODB_LOCKS.lock_table</code>：锁定的表</li>
+<li><code>INNODB_LOCKS.lock_index/space/page</code>：锁定的索引、spaceId、页</li>
+<li><code>INNODB_LOCKS.lock_rec</code>：锁定行的数量</li>
+<li><code>INNODB_LOCKS.lock_data</code>：锁定记录的主键值，注意此值为非可信值</li>
+</ul>
+</li>
+<li>INNODB_LOCK_WAITS：锁等待信息记录表，记录锁、事务的等待关系，可以直白看出哪些事务发生了锁等待。<ul>
+<li><img src="/assets/post_images/innodb_lock_waits.png" alt="innodb_lock_waits"></li>
+<li><code>INNODB_LOCK_WAITS.requesting_trx_id</code>：申请锁资源的事务Id</li>
+<li><code>INNODB_LOCK_WAITS.requesting_lock_id</code>：申请的锁Id</li>
+<li><code>INNODB_LOCK_WAITS.blocking_trx_id</code>：阻塞的事务Id</li>
+<li><code>INNODB_LOCK_WAITS.blocking_lock_id</code>：阻塞的锁Id</li>
+<li>也就是说，从<code>lock_waits</code>表可以看出，不同事务的锁等待情况，关联<code>trx</code>和<code>locks</code>表后就可以获取详细的事务、锁信息。</li>
+</ul>
+</li>
+</ul>
+<h3 id="一致性非锁定读-VS-一致性锁定读"><a href="#一致性非锁定读-VS-一致性锁定读" class="headerlink" title="一致性非锁定读 VS 一致性锁定读"></a>一致性非锁定读 VS 一致性锁定读</h3><ul>
+<li>一致性非锁定读（consistent nonblocking read）：通过「并发多版本控制」MVCC获取当前时间数据库中的行数据。由于获取版本机制的时间点不同，也就产生了不同的隔离级别。如<code>READ COMMITTED</code>总是读取行数据的最新版本，而<code>REPEATABLE READ</code>则是取事务开始时的数据版本。这也就造就了二者的差异，前者多次读取时可取到其他事务已提交的数据，而后者在多次读取时总是保持行为一致。</li>
+<li>一致性锁定读（locking read）：为保证读操作中数据的一致性，需显式进行加锁来保证并发情况下的数据一致性。<ul>
+<li><code>select ... for update</code>：在读取行上加X锁，其他事务不能加任何锁</li>
+<li><code>select ... in share mode</code>：在读取行上加S锁，其他事务只能加S锁，如果加X锁将导致锁等待</li>
+<li>上述两种锁定读操作时，如果其他事务为<code>非锁定读</code>操作时，是可以正常读取的（因为非锁定读操作不会加任何锁）</li>
+<li>在进行锁定读操作时，必须显式通过<code>begin</code>、<code>start transaction</code>或<code>set autocommit=0</code>将多条SQL放在同一个事务中提交</li>
+</ul>
+</li>
+</ul>
+<h2 id="行锁中算法"><a href="#行锁中算法" class="headerlink" title="行锁中算法"></a>行锁中算法</h2><ul>
+<li>Record Lock：对单个行记录上锁<ul>
+<li>通过聚簇索引或二级索引查找时，会在索引上加<code>Record Lock</code></li>
+<li>通过<code>SHOW ENGINE INNODB STATUS</code>可以看到类型如下内容：</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RECORD LOCKS space id 58 page no 3 n bits 72 index `PRIMARY` of table xxxx</span><br><span class="line">trx id 10078 lock_mode X locks rec but not gap</span><br><span class="line">Record <span class="keyword">lock</span>, <span class="keyword">heap</span> <span class="keyword">no</span> <span class="number">2</span> <span class="keyword">PHYSICAL</span> <span class="built_in">RECORD</span>: n_fields <span class="number">3</span>; compact format; info bits 0</span><br><span class="line">0: len 4; hex 8000000a; asc     ;;</span><br><span class="line">1: len 6; hex 00000000274f; asc     'O;;</span><br><span class="line">2: len 7; hex b60000019d0110; asc        ;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Gap Lock：范围锁定<ul>
+<li>按照范围锁定索引记录</li>
+<li>例如，<code>SELECT c1 FROM t WHERE c1 BETWEEN 10 and 20 FOR UPDATE;</code>，为防止其他事务将值15插入到t.c1列中，无论该列中是否已有这样的值，该范围中所有现有值之间的间隙都会被锁定。</li>
+<li><code>Gap Lock</code>是在性能和并发能力上的一种权衡方案，仅在部分事务隔离级别上采用</li>
+<li><code>SELECT * FROM child WHERE id = 100;</code>对这类<code>id</code>具有<code>唯一索引</code>的情况，只会明确加<code>Record锁</code>，而不会加<code>Gap锁</code></li>
+<li>而对于无索引或无唯一索引情况时，会增加<code>Gap锁</code></li>
+</ul>
+</li>
+<li>Next-Key Lock：Gap+Record锁<ul>
+<li>在唯一索引情况下会降级为RecordLock提高并发能力</li>
+<li><code>Next-Key Lock</code>在锁定时会将下一个key区间也进行<code>Gap Lock</code>，目的是为了避免幻读的情况</li>
+<li>所谓的<code>Next-Key</code>是指，范围区间划分是包含下一个值</li>
+<li>如索引有10，11，13，20四个值时，可被<code>Next-Key Lock</code>的范围区间是<code>(-∞, 10]</code>, <code>(10, 11]</code>, <code>(11, 13]</code>, <code>(13, 20]</code>, <code>(20, +∞]</code>五个区间</li>
+<li>如插入新值12后，则<code>(10, 11]</code>, <code>(11, 13]</code>裂变为<code>(10, 11]</code>, <code>(11, 12]</code>, <code>(12, 13]</code></li>
+</ul>
+</li>
+</ul>
+<p>实例1：唯一索引时，Next-Key Lock降级为Record锁，仅锁定单行记录</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> t(a <span class="built_in">int</span> primary <span class="keyword">key</span>);</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">select</span> <span class="number">1</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">select</span> <span class="number">2</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">select</span> <span class="number">5</span>;</span><br></pre></td></tr></table></figure>
+<p>此时插入按唯一键<code>a</code>插入时，只会锁定单条记录，如下表：<br><img src="/assets/post_images/uniqKey_lock.png" alt="uniqKey_lock"></p>
+<p>实例2：辅助索引（非唯一索引或主键索引）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> z(a <span class="built_in">int</span>, b <span class="built_in">int</span>, primary <span class="keyword">key</span>(a), <span class="keyword">key</span>(b));</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">1</span>,<span class="number">1</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">3</span>,<span class="number">1</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">5</span>,<span class="number">3</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">7</span>,<span class="number">6</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">10</span>,<span class="number">8</span>;</span><br></pre></td></tr></table></figure>
+<p>执行SQL<code>select * from z where b=3 for update</code>时，锁处理为：</p>
+<ul>
+<li>存在两个索引，需分别进行锁定</li>
+<li>对于<code>a</code>聚簇索引，对<code>a=5</code>进行RecordLock</li>
+<li>对于<code>b</code>辅助索引，按<code>Next-Key</code>对区间<code>(1,3]</code>加锁</li>
+<li>同时，InnoDB还会对下一个键值加<code>GapLock</code>，即对区间<code>(3,6]</code>加锁</li>
+</ul>
+<p>其他会话的下列SQL将被阻塞（锁等待）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> z <span class="keyword">where</span> a=<span class="number">5</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment">-- a=5，是`a=5`的RecordLock锁定记录，锁等待</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">4</span>,<span class="number">2</span>; <span class="comment">-- b=2，在锁定区间(1,3]范围内，锁等待</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> z <span class="keyword">select</span> <span class="number">6</span>,<span class="number">5</span>;  <span class="comment">-- b=5 在锁定区间(3,6]范围内，锁等待</span></span><br></pre></td></tr></table></figure>
+<h2 id="二、锁注意问题"><a href="#二、锁注意问题" class="headerlink" title="二、锁注意问题"></a>二、锁注意问题</h2><ul>
+<li>脏读（Dirty Read）<ul>
+<li>详见之前文章：<a href="http://fivezh.github.io/2019/02/01/MySQL-Transaction-Isolation-Level#%E8%84%8F%E8%AF%BB%E3%80%81%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E3%80%81%E5%B9%BB%E8%AF%BB">脏读、不可重复读、幻读</a></li>
+</ul>
+</li>
+<li>不可重复读</li>
+<li>丢失更新</li>
+<li>幻读（Phantom Problem）<ul>
+<li><code>Phantom Problem</code>幻读是指，同一个事务中，连续执行两次相同SQL可能出现不同的结果，第二次SQL会返回之前不存在的行。</li>
+</ul>
+</li>
+</ul>
+<h2 id="三、死锁"><a href="#三、死锁" class="headerlink" title="三、死锁"></a>三、死锁</h2><blockquote>
+<p>死锁是指两个或两个以上的事务在执行过程等中，因争夺资源而造成的一种相互等待的现象。</p>
+</blockquote>
+<p>按照《Operating.System.Concepts 操作系统概念》一书中死锁的必要条件：</p>
+<ul>
+<li>互斥（Mutual exclusion，简称Mutex）<ul>
+<li>至少有一个资源处于非共享模式，即一次只能有一个进程使用</li>
+<li>如另一进程申请此资源，则须等待该资源释放</li>
+</ul>
+</li>
+<li>占有并等待（Hold and wait）<ul>
+<li>一个进程必须占有至少一个资源</li>
+<li>并等待另一资源</li>
+<li>而该资源被其他进程占用</li>
+</ul>
+</li>
+<li>非抢占（No preemption）<ul>
+<li>资源不能被抢占</li>
+<li>即资源只能在进程完成任务后自动释放</li>
+</ul>
+</li>
+<li>循环等待（Circular wait）<ul>
+<li>一组等待进程{P0, P1…Pn-1, Pn}</li>
+<li>P0等待资源P1占有，P1等待资源P2占有</li>
+<li>Pn-1等待资源Pn占有，Pn等待资源P0占有</li>
+<li>循环等待，则形成环形结构</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>死锁预防、检测相关内容可详阅本书，或参考其他文献，本文不再详细展开。</p>
+</blockquote>
+<p>死锁发生的四个条件缺一都无法导致死锁，所以死锁恢复的方法也就是打破其中一项条件，导致死锁解除。</p>
+<h2 id="五、参考文献"><a href="#五、参考文献" class="headerlink" title="五、参考文献"></a>五、参考文献</h2><ul>
+<li><a href="https://juejin.im/post/5df61fa8f265da33e1517bdc" target="_blank" rel="noopener">Innodb锁类型</a></li>
+<li><a href="http://hedengcheng.com/?p=844" target="_blank" rel="noopener">何登成：一个最不可思议的MySQL死锁分析</a></li>
+<li><a href="http://hedengcheng.com/?p=771" target="_blank" rel="noopener">何登成：MySQL 加锁处理分析</a></li>
+<li><a href="http://www.fanyilun.me/2017/04/20/MySQL%E5%8A%A0%E9%94%81%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">MySQL加锁分析</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank" rel="noopener">MySQL InnoDB Locking</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank" rel="noopener">MySQL Phantom Rows</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2020/01/19/mysql-icp/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MySQL索引下推</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2020 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
