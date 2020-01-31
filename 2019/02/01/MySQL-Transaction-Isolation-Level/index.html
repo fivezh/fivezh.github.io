@@ -15,7 +15,7 @@
 <meta property="og:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/transaction_isolation_levels.png">
-<meta property="og:updated_time" content="2019-12-10T12:24:01.990Z">
+<meta property="og:updated_time" content="2020-01-31T14:13:16.665Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析MySQL事务隔离级别">
 <meta name="twitter:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
@@ -247,6 +247,7 @@ var _hmt = _hmt || [];
 <li>可重复读(MySQL默认事务隔离)，但可能出现幻读(Phantom Read)</li>
 <li><code>幻读(Phantom Read)</code>：当用户读取某范围数据行时，另一事务在此范围内<strong>插入新行</strong>，当用户再次读取此范围数据行时，读取到新的幻影行</li>
 <li>InnoDB通过多版本并发控制MVCC机制解决该问题</li>
+<li>PS：新版MySQL采用<code>Next-Key锁</code>来解决幻读问题</li>
 </ul>
 </li>
 <li><strong>SERIALIZABLE</strong>：串行化<ul>
@@ -261,10 +262,14 @@ var _hmt = _hmt || [];
 <ul>
 <li><strong>脏读（Dirty Read）</strong>：某事务已更新一份数据，而另一个事务此时读取了同一份数据，某些原因前一个更新做了回滚Rollback操作，则后一个事务数据是不正确的（读到了脏的数据）</li>
 <li><strong>不可重复读（Non-repeatable read）</strong>：在<strong>一个事务的两次查询</strong>中数据不一致，可能是两次查询过程中另一个事务更新了数据。</li>
-<li><strong>幻读（Phantom Read）</strong>：一个事务的两次查询中数据不一致。例如一个事务查询数据，而另一个事务却插入新的数据，先前事务的查询中，发现一些数据是之前查询中没有的</li>
+<li><strong>幻读（Phantom Read）</strong>：一个事务的两次查询中数据不一致。例如一个事务查询数据，而另一个事务却插入新的数据，先前事务的查询中，发现一些数据是之前查询中没有的<ul>
+<li>参考阅读：<a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-next-key-locking.html" target="_blank" rel="noopener">MySQL Phantom Rows</a></li>
+<li>幻读破坏了ACID中的隔离性：事务在执行过程中已读取数据不应该被改变</li>
+</ul>
+</li>
 </ul>
 <blockquote>
-<p><strong>注意</strong>：根据<code>ANSI SQL Standard</code>在可重复读级别下允许出现幻读，MySQL实现满足标准，这不是Bug。但PostgreSQL在可重复读时不会出现幻读问题，这是不同引擎实现机制上的差异。</p>
+<p><strong>注意</strong>：根据<code>ANSI SQL Standard</code>在可重复读级别下允许出现幻读，MySQL实现满足标准，这不是Bug。但PostgreSQL在可重复读时不会出现幻读问题，这是不同引擎实现机制上的差异。<br>By default, InnoDB operates in REPEATABLE READ transaction isolation level. In this case, InnoDB uses next-key locks for searches and index scans, which prevents phantom rows (see Section 15.7.4, “Phantom Rows”). 缺省的，MySQL采用<code>REPEATABLE READ</code>事务隔离级别，采用<code>Next-key</code>锁机制来避免幻读问题</p>
 </blockquote>
 <table>
 <thead>
@@ -302,6 +307,9 @@ var _hmt = _hmt || [];
 </tr>
 </tbody>
 </table>
+<blockquote>
+<p>注意：MySQL采用<code>REPEATABLE READ</code>事务隔离级别，通过<code>Next-Key锁</code>来解决幻读问题</p>
+</blockquote>
 <h3 id="示例1：脏读"><a href="#示例1：脏读" class="headerlink" title="示例1：脏读"></a>示例1：脏读</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">read</span> uncommitted; <span class="comment">-- 设置会话隔离级别为 未提交读</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx; <span class="comment">-- 此时为空，事务未提交</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话2</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> xxx <span class="keyword">values</span>(<span class="number">1</span>); <span class="comment">-- 未提交事务中，插入数据</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xx; <span class="comment">-- 读取到会话2中未提交数据，这被称为 脏读</span></span><br></pre></td></tr></table></figure>
 <p><code>脏读(Dirty Read)</code>是对一致性有要求的情况下无法接受的，所有<code>未提交读</code>在实际应用场景中几乎很少使用。</p>
 <h3 id="示例2：不可重复读"><a href="#示例2：不可重复读" class="headerlink" title="示例2：不可重复读"></a>示例2：不可重复读</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会话1中操作：</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>; <span class="comment">-- 此时数据状态为a</span></span><br><span class="line"><span class="comment">-- 注意此会话中开启事务，未提交</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 切换至会话2操作</span></span><br><span class="line"><span class="keyword">update</span> xxx <span class="keyword">set</span> xxx=newValue <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>; <span class="comment">-- 更新数据至新的状态b</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 再次切换至会话1操作</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 此时查询出的数据状态就有两种选择：新状态b、老状态a</span></span><br><span class="line"><span class="comment">-- 所谓的连续读：同一个事务中的两次读操作，数据状态保持一致</span></span><br></pre></td></tr></table></figure>
@@ -402,6 +410,7 @@ var _hmt = _hmt || [];
 <li><a href="https://stackoverflow.com/questions/36219508/read-committed-vs-repeatable-reads-in-mysql" target="_blank" rel="noopener">Read Committed Vs Repeatable Reads in MySQL?</a></li>
 <li><a href="http://mysql.taobao.org/monthly/2017/06/07/" target="_blank" rel="noopener">淘宝：MySQL · 源码分析 · InnoDB Repeatable Read隔离级别之大不同</a></li>
 <li><a href="https://www.cnblogs.com/zhoujinyi/p/3437475.html" target="_blank" rel="noopener">MySQL 四种事务隔离级的说明-提供不可重复读、幻读的具体实例</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank" rel="noopener">MySQL InnoDB Locking</a></li>
 </ul>
 
       
