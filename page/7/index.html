@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -185,81 +185,6 @@ var _hmt = _hmt || [];
 </nav>
 
       <div class="body-wrap">
-  
-    <article id="post-LeetCode-258-Add-Digits" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/05/LeetCode-258-Add-Digits/" class="article-date">
-  	<time datetime="2015-08-05T15:42:16.000Z" itemprop="datePublished">2015-08-05</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/05/LeetCode-258-Add-Digits/">[LeetCode] 258 Add Digits | 计算树根</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>Given a non-negative integer num, repeatedly add all its digits until the result has only one digit.</p>
-<p>For example:</p>
-<p>Given num = 38, the process is like: 3 + 8 = 11, 1 + 1 = 2. Since 2 has only one digit, return it.</p>
-<p>Follow up:<br>Could you do it without any loop/recursion in O(1) runtime?</p>
-</blockquote>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><p>最初看到这个题目，觉得迭代加法取余的方式肯定是最low的，分析规律。</p>
-<ul>
-<li>最终得到个位数，结果取值范围[0,9] </li>
-<li>各位数累加的计算规律：dr(10)=10-9=1, dr(11)=11-9=2</li>
-<li>但并不是对九取余的关系，因为mod(n, 9)的取值范围时[0, 8]</li>
-<li>可以抽象为dr(n)=mod(n-1,9) + 1</li>
-</ul>
-<p>时间复杂度：O(1), 空间复杂度O(1)</p>
-<ul>
-<li>各位数累加的计算规律：12345=1x(9999+1)+2x(999+1)+3x(99+1)+4x(9+1)+5=(1x9999+2x999+3x99+4x9)+(1+2+3+4+5)
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/08/05/LeetCode-258-Add-Digits/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
   
     <article id="post-LeetCode-326-Power-of-Three" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -835,6 +760,74 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a  href="/2015/04/07/LeetCode-191-Number-of-1-Bits/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-LeetCode-217-Contains-Duplicate" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/03/20/LeetCode-217-Contains-Duplicate/" class="article-date">
+  	<time datetime="2015-03-20T15:35:10.000Z" itemprop="datePublished">2015-03-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/20/LeetCode-217-Contains-Duplicate/">[LeetCode] 217.Contains-Duplicate | 数组包含相同元素判断</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>题目来源：<a href="https://leetcode.com/problems/contains-duplicate/" target="_blank" rel="noopener">LeetCode: 217. Contains Duplicate</a></p>
+<blockquote>
+<p>Given an array of integers, find if the array contains any duplicates. Your function should return true if any value appears at least twice in the array, and it should return false if every element is distinct.</p>
+</blockquote>
+<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ul>
+<li>冒泡的方式逐一比较, 时间复杂度: O(n^2)</li>
+<li>先折半插入排序, 过程中比较是否有相同元素, 时间复杂度：O(nlogn)</li>
+<li>逐一将元素插入Set或HashTable，判断是否已重复, 时间复杂度: O(n)</li>
+</ul>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/03/20/LeetCode-217-Contains-Duplicate/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>

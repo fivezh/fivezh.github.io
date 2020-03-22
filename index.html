@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -185,91 +185,6 @@ var _hmt = _hmt || [];
 </nav>
 
       <div class="body-wrap">
-  
-    <article id="post-golang-new-make" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2020/03/15/golang-new-make/" class="article-date">
-  	<time datetime="2020-03-15T09:01:17.000Z" itemprop="datePublished">2020-03-15</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/03/15/golang-new-make/">golang-new-make</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-<!-- Table of Contents -->
-
-        <ul>
-<li>Golang中new和make的区别？</li>
-<li>复杂结构的初始化</li>
-</ul>
-<h2 id="new-vs-make"><a href="#new-vs-make" class="headerlink" title="new() vs make()"></a><code>new()</code> vs <code>make()</code></h2><p>需要区分在Golang中<code>声明</code>、<code>初始化</code>的区别？</p>
-<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a []<span class="keyword">int</span> <span class="comment">// 声明，未初始化，此时为nil slice</span></span><br></pre></td></tr></table></figure>
-<h3 id="new"><a href="#new" class="headerlink" title="new()"></a><code>new()</code></h3><blockquote>
-<p>The built-in function new takes a type T, allocates storage for a variable of that type at run time, and returns a value of type *T pointing to it.The variable is initialized as described in the section on initial values.</p>
-</blockquote>
-<p><code>new()</code>是内存分配的内置函数，传入类型<code>T</code>，则在运行时分配内存，返回<code>*T</code>类型的值（指向新分配内存地址的指针）。</p>
-<p>变量将按照零值的方式来进行初始化。</p>
-<h3 id="make"><a href="#make" class="headerlink" title="make()"></a><code>make()</code></h3><blockquote>
-<p>The built-in function make takes a type T, which must be a slice, map or channel type, optionally followed by a type-specific list of expressions. It returns a value of type T (not *T). The memory is initialized as described in the section on initial values.</p>
-</blockquote>
-<p>内置函数<code>make()</code>仅支持特定类型参数(slice/map/channel)，返回类型为T的变量值（注意：new返回*T类型值，make返回T类型值）。变量初始化和<code>new</code>保持一致的策略，均按零值处理。</p>
-<ul>
-<li>slice</li>
-<li>map</li>
-<li>channel</li>
-<li>或者上述类型，再加其他参数</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Call             Type T     Result</span><br><span class="line"></span><br><span class="line">make(T, n)       slice      slice of <span class="built_in">type</span> T with length n and capacity n</span><br><span class="line">make(T, n, m)    slice      slice of <span class="built_in">type</span> T with length n and capacity m</span><br><span class="line"></span><br><span class="line">make(T)          map        map of <span class="built_in">type</span> T</span><br><span class="line">make(T, n)       map        map of <span class="built_in">type</span> T with initial space <span class="keyword">for</span> approximately n elements</span><br><span class="line"></span><br><span class="line">make(T)          channel    unbuffered channel of <span class="built_in">type</span> T</span><br><span class="line">make(T, n)       channel    buffered channel of <span class="built_in">type</span> T, buffer size n</span><br></pre></td></tr></table></figure>
-<h2 id="复杂结构体的初始化"><a href="#复杂结构体的初始化" class="headerlink" title="复杂结构体的初始化"></a>复杂结构体的初始化</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Foo <span class="keyword">struct</span> &#123;</span><br><span class="line">    a <span class="keyword">int</span></span><br><span class="line">    b <span class="keyword">string</span></span><br><span class="line">    c <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">    d []<span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Bar <span class="keyword">struct</span> &#123;</span><br><span class="line">    e <span class="keyword">int</span></span><br><span class="line">    f Foo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
-<li><a href="https://golang.org/ref/spec#Making_slices_maps_and_channels" target="_blank" rel="noopener">spec#Making_slices_maps_and_channels-make关键词</a></li>
-<li><a href="https://golang.org/ref/spec#Allocation" target="_blank" rel="noopener">spec#Allocation-new关键词</a></li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
   
     <article id="post-golang-nil" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -810,6 +725,73 @@ var _hmt = _hmt || [];
       
         <p class="article-more-link">
           <a  href="/2019/04/24/ali-message-service/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-sync_mutex_translation" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/04/09/sync_mutex_translation/" class="article-date">
+  	<time datetime="2019-04-09T06:41:21.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2019/04/09/sync_mutex_translation/">[译]sync.RWMutex - 解决并发读写问题</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <ul>
+<li>原文地址：<a href="https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0" target="_blank" rel="noopener">https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0</a></li>
+<li>原文作者：<a href="https://medium.com/@mlowicki" target="_blank" rel="noopener">Michał Łowicki</a></li>
+<li>译文出处：<a href="https://medium.com" target="_blank" rel="noopener">https://medium.com</a></li>
+<li>本文永久链接：<a href="https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md" target="_blank" rel="noopener">https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md</a></li>
+<li>译者：<a href="https://github.com/fivezh" target="_blank" rel="noopener">fivezh</a></li>
+<li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
+</ul>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2019/04/09/sync_mutex_translation/#more">more >></a>
         </p>
       
       <div class="clearfix"></div>
