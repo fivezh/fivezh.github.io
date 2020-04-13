@@ -17,7 +17,7 @@
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/multiColumnIndex.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-2phases.png">
 <meta property="og:image" content="http://fivezh.github.io/assets/post_images/index-access-with-icp.png">
-<meta property="og:updated_time" content="2020-01-20T01:58:26.104Z">
+<meta property="og:updated_time" content="2020-04-13T14:58:31.948Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL索引下推">
 <meta name="twitter:description" content="MySQL 联合索引仅支持按「最左匹配」原则使用索引。在遇到范围查询情况时，会停止利用后面的索引字段。">
@@ -231,7 +231,7 @@ var _hmt = _hmt || [];
 
         <p>MySQL 联合索引仅支持按「最左匹配」原则使用索引。在遇到范围查询情况时，会停止利用后面的索引字段。<br><a id="more"></a><br>本文针对这一问题对联合索引原理进行说明，并引出官方对这种情况下的优化方案：ICP 索引下推机制。</p>
 <blockquote>
-<p>注：联合索引，又称符合索引，英文为<code>Multiple-Column Indexes</code>或<code>Composite Indexes</code></p>
+<p>注：联合索引，又称复合索引，英文为<code>Multiple-Column Indexes</code>或<code>Composite Indexes</code></p>
 </blockquote>
 <h2 id="联合索引存储原理"><a href="#联合索引存储原理" class="headerlink" title="联合索引存储原理"></a>联合索引存储原理</h2><p><img src="/assets/post_images/multiColumnIndex.png" alt="multiColumnIndex"></p>
 <p><code>index (a,b)</code>的联合索引结构如上图（出自《MySQL技术内幕-InnoDB存储引擎》），观察到每个节点中均同时包含<code>a,b</code>两个字段信息，且字段<code>a</code>全局有序，字段<code>b</code>局部有序（仅在字段<code>a</code>值相同时，字段<code>b</code>是有序的）。</p>
