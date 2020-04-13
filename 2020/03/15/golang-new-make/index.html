@@ -4,20 +4,20 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>golang-new-make | 小武的博客</title>
+  <title>Golang new VS make | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Golang中new和make的区别？ 复杂结构的初始化  new() vs make()需要区分在Golang中声明、初始化的区别？ 1var a []int // 声明，未初始化，此时为nil slice new() The built-in function new takes a type T, allocates storage for a variable of that type">
+  <meta name="description" content="Golang中new和make的区别？ 复杂结构的类型如何正确初始化">
 <meta name="keywords" content="Golang">
 <meta property="og:type" content="article">
-<meta property="og:title" content="golang-new-make">
+<meta property="og:title" content="Golang new VS make">
 <meta property="og:url" content="http://fivezh.github.io/2020/03/15/golang-new-make/index.html">
 <meta property="og:site_name" content="小武的博客">
-<meta property="og:description" content="Golang中new和make的区别？ 复杂结构的初始化  new() vs make()需要区分在Golang中声明、初始化的区别？ 1var a []int // 声明，未初始化，此时为nil slice new() The built-in function new takes a type T, allocates storage for a variable of that type">
+<meta property="og:description" content="Golang中new和make的区别？ 复杂结构的类型如何正确初始化">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2020-03-21T16:03:34.188Z">
+<meta property="og:updated_time" content="2020-04-13T15:44:55.450Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="golang-new-make">
-<meta name="twitter:description" content="Golang中new和make的区别？ 复杂结构的初始化  new() vs make()需要区分在Golang中声明、初始化的区别？ 1var a []int // 声明，未初始化，此时为nil slice new() The built-in function new takes a type T, allocates storage for a variable of that type">
+<meta name="twitter:title" content="Golang new VS make">
+<meta name="twitter:description" content="Golang中new和make的区别？ 复杂结构的类型如何正确初始化">
   
     <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
   
@@ -203,7 +203,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      golang-new-make
+      Golang new VS make
     </h1>
   
 
@@ -227,15 +227,16 @@ var _hmt = _hmt || [];
 
         <ul>
 <li>Golang中new和make的区别？</li>
-<li>复杂结构的初始化</li>
+<li>复杂结构的类型如何正确初始化</li>
 </ul>
+<a id="more"></a>
 <h2 id="new-vs-make"><a href="#new-vs-make" class="headerlink" title="new() vs make()"></a><code>new()</code> vs <code>make()</code></h2><p>需要区分在Golang中<code>声明</code>、<code>初始化</code>的区别？</p>
 <figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a []<span class="keyword">int</span> <span class="comment">// 声明，未初始化，此时为nil slice</span></span><br></pre></td></tr></table></figure>
 <h3 id="new"><a href="#new" class="headerlink" title="new()"></a><code>new()</code></h3><blockquote>
 <p>The built-in function new takes a type T, allocates storage for a variable of that type at run time, and returns a value of type *T pointing to it.The variable is initialized as described in the section on initial values.</p>
 </blockquote>
 <p><code>new()</code>是内存分配的内置函数，传入类型<code>T</code>，则在运行时分配内存，返回<code>*T</code>类型的值（指向新分配内存地址的指针）。</p>
-<p>变量将按照零值的方式来进行初始化。</p>
+<p>变量将按照<code>类型对应的零值</code>来进行初始化，如map/slice零值均为nil。</p>
 <h3 id="make"><a href="#make" class="headerlink" title="make()"></a><code>make()</code></h3><blockquote>
 <p>The built-in function make takes a type T, which must be a slice, map or channel type, optionally followed by a type-specific list of expressions. It returns a value of type T (not *T). The memory is initialized as described in the section on initial values.</p>
 </blockquote>
@@ -247,8 +248,18 @@ var _hmt = _hmt || [];
 <li>或者上述类型，再加其他参数</li>
 </ul>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Call             Type T     Result</span><br><span class="line"></span><br><span class="line">make(T, n)       slice      slice of <span class="built_in">type</span> T with length n and capacity n</span><br><span class="line">make(T, n, m)    slice      slice of <span class="built_in">type</span> T with length n and capacity m</span><br><span class="line"></span><br><span class="line">make(T)          map        map of <span class="built_in">type</span> T</span><br><span class="line">make(T, n)       map        map of <span class="built_in">type</span> T with initial space <span class="keyword">for</span> approximately n elements</span><br><span class="line"></span><br><span class="line">make(T)          channel    unbuffered channel of <span class="built_in">type</span> T</span><br><span class="line">make(T, n)       channel    buffered channel of <span class="built_in">type</span> T, buffer size n</span><br></pre></td></tr></table></figure>
-<h2 id="复杂结构体的初始化"><a href="#复杂结构体的初始化" class="headerlink" title="复杂结构体的初始化"></a>复杂结构体的初始化</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Foo <span class="keyword">struct</span> &#123;</span><br><span class="line">    a <span class="keyword">int</span></span><br><span class="line">    b <span class="keyword">string</span></span><br><span class="line">    c <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">    d []<span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Bar <span class="keyword">struct</span> &#123;</span><br><span class="line">    e <span class="keyword">int</span></span><br><span class="line">    f Foo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h1><ul>
+<h2 id="复杂结构体的初始化"><a href="#复杂结构体的初始化" class="headerlink" title="复杂结构体的初始化"></a>复杂结构体的初始化</h2><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Foo <span class="keyword">struct</span> &#123;</span><br><span class="line">    a <span class="keyword">int</span></span><br><span class="line">    b <span class="keyword">string</span></span><br><span class="line">    c <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span></span><br><span class="line">    d []<span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> Bar <span class="keyword">struct</span> &#123;</span><br><span class="line">    e <span class="keyword">int</span></span><br><span class="line">    f *Foo</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于上面<code>Foo</code>类型的复合结构，初始化时要注意下，直接<code>new Foo()</code>的对象中map是没有分配空间的，也就是<code>nil map</code>，此时不能直接使用。</p>
+<p>下面的代码，会抛出panic：<code>panic: assignment to entry in nil map</code></p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">h1 := &amp;Foo&#123;&#125;</span><br><span class="line"><span class="comment">// h1 := new(Foo)和上面代码等价</span></span><br><span class="line">h1.c[<span class="number">1</span>] = <span class="number">111</span> <span class="comment">// panic: assignment to entry in nil map</span></span><br><span class="line">h1.d = <span class="built_in">append</span>(h1.d, <span class="number">1</span>) <span class="comment">// nil slice可通过append追加元素</span></span><br></pre></td></tr></table></figure>
+<p>正确的用法：定义类型对应的<code>NewTypeName()</code>方法专门用于类型初始化</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewFoo</span><span class="params">()</span> *<span class="title">Foo</span></span> &#123;</span><br><span class="line">    foo := <span class="built_in">new</span>(Foo)</span><br><span class="line">    foo.c = <span class="built_in">make</span>(<span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">return</span> foo</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewBar</span><span class="params">()</span> *<span class="title">Bar</span></span> &#123;</span><br><span class="line">    bar := <span class="built_in">new</span>(Bar)</span><br><span class="line">    bar.f = NewFoo()</span><br><span class="line">    <span class="keyword">return</span> bar</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">    h1 := NewFoo()</span><br><span class="line">    h1.c[<span class="number">1</span>] = <span class="number">11</span></span><br><span class="line">    fmt.Println(h1)</span><br><span class="line"></span><br><span class="line">    h2 := NewBar()</span><br><span class="line">    h2.f.c[<span class="number">2</span>] = <span class="number">22</span> <span class="comment">// 可以正确写入map元素</span></span><br><span class="line">    fmt.Println(*h2.f)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><ul>
+<li><code>make</code>仅用于<code>map</code>、<code>slice</code>、<code>channel</code></li>
+<li><code>new</code>可用于类型T的内存分配，类型各字段初始值为类型对应零值</li>
+<li>复合类型，多通用<code>NewTypeName()</code>自定义函数，返回新建类型变量，而类型内字段在此方法内进行有效的内存分配操作。（如map应通过make开辟空间）</li>
+</ul>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
 <li><a href="https://golang.org/ref/spec#Making_slices_maps_and_channels" target="_blank" rel="noopener">spec#Making_slices_maps_and_channels-make关键词</a></li>
 <li><a href="https://golang.org/ref/spec#Allocation" target="_blank" rel="noopener">spec#Allocation-new关键词</a></li>
 </ul>
