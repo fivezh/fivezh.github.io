@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,68 @@ var _hmt = _hmt || [];
 </nav>
 
       <div class="body-wrap">
+  
+    <article id="post-Python-What-does-Daemon-Threading-Thread-mean" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/18/Python-What-does-Daemon-Threading-Thread-mean/" class="article-date">
+  	<time datetime="2015-10-18T03:36:45.000Z" itemprop="datePublished">2015-10-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/18/Python-What-does-Daemon-Threading-Thread-mean/">[Python]Threading.Thread之Daemon线程</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>对Daemon线程理解一直不清晰，翻看手册，记录说明如下：</p>
+<h2 id="一、什么是Daemon"><a href="#一、什么是Daemon" class="headerlink" title="一、什么是Daemon"></a>一、什么是Daemon</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A thread can be flagged as a “daemon thread”. </span><br><span class="line">The significance of this flag is that the entire Python program exits when only daemon threads are left.</span><br><span class="line">The initial value is inherited from the creating thread. The flag can be set through the daemon property.</span><br><span class="line">线程可以被标识为&quot;Daemon线程&quot;，Daemon线程表明整个Python主程序只有在Daemon子线程运行时可以退出。</span><br><span class="line">该属性值继承自父线程，可通过setDaemon()函数设定该值。</span><br></pre></td></tr></table></figure>
+<p><code>Note:</code> Daemon threads are abruptly stopped at shutdown.<br>Their resources (such as open files, database transactions, etc.) may not be released properly.<br>If you want your threads to stop gracefully, make them non-daemonic and use a suitable signalling mechanism such as an Event.<br><code>注意:</code>Daemon线程会被粗鲁的直接结束，它所使用的资源（已打开文件、数据库事务等）无法被合理的释放。因此如果需要线程被优雅的结束，请设置为非Daemon线程，并使用合理的信号方法，如事件Event。<br>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2015/10/18/Python-What-does-Daemon-Threading-Thread-mean/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
   
     <article id="post-Python-How-to-open-and-close-file-safely" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -787,75 +849,6 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-LeetCode-257-Binary-Tree-Paths" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/11/LeetCode-257-Binary-Tree-Paths/" class="article-date">
-  	<time datetime="2015-08-11T15:52:10.000Z" itemprop="datePublished">2015-08-11</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/11/LeetCode-257-Binary-Tree-Paths/">[LeetCode] 257. Binary Tree Paths | 二叉树输出路径</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>题目来源：<a href="https://leetcode.com/problems/binary-tree-paths/" target="_blank" rel="noopener">LeetCode: 257. Binary Tree Paths</a></p>
-<blockquote>
-<p>Given a binary tree, return all root-to-leaf paths.<br>For example, given the following binary tree:<br>   1<br> /   \<br>2     3<br> \<br>  5<br>All root-to-leaf paths are:<br>[“1-&gt;2-&gt;5”, “1-&gt;3”]</p>
-</blockquote>
-<h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ul>
-<li>二叉树的遍历：先序遍历，递归调用</li>
-<li>解决好走过路径的记录和回退</li>
-<li>C语言处理字符的操作不太便捷，试着用Python写这道题</li>
-</ul>
-<p>时间复杂度：O(n), 空间复杂度O(logn)<br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LeetCode/">LeetCode</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2015/08/11/LeetCode-257-Binary-Tree-Paths/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/5/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/7/">Next &raquo;</a>
@@ -866,7 +859,7 @@ var _hmt = _hmt || [];
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 小武
+    		&copy; 2021 小武
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

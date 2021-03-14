@@ -120,7 +120,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
 					</div>
 				</section>
 				
@@ -185,6 +185,69 @@ var _hmt = _hmt || [];
 </nav>
 
       <div class="body-wrap">
+  
+    <article id="post-Linux-slab-info" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/25/Linux-slab-info/" class="article-date">
+  	<time datetime="2017-06-25T09:25:49.000Z" itemprop="datePublished">2017-06-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/25/Linux-slab-info/">Linux内存之Slab</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Linux内存管理模式，页式管理适合于大块内存的情形，而对于内核对象级别的较小内存情形下，不足以占用1个页。</p>
+<blockquote>
+<p>在linux内核中会有许多小对象，这些对象构造销毁十分频繁，比如i-node，dentry。这么这些对象如果每次构建的时候就向内存要一个页，而其实际大小可能只有几个字节，这样就非常浪费，为了解决这个问题就引入了一种新的机制来处理在同一页框中如何分配小存储器区。这就是我们要讨论的slab层。在讲述slab前，我想先铺垫一下有关内存页的概念，我们都知道在linux中内存都是以页为单位来进行管理的(通常为4KB)，当内核需要内存就调用如：kmem_getpages这样的接口(底层调用__alloc_pages())。那么内核是如何管理页的分配的，这里linux使用了伙伴算法。slab也是向内核申请一个个页，然后再对这些页框做管理来达到分配小存储区的目的的。</p>
+</blockquote>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2017/06/25/Linux-slab-info/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
   
     <article id="post-centos-7-memory-available" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -769,67 +832,6 @@ var _hmt = _hmt || [];
 
 
   
-    <article id="post-How-to-get-Client-ip-correctly" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/11/13/How-to-get-Client-ip-correctly/" class="article-date">
-  	<time datetime="2016-11-13T03:35:45.000Z" itemprop="datePublished">2016-11-13</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/11/13/How-to-get-Client-ip-correctly/">如何正确获取请求方的ip地址(How to get client ip correctly)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>出于多种原因(记录client原始ip、定位、反作弊等), 都需要获取请求发起方的原始ip信息。<br>这里探讨两种方式：1. PHP纯手动获取，2. Laravel提供的getClientIp()函数</p>
-<h1 id="通过-SERVER-或getenv-方式"><a href="#通过-SERVER-或getenv-方式" class="headerlink" title="通过$_SERVER()或getenv()方式"></a>通过$_SERVER()或getenv()方式</h1><p>方式1：通过x-forwarded-for头部<br>PHP中通过<code>$_SERVER(&#39;HTTP_X_FORWARDED_FOR&#39;)</code>获取http request请求头部的<a href="https://zh.wikipedia.org/wiki/X-Forwarded-For" target="_blank" rel="noopener">x-forwarded-for</a>参数<br>以下为<code>$_SERVER</code>所有参数实例：<br>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Laravel/">Laravel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a  href="/2016/11/13/How-to-get-Client-ip-correctly/#more">more >></a>
-        </p>
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
       <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
@@ -840,7 +842,7 @@ var _hmt = _hmt || [];
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2020 小武
+    		&copy; 2021 小武
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
