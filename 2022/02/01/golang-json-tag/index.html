@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="小武的博客">
 <meta property="og:description" content="GoLang中结构体的 JSON Tag 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：  JSON Tag标签的完整语法，包含哪些选项 不同选项（输出名/-/omitempty/string）的作用及使用范围 特殊注意事项补充">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2022-02-06T14:18:08.466Z">
+<meta property="og:updated_time" content="2022-02-06T14:21:55.222Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="GoLang 中 Json Tag用法汇总">
 <meta name="twitter:description" content="GoLang中结构体的 JSON Tag 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：  JSON Tag标签的完整语法，包含哪些选项 不同选项（输出名/-/omitempty/string）的作用及使用范围 特殊注意事项补充">
@@ -302,6 +302,7 @@ var _hmt = _hmt || [];
 <p>指针类型值被编码为所指向的值，一个 <code>nil</code> 指针会被编码为 <code>null</code> JSON值。<br>接口类型值编码为接口中包含的值，一个 <code>nil</code> 接口值被编码为 <code>null</code> JSON值。<br>通道（Channel）、复合类型（complex）和函数值（function）不能进行JSON编码，试图对这样的值进行编码会导致Marshal返回一个<code>UnsupportedTypeError</code>错误。<br>JSON不能代表循环嵌套的数据结构，Marshal函数也将不处理它们。向Marshal传递循环结构将导致一个错误。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
 <li><a href="https://pkg.go.dev/encoding/json#Marshal" target="_blank" rel="noopener">encoding/json#Marshal</a></li>
+<li><a href="https://blog.csdn.net/xz_studying/article/details/106012535" target="_blank" rel="noopener">struct json tag的使用及深入理解</a></li>
 </ul>
 
       
