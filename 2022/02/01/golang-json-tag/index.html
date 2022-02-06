@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>GoLang 中 Json Tag用法汇总 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="GoLang中结构体的 JSON Tag 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：  JSON Tag标签的完整语法，包含哪些选项 不同选项（输出名/-/omitempty/string）的作用及使用范围 特殊注意事项补充">
+<meta name="keywords" content="GoLang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GoLang 中 Json Tag用法汇总">
+<meta property="og:url" content="http://fivezh.github.io/2022/02/01/golang-json-tag/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="GoLang中结构体的 JSON Tag 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：  JSON Tag标签的完整语法，包含哪些选项 不同选项（输出名/-/omitempty/string）的作用及使用范围 特殊注意事项补充">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-02-06T14:02:38.943Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GoLang 中 Json Tag用法汇总">
+<meta name="twitter:description" content="GoLang中结构体的 JSON Tag 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：  JSON Tag标签的完整语法，包含哪些选项 不同选项（输出名/-/omitempty/string）的作用及使用范围 特殊注意事项补充">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/GoLang/" style="font-size: 10px;">GoLang</a> <a href="/tags/Golang/" style="font-size: 15.71px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 17.14px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-golang-json-tag" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2022/02/01/golang-json-tag/" class="article-date">
+  	<time datetime="2022-02-01T07:42:43.000Z" itemprop="datePublished">2022-02-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      GoLang 中 Json Tag用法汇总
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GoLang/">GoLang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>GoLang中结构体的 <code>JSON Tag</code> 标识（英文名backquote或backtick，反引号 ` 符号包裹的部分内容）一直未明确看过完整规范和使用说明，存在模棱两可，系统整理如下：</p>
+<ul>
+<li><code>JSON Tag</code>标签的完整语法，包含哪些选项</li>
+<li>不同选项（输出名/-/omitempty/string）的作用及使用范围</li>
+<li>特殊注意事项补充</li>
+</ul>
+<a id="more"></a>
+<h2 id="Json中Tag用法汇总"><a href="#Json中Tag用法汇总" class="headerlink" title="Json中Tag用法汇总"></a>Json中Tag用法汇总</h2><ul>
+<li>JSON Tag标签格式为：<code>json:&quot;FieldName/-/可选,omitempty/可选,string/可选</code></li>
+<li>多个选项之间使用 <code>,</code> 逗号分割</li>
+<li><code>FieldName</code>选项：指定编码后键名称<ul>
+<li>可为空，则使用Struct对应字段名作为JSON输出名</li>
+<li><code>FieldName</code>非空，则使用指定的FieldName作为JSON输出名</li>
+<li><code>-</code>符号，输出时忽略此字段；但要注意<code>-,</code>（多一个逗号结尾）时，输出字段名为<code>-</code>的JSON字段，而不是忽略</li>
+</ul>
+</li>
+<li><code>omitempty</code>选项：忽略空值<ul>
+<li>包含此选项，输出时字段空值（零值+空值：false、0、nil指针、nil接口值，以及任何空数组、切片、map或字符串）则不输出</li>
+</ul>
+</li>
+<li><code>string</code>选项：结果输出为字符串<ul>
+<li>字段结果输出为<code>字符串</code></li>
+<li>只适用于字符串、浮点、整数或布尔类型的字段</li>
+<li>这种额外的编码有时在与 JavaScript 程序通信时使用</li>
+<li>要注意，如果字段值本身为<code>string</code>时，再次增加JSON的<code>string</code>标签选项，会导致多个引号的情况</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例代码：https://go.dev/play/p/ApzFQttV_MB</span></span><br><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"encoding/json"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"os"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">type</span> ColorGroup <span class="keyword">struct</span> &#123;</span><br><span class="line">		Hello   <span class="keyword">bool</span>     <span class="string">`json:"Hello,string"`</span></span><br><span class="line">		world   <span class="keyword">bool</span>     <span class="string">`json:"World,string"`</span></span><br><span class="line">		ID      <span class="keyword">int</span>      <span class="string">`json:"id,string"`</span></span><br><span class="line">		Name    <span class="keyword">string</span>   <span class="string">`json:"name,string"`</span></span><br><span class="line">		Colors  []<span class="keyword">string</span> <span class="string">`json:"ColorName,omitempty"`</span></span><br><span class="line">		Colors1 []<span class="keyword">string</span> <span class="string">`json:"ColorName1"`</span></span><br><span class="line">		Colors2 []<span class="keyword">string</span> <span class="string">`json:"ColorName2"`</span></span><br><span class="line">	&#125;</span><br><span class="line">	group := ColorGroup&#123;</span><br><span class="line">		Hello:   <span class="literal">true</span>,</span><br><span class="line">		world:   <span class="literal">true</span>,</span><br><span class="line">		ID:      <span class="number">1</span>,</span><br><span class="line">		Name:    <span class="string">"Reds"</span>,</span><br><span class="line">		Colors:  []<span class="keyword">string</span>&#123;<span class="string">"hello"</span>, <span class="string">"world"</span>&#125;,</span><br><span class="line">		Colors1: <span class="literal">nil</span>,</span><br><span class="line">		Colors2: []<span class="keyword">string</span>&#123;&#125;,</span><br><span class="line">	&#125;</span><br><span class="line">	b, err := json.Marshal(group)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"error:"</span>, err)</span><br><span class="line">	&#125;</span><br><span class="line">	os.Stdout.Write(b)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出结果</span></span><br><span class="line"><span class="comment">//&#123;"Hello":"true","id":"1","name":"\"Reds\"","ColorName":["hello","world"],"ColorName1":null,"ColorName2":[]&#125;</span></span><br></pre></td></tr></table></figure>
+<p>其他注意：</p>
+<ul>
+<li><code>nil</code> 指针、<code>nil</code> 接口、<code>nil</code>切片等nil类型值，进行编码后为 <code>null</code> JSON 对象</li>
+<li>空切片、空数组编码为 <code>[]</code> JSON 数组</li>
+<li><code>map</code> 编码为 <code>{}</code> JSON 对象</li>
+<li>指针类型值编码为指针所指向的值，接口类型值编码后为对应类型的值</li>
+</ul>
+<h2 id="官方-Marshal-函数说明"><a href="#官方-Marshal-函数说明" class="headerlink" title="官方 Marshal 函数说明"></a>官方 <code>Marshal</code> 函数说明</h2><p><code>func Marshal(v interface{}) ([]byte, error)</code></p>
+<p><code>Marshal</code> 返回变量 <code>v</code> 的 <code>JSON</code> 编码后结果<br><code>Marshal</code> 函数会递归的处理变量 <code>v</code>；如果一个值实现了<code>Marshaler</code>接口，并且不是一个<code>nil</code>指针，<code>Marshal</code> 调用其 <code>MarshalJSON</code> 方法来生成 JSON 数据。如果没有 <code>MarshalJSON</code> 方法但实现了 <code>encoding.TextMarshaler</code> 方法，<code>Marshal</code> 调用 <code>MarshalText</code> 方法并将结果编码为 JSON 字符串。<code>nil</code> 指针异常并不是严格意义上的必须，而是模仿了UnmarshalJSON行为中的一个类似的、必须的异常。</p>
+<p>否则，Marshal使用以下与类型有关的默认编码：</p>
+<ul>
+<li>布尔值被编码为JSON布尔值</li>
+<li>浮点、整数和数值类型值编码为JSON数字</li>
+<li>字符串值被编码为JSON字符串，被强制为有效的UTF-8，用Unicode替换符文替换无效的字节。为了使JSON能够安全地嵌入到HTML <code>&lt;script&gt;</code>标签中，字符串使用HTMLEscape进行编码，将”&lt;”、”&gt;”、”&amp;”、”U+2028”和”U+2029”转义为”\u003c”、”\u003e”、”\u0026”、”\u2028”、和”\u2029”。在使用编码器时，可以通过调用SetEscapeHTML(false)禁用这种替换。</li>
+<li>数组和分片的值会被编码为JSON数组，但<code>[]byte</code>会被编码为base64编码的字符串，而nil切片会被编码为null JSON对象值。<ul>
+<li>数组、分片，编码后为 JSON 数组</li>
+<li><code>[]byte</code>空切片，编码后为空数组 <code>[]</code></li>
+<li>nil 切片，编码后为 <code>null</code></li>
+</ul>
+</li>
+<li>结构体类型的值被编码为JSON对象。每个导出的结构字段都会成为对象的成员，使用字段名作为对象的键，除非字段因为下面的原因被省略<ul>
+<li>每个结构字段的编码都可通过存储在结构字段Tag标签的 “json” 键下的<code>格式字符串</code>来定制。格式字符串给出了字段的名称，后面可能有一个用逗号分隔的选项列表。名称可以是空的，以便指定选项而不覆盖默认的字段名</li>
+<li>“omitempty”选项，如果字段为空值，应该从编码中省略，定义为false、0、nil指针、nil接口值，以及任何空数组、切片、map或字符串</li>
+<li>作为一种特殊情况，如果字段标签是”-“，字段总是被省略的。请注意，一个名称为”-“的字段仍然可以使用标签”-,”来生成</li>
+</ul>
+</li>
+</ul>
+<p>结构体字段Tag标签下 <code>json</code> 键对应格式化字符串说明：</p>
+<ul>
+<li>给出字段编码后的名称，后面可能有一组逗号分割的选项列表</li>
+<li>字段名称可以为空，用于在不覆盖默认字段名的情况下指定不同选项</li>
+<li><code>omitempty</code>选项，字段为空值（false/0/nil指针/nil接口值/空数组/空切片/空map/空字符串）时则跳过编码输出</li>
+<li>字段标签为<code>-</code>时，此字段总是被忽略；但要注意，名为<code>-</code>的字段出现在<code>-,</code>标签中时仍可以被生成</li>
+</ul>
+<p>结构体字段标签和对应含义的一些例子：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Field appears in JSON as key "myName".</span></span><br><span class="line"><span class="comment">// 该字段出现在JSON中时，名为"myName"</span></span><br><span class="line">Field <span class="keyword">int</span> <span class="string">`json:"myName"`</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Field appears in JSON as key "myName" and</span></span><br><span class="line"><span class="comment">// the field is omitted from the object if its value is empty,</span></span><br><span class="line"><span class="comment">// as defined above.</span></span><br><span class="line"><span class="comment">// 该字段出现在JSON中时，名为"myName"，如为零值则输出时忽略此字段</span></span><br><span class="line">Field <span class="keyword">int</span> <span class="string">`json:"myName,omitempty"`</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Field appears in JSON as key "Field" (the default), but</span></span><br><span class="line"><span class="comment">// the field is skipped if empty.</span></span><br><span class="line"><span class="comment">// Note the leading comma.</span></span><br><span class="line"><span class="comment">// 该字段出现在JSON中时，名为"Field"，如为零值则输出时忽略此字段</span></span><br><span class="line">Field <span class="keyword">int</span> <span class="string">`json:",omitempty"`</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Field is ignored by this package.</span></span><br><span class="line"><span class="comment">// 该字段当前包输出JSON时忽略</span></span><br><span class="line">Field <span class="keyword">int</span> <span class="string">`json:"-"`</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Field appears in JSON as key "-".</span></span><br><span class="line"><span class="comment">// 该字段出现在JSON中时，名为"-"</span></span><br><span class="line">Field <span class="keyword">int</span> <span class="string">`json:"-,"`</span></span><br></pre></td></tr></table></figure>
+<p><code>&quot;string&quot;</code> 选项表示字段以 JSON 格式存储在 JSON 编码的字符串中。它只适用于字符串、浮点、整数或布尔类型的字段。这种额外的编码有时在与JavaScript程序通信时使用。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Int64String <span class="keyword">int64</span> <span class="string">`json:",string"`</span></span><br></pre></td></tr></table></figure>
+<p>键名满足以下条件时将被使用：非空字符串，仅由Unicode字母、数字和ASCII标点符号（不包括引号、反斜杠和逗号）组成。<br>受下文所述的Go可见性规则的限制，匿名结构字段通常可被编码，其内部可导出的字段等价于外部结构中的字段。匿名结构体字段使用其JSON Tag标签中给出名称，而不是匿名的。接口类型的匿名结构字段的处理方式与将该类型作为其名称相同，也不是匿名。<br>在决定对哪个字段进行marshal或unmarshal时，Go中结构体字段可见性规则进行了调整。如果在同一级别有多个字段，并且该级别是嵌套最少的（且将是通常Go规则所选择的嵌套级别），则适用以下额外规则：</p>
+<p>1) 在这些字段中，如果有任何字段是JSON Tag标记的，就只考虑有标记的字段，即使有多个未标记的字段，否则会发生冲突。</p>
+<p>2) 如果只有一个字段（根据第一条规则标记或不标记），该字段被选中。</p>
+<p>3) 否则有多个字段，都会被忽略；不会发生错误。</p>
+<p>Go 1.1中新增了对匿名结构字段的处理。在Go 1.1之前，匿名结构字段被忽略。要在当前版本和早期版本中强制忽略匿名结构字段，请给该字段一个”-“的JSON标签。</p>
+<p><code>Map</code>的值被编码为JSON对象。地图的键类型必须是字符串、整数类型，或者实现了<code>encoding.TextMarshaler</code>接口。通过应用以下规则对<code>Map</code>的键进行排序并作为JSON对象的键使用，但要遵守上面为字符串值描述的UTF-8强制规则。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- 任何字符串类型的键都可以直接使用</span><br><span class="line">- encoding.TextMarshalers 将被编码</span><br><span class="line">- 整数键被转换为字符串</span><br></pre></td></tr></table></figure>
+<p>指针类型值被编码为所指向的值，一个 <code>nil</code> 指针会被编码为 <code>null</code> JSON值。<br>接口类型值编码为接口中包含的值，一个 <code>nil</code> 接口值被编码为 <code>null</code> JSON值。<br>通道（Channel）、复合类型（complex）和函数值（function）不能进行JSON编码，试图对这样的值进行编码会导致Marshal返回一个<code>UnsupportedTypeError</code>错误。<br>JSON不能代表循环嵌套的数据结构，Marshal函数也将不处理它们。向Marshal传递循环结构将导致一个错误。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://pkg.go.dev/encoding/json#Marshal" target="_blank" rel="noopener">encoding/json#Marshal</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/03/14/2021-clickhouse/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[译] Clickhouse 在日志存储与分析方面替代 ElasticSearch 和 MySQL</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
