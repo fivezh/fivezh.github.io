@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Lumem(一)：入门介绍 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Lumen是Laravel框架作者Taylor Otwell为无状态API微服务而专门基于Laravel开发的框架。Lumen名字来源：Illuminate，这是Laravel中主要实现包。使用Lumen，你可以做到：  Laravel各种优雅的用法 专注后端、无状态Stateless、微服务micro-service 性能比Laravel提升一倍相比Laravel，去除了下列包依赖，使得包依赖由">
+<meta name="keywords" content="PHP,Lumen">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lumem(一)：入门介绍">
+<meta property="og:url" content="http://fivezh.github.io/2016/07/30/Lumem-part1-introducing/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="Lumen是Laravel框架作者Taylor Otwell为无状态API微服务而专门基于Laravel开发的框架。Lumen名字来源：Illuminate，这是Laravel中主要实现包。使用Lumen，你可以做到：  Laravel各种优雅的用法 专注后端、无状态Stateless、微服务micro-service 性能比Laravel提升一倍相比Laravel，去除了下列包依赖，使得包依赖由">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lumem(一)：入门介绍">
+<meta name="twitter:description" content="Lumen是Laravel框架作者Taylor Otwell为无状态API微服务而专门基于Laravel开发的框架。Lumen名字来源：Illuminate，这是Laravel中主要实现包。使用Lumen，你可以做到：  Laravel各种优雅的用法 专注后端、无状态Stateless、微服务micro-service 性能比Laravel提升一倍相比Laravel，去除了下列包依赖，使得包依赖由">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Lumem-part1-introducing" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/30/Lumem-part1-introducing/" class="article-date">
+  	<time datetime="2016-07-30T06:17:52.000Z" itemprop="datePublished">2016-07-30</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Lumem(一)：入门介绍
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Lumen/">Lumen</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>Lumen是Laravel框架作者Taylor Otwell为无状态API微服务而专门基于Laravel开发的框架。<br>Lumen名字来源：Illuminate，这是Laravel中主要实现包。<br>使用Lumen，你可以做到：</p>
+<ul>
+<li>Laravel各种优雅的用法</li>
+<li>专注后端、无状态Stateless、微服务micro-service</li>
+<li>性能比Laravel提升一倍<br>相比Laravel，去除了下列包依赖，使得包依赖由53降到28。</li>
+<li>Illuminate：console、cookie、exception、log、mail、redis、routing、session</li>
+<li>Symfony：routing、translation、process、console、debug、finder</li>
+<li>league：flysystem</li>
+<li>Jeremeamia：superclosure</li>
+</ul>
+<a id="more"></a>
+<h2 id="Lumen-创建项目步骤"><a href="#Lumen-创建项目步骤" class="headerlink" title="Lumen 创建项目步骤"></a>Lumen 创建项目步骤</h2><h3 id="1-composer创建lumen项目"><a href="#1-composer创建lumen项目" class="headerlink" title="1. composer创建lumen项目"></a>1. composer创建lumen项目</h3><p><code>composer create-project laravel/lumen --prefer-dist</code></p>
+<h3 id="2-lumen初始化配置"><a href="#2-lumen初始化配置" class="headerlink" title="2. lumen初始化配置"></a>2. lumen初始化配置</h3><p>这里采用Nginx作为http server，确认Nginx配置没问题，默认访问Lumen会显示Lumen版本信息。</p>
+<blockquote>
+<p>Lumen (5.2.7) (Laravel Components 5.2.*)</p>
+<ul>
+<li>修改区域和时区<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">vendor/laravel/lumen-framework/config/app.php</span><br><span class="line">&apos;locale&apos; =&gt; env(&apos;APP_LOCALE&apos;, &apos;cn&apos;),</span><br><span class="line">vendor/laravel/lumen-framework/src/Application.php</span><br><span class="line">date_default_timezone_set(env(&apos;APP_TIMEZONE&apos;, &apos;Asia/Shanghai&apos;));</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</blockquote>
+<p>由于Lumen建议统一采用.env方式管理配置，在Application.php中也是根据APP_TIMEZONE设置的，但我们的项目里将config外提到项目根目录下，且通过部署脚本在config和config.sandbox目前间切换配置文件，因此，这里直接修改Application.php源码。</p>
+<h3 id="3-路由定义"><a href="#3-路由定义" class="headerlink" title="3. 路由定义"></a>3. 路由定义</h3><p>默认路由文件：<code>app/Http/routes.php</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bootstrap/app.php</span><br><span class="line">$app-&gt;group([&apos;namespace&apos; =&gt; &apos;App\Http\Controllers&apos;], function ($app) &#123;</span><br><span class="line">    require __DIR__.&apos;/../app/Http/routes.php&apos;;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">app/Http/routes.php</span><br><span class="line">$app-&gt;get(&apos;/&apos;, function () use ($app) &#123;</span><br><span class="line">    return $app-&gt;version();</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p><strong>注</strong>：5.2版本Lumen已修复之前Controller命名空间缺失的问题。<br>新增路由：<code>$app-&gt;get(&#39;/&#39;, &#39;ExampleController@helloworld&#39;);</code></p>
+<h3 id="4-Log按日分割配置"><a href="#4-Log按日分割配置" class="headerlink" title="4. Log按日分割配置"></a>4. Log按日分割配置</h3><p>增加LogServiceProvider，实现按日分割日志。</p>
+<ul>
+<li><p>新增app/Providers/LogServiceProvider.php</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"> </span><br><span class="line">namespace App\Providers;</span><br><span class="line"> </span><br><span class="line">use Illuminate\Support\ServiceProvider;</span><br><span class="line"> </span><br><span class="line">use Monolog\Formatter\LineFormatter;</span><br><span class="line">use Monolog\Handler\RotatingFileHandler;</span><br><span class="line"> </span><br><span class="line">class LogServiceProvider extends ServiceProvider</span><br><span class="line">&#123;</span><br><span class="line">    /**</span><br><span class="line">     * 扩展Lumen支持按日分割保存日志</span><br><span class="line">     * Configure logging on boot.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function boot()</span><br><span class="line">    &#123;</span><br><span class="line">        // max files to be saved</span><br><span class="line">        $maxFiles = 30;</span><br><span class="line"> </span><br><span class="line">        $handlers[] = (new RotatingFileHandler(storage_path(&apos;logs/lumen.log&apos;), $maxFiles))</span><br><span class="line">            -&gt;setFormatter(new LineFormatter(null, null, true, true));</span><br><span class="line"> </span><br><span class="line">        $this-&gt;app[&apos;log&apos;]-&gt;setHandlers($handlers);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    /**</span><br><span class="line">     * Register the log service.</span><br><span class="line">     *</span><br><span class="line">     * @return void</span><br><span class="line">     */</span><br><span class="line">    public function register()</span><br><span class="line">    &#123;</span><br><span class="line">        // Log binding already registered in vendor/laravel/lumen-framework/src/Application.php.</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>向容器注册ServiceProvider，修改文件：bootstrap/app.php</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$app-&gt;register(App\Providers\LogServiceProvider::class);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="5-如何读取配置文件？"><a href="#5-如何读取配置文件？" class="headerlink" title="5. 如何读取配置文件？"></a>5. 如何读取配置文件？</h3><ul>
+<li>bootstrap/app.php增加：<code>$app-&gt;configure(&#39;app&#39;);</code></li>
+<li>程序中通过全局的辅助函数：<code>$test = config(&#39;app.cipher&#39;);</code>读取相应配置项</li>
+</ul>
+<h3 id="6-Redis使用"><a href="#6-Redis使用" class="headerlink" title="6. Redis使用"></a>6. Redis使用</h3><p>由于Lumen默认去除了Laravel中predis和illuminate/redis包依赖，所以Lumen默认无法直接支持Redis。<br>为Lumen添加Redis支持的步骤：</p>
+<ul>
+<li>composer安装predis和illuminate/redis包：composer require predis/predis ~1.0和illuminate/redis 5.2.*</li>
+<li>开启Facades支持（bootstrap/app.php）：$app-&gt;withFacades()</li>
+<li>注册redisServiceProvider（bootstrap/app.php）：$app-&gt;register(Illuminate\Redis\RedisServiceProvider::class);</li>
+<li>Facades增加Redis别名(vendor/laravel/lumen-framework/src/Application.php, withFacades函数)：class_alias(‘Illuminate\Support\Facades\Redis’, ‘Redis’);</li>
+</ul>
+<p><strong>注</strong>：predis为PHP实现的Redis客户端，如考虑性能，可考虑采用PhpRedis扩展方式替代predis。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/31/Lumem-part2-lifecycle/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Lumem(二)：生命周期、容器、ServiceProvider
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/05/31/Python-http-packet-parsing/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Python | 解析pcap文件分析HTTP Request/Response报文</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

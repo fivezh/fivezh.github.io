@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[Python]广度优先的多线程Python网页抓取脚本 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、脚本作用使用Python脚本批量化抓取特定网页内容中的相应资源，应包含功能：  读取命令参数：argparse 读取配置文件：ConfigParser HTTP请求、URL处理及HTML解析：urllib2, urllib, HTMLParser 广度优先并行请求：设计多线程模型 保存本地资源：仅保存符合规则的资源 日志记录：logging">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Python]广度优先的多线程Python网页抓取脚本">
+<meta property="og:url" content="http://fivezh.github.io/2016/01/18/Python-BFS-multithredings-web-crawler/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="一、脚本作用使用Python脚本批量化抓取特定网页内容中的相应资源，应包含功能：  读取命令参数：argparse 读取配置文件：ConfigParser HTTP请求、URL处理及HTML解析：urllib2, urllib, HTMLParser 广度优先并行请求：设计多线程模型 保存本地资源：仅保存符合规则的资源 日志记录：logging">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Python]广度优先的多线程Python网页抓取脚本">
+<meta name="twitter:description" content="一、脚本作用使用Python脚本批量化抓取特定网页内容中的相应资源，应包含功能：  读取命令参数：argparse 读取配置文件：ConfigParser HTTP请求、URL处理及HTML解析：urllib2, urllib, HTMLParser 广度优先并行请求：设计多线程模型 保存本地资源：仅保存符合规则的资源 日志记录：logging">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Python-BFS-multithredings-web-crawler" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/01/18/Python-BFS-multithredings-web-crawler/" class="article-date">
+  	<time datetime="2016-01-18T12:08:27.000Z" itemprop="datePublished">2016-01-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [Python]广度优先的多线程Python网页抓取脚本
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <h1 id="一、脚本作用"><a href="#一、脚本作用" class="headerlink" title="一、脚本作用"></a>一、脚本作用</h1><p>使用Python脚本批量化抓取特定网页内容中的相应资源，应包含功能：</p>
+<ul>
+<li>读取命令参数：argparse</li>
+<li>读取配置文件：ConfigParser</li>
+<li>HTTP请求、URL处理及HTML解析：urllib2, urllib, HTMLParser</li>
+<li>广度优先并行请求：设计多线程模型</li>
+<li>保存本地资源：仅保存符合规则的资源</li>
+<li>日志记录：logging<a id="more"></a>
+<h1 id="二、脚本主要说明"><a href="#二、脚本主要说明" class="headerlink" title="二、脚本主要说明"></a>二、脚本主要说明</h1><h2 id="2-1-命令参数读取"><a href="#2-1-命令参数读取" class="headerlink" title="2.1 命令参数读取"></a>2.1 命令参数读取</h2>Python目前推荐使用argparse进行命令参数解析<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import argparse</span><br><span class="line">import logging</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line">parser.add_argument(&quot;-v&quot;, &quot;--version&quot;, help=&quot;show current script version&quot;, action=&quot;version&quot;, version=&quot;%(prog)s 1.0&quot;)</span><br><span class="line">parser.add_argument(&quot;-c&quot;, &quot;--conf&quot;, help=&quot;set config file&quot;, required=&quot;true&quot;)</span><br><span class="line">args = parser.parse_args()</span><br><span class="line">if args.conf:</span><br><span class="line">    conf = args.conf </span><br><span class="line">    logging.info(&quot;Success to read conf args : %s&quot; , conf)</span><br><span class="line">else:</span><br><span class="line">    logging.error(&quot;Fail to read conf args&quot;)</span><br><span class="line">    sys.exit(1)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="2-2-配置文件读取"><a href="#2-2-配置文件读取" class="headerlink" title="2.2 配置文件读取"></a>2.2 配置文件读取</h2><p>通过ConfigParser模块读取配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">import ConfigParser</span><br><span class="line">import logging</span><br><span class="line"></span><br><span class="line">conf = &quot;spider.conf&quot;</span><br><span class="line">conf_parser = ConfigParser.ConfigParser()</span><br><span class="line">try:</span><br><span class="line">    conf_parser.read(conf)</span><br><span class="line">except ConfigParser.Error as e:</span><br><span class="line">    logging.error(&quot;Fail to load conf(%s) as ConfigParser.Error: %s&quot;, conf, e)</span><br><span class="line">    return &quot;Fail&quot;</span><br><span class="line"></span><br><span class="line">#读取配置文件中author配置项内容</span><br><span class="line">author = conf_parser.get(&quot;spider&quot;, &quot;author&quot;)</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-3-HTTP请求、URL处理"><a href="#2-3-HTTP请求、URL处理" class="headerlink" title="2.3 HTTP请求、URL处理"></a>2.3 HTTP请求、URL处理</h2><h3 id="2-3-1-HTTP请求"><a href="#2-3-1-HTTP请求" class="headerlink" title="2.3.1 HTTP请求"></a>2.3.1 HTTP请求</h3><p>Python中使用urllib, urllib2, Requests进行HTTP请求和响应处理。<br>以urllib2为例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">url = &quot;http://www.baidu.com&quot;</span><br><span class="line">try:</span><br><span class="line">    page = urllib2.urlopen(url)</span><br><span class="line">except IOError as e:</span><br><span class="line">    logging.error(&apos;Url open failed with exception: %s&apos;, e)</span><br><span class="line">    return None</span><br><span class="line">html = page.read()</span><br><span class="line">print &quot;HTML of the url:&quot;, html</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-3-2-URL处理"><a href="#2-3-2-URL处理" class="headerlink" title="2.3.2 URL处理"></a>2.3.2 URL处理</h3><p>需要考虑的URL地址处理包括：</p>
+<ul>
+<li>URL拼接：部分链接为相对地址，需要在请求前拼接为真实的绝对地址<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">urlparse.urljoin(&apos;http://www.baidu.com/news/123&apos;,&apos;/images/baidu.png&apos;)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>结果为：<a href="http://www.baidu.com/images/baidu.png" target="_blank" rel="noopener">http://www.baidu.com/images/baidu.png</a></p>
+<ul>
+<li>URL转码：当以URL作为文件名保存文件时，需要对URL中特殊字符转义<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file_name = urllib.quote_plus(url)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="2-3-3-HTML解析"><a href="#2-3-3-HTML解析" class="headerlink" title="2.3.3 HTML解析"></a>2.3.3 HTML解析</h3><p><strong> 网页编码解析 </strong>：由于不同网页编码格式不一，会导致HTML页面内容解析时报错，应根据页面编码格式进行html编码。</p>
+<ol>
+<li><p>第三方库<a href="https://pypi.python.org/pypi/chardet" target="_blank" rel="noopener">chardetet</a>可实现页面编码格式探测：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pip install chardet #安装chardet库</span><br><span class="line"></span><br><span class="line">import urllib</span><br><span class="line">import chardet</span><br><span class="line">html = urllib.urlopen(&apos;http://www.google.cn/&apos;).read()</span><br><span class="line">print chardet.detect(rawdata)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>手动解析页面html中charset属性，确定页面编码<br>实现方式：正则表达式匹配html中charset=部分的属性，确定网页编码格式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">regex = ur&apos;meta.*charset=(&quot;?)(.*?)(&quot;|&gt;)&apos;</span><br><span class="line">match = re.search(regex, html)</span><br><span class="line">html_charset = &apos;utf-8&apos;  # default charset</span><br><span class="line">if match:</span><br><span class="line">    html_charset = match.group(2)</span><br><span class="line">else:</span><br><span class="line">    logging.error(&quot;Fail to match charset Regex for url:%s&quot;, url)</span><br><span class="line">    logging.info(html)</span><br><span class="line">    return html</span><br><span class="line"></span><br><span class="line">if html_charset==&quot;gb2312&quot; or html_charset==&quot;GBK&quot;:</span><br><span class="line">    html_charset = &quot;GB18030&quot;</span><br><span class="line">elif html_charset==&quot;iso-8859-1&quot;:</span><br><span class="line">    html_charset = &quot;latin-1&quot;</span><br><span class="line">return html.decode(html_charset)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据http Response的Header中字符编码，经测试发现国内大多网站该报文头部字段与页面编码格式不符。</p>
+</li>
+</ol>
+<hr>
+<p>Python中解析HTML多种方式：BeautifulSoup/HTMLParser/SGMLParser等，这里选用HTMLParser操作<br>函数<code>MyParser.get_sub_urls(cur_url, cur_html)</code>将返回指定url对应html下所有子链接（以标签<a></a>方式包含的链接）<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">import HTMLParser</span><br><span class="line">import re</span><br><span class="line">import urlparse</span><br><span class="line">import logging</span><br><span class="line"></span><br><span class="line">class MyParser(HTMLParser.HTMLParser):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        HTMLParser.HTMLParser.__init__(self)</span><br><span class="line">        self.links = []</span><br><span class="line">    def handle_starttag(self, tag, attrs):</span><br><span class="line">        if tag == &quot;a&quot;:</span><br><span class="line">            if len(attrs) == 0: pass</span><br><span class="line">            else:</span><br><span class="line">                for (k, v) in attrs:</span><br><span class="line">                    if k == &quot;href&quot; and v != &quot;/&quot; and v != &quot;javascript:;&quot; and v !=&quot;javascript:void(0)&quot; and v != &quot;#&quot; and v != &quot;&quot;:</span><br><span class="line">                        self.links.append(v)</span><br><span class="line"></span><br><span class="line"># HtmlParser to find all links</span><br><span class="line">def get_sub_urls(cur_url, cur_html):</span><br><span class="line">    # get the current scheme</span><br><span class="line">    urlparser = urlparse.urlparse(cur_url)</span><br><span class="line"></span><br><span class="line">    # get all the sub href links</span><br><span class="line">    myhtmlparser = MyParser()</span><br><span class="line">    myhtmlparser.feed(cur_html)</span><br><span class="line">    myhtmlparser.close()</span><br><span class="line">    logging.info(&apos;get all sub urls succ of : %s &apos; % cur_url)</span><br><span class="line"></span><br><span class="line">    return myhtmlparser.links</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-4-广度优先遍历"><a href="#2-4-广度优先遍历" class="headerlink" title="2.4 广度优先遍历"></a>2.4 广度优先遍历</h2><p>广度优先首先想到“队列Queue”实现，Python中封装Queue是线程安全的，也为下一步多线程实践提供支持。<br>思路：HTTP请求-&gt;获取HTML-&gt;解析HTML获取子链接-&gt;子链接入队列-&gt;循环队列pop元素,重复该步骤，直到队列为空。<br>下面是简单的伪码描述，文末附全部代码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">crawl-request:</span><br><span class="line"></span><br><span class="line">while not url_queue.empty();</span><br><span class="line">    url = url_queue.get()</span><br><span class="line">    content = webpage_urlopen.webpage_urlopen(url, conf.crawl_timeout)</span><br><span class="line">    //actions like saving pages</span><br><span class="line">    sub_urls = webpage_parse.webpage_parse(content, url)</span><br><span class="line">    for sub_url in sub_urls:</span><br><span class="line">        url_queue.put(sub_url)</span><br><span class="line"></span><br><span class="line">function main：</span><br><span class="line">url_queue = Queue.Queue()</span><br><span class="line">url_queue.put(init_url)</span><br><span class="line">crawl-request(url)</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-5-多线程实现"><a href="#2-5-多线程实现" class="headerlink" title="2.5 多线程实现"></a>2.5 多线程实现</h2><p>多线程需解决“数据同步”问题，前文采用的队列Queue是线程安全的，因此在此多线程实现是规避了过多对“数据同步”的考量。<br>另外，多线程可设置为Daemon线程，则不需要注意等待线程结束，而只需要通过queue.join()等待“任务队列Queue”完成则主线程退出。<br>主线程退出时，Daemon会自动结束。<br>队列Queue的使用，可简化多线程数据同步、线程控制的模型设计，但要清晰理解Daemon线程、队列join的意义。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">queue = Queue.Queue()</span><br><span class="line"></span><br><span class="line">class ThreadUrl(threading.Thread):</span><br><span class="line">    def __init__(self,queue):</span><br><span class="line">        threading.Thread.__init__(self)</span><br><span class="line">        self.queue = queue</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while True:</span><br><span class="line">            # grabs host from Queue</span><br><span class="line">            host = self.queue.get()</span><br><span class="line"></span><br><span class="line">            #grabs urls of hosts and prints first 1024 bytes of page</span><br><span class="line">            url = urllib2.urlopen(host)</span><br><span class="line">            print url.read(1024)</span><br><span class="line"></span><br><span class="line">            #signals to queue job is done</span><br><span class="line">            self.queue.task_done()</span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    #populate queue with data</span><br><span class="line">    for host in hosts:</span><br><span class="line">        queue.put(host)</span><br><span class="line">    #spawn a poll of threads, and pass them queue instance</span><br><span class="line">    for i in range(5):</span><br><span class="line">        t = ThreadUrl(queue)</span><br><span class="line">        t.setDaemon(True)</span><br><span class="line">        t.start()</span><br><span class="line"></span><br><span class="line">    #wait on the queue until everything has been processed</span><br><span class="line">    cur_ths = threading.enumerate()</span><br><span class="line">    print &quot;cur enumerate threadings len:&quot;, len(cur_ths)</span><br><span class="line">    for t in cur_ths: </span><br><span class="line">        print &quot;cur enumerate threadings:&quot;, t</span><br><span class="line">    queue.join()</span><br><span class="line">main()</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-5-日志记录"><a href="#2-5-日志记录" class="headerlink" title="2.5 日志记录"></a>2.5 日志记录</h2><p>logging模块来实现日志记录，定义好格式、级别，没有太多可说的。<br>可通过logging.handlers为不同错误级别的日志设定独立的日志文件，将高级别日志独立出来便于发现错误。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># main.py</span><br><span class="line">import log</span><br><span class="line">log.init_log(&quot;./log.txt&quot;, level=logging.DEBUG)</span><br><span class="line"></span><br><span class="line"># log.py</span><br><span class="line">import os</span><br><span class="line">import logging</span><br><span class="line">import logging.handlers</span><br><span class="line"></span><br><span class="line">def init_log(log_path, level=logging.INFO, when=&quot;D&quot;, backup=7,</span><br><span class="line">             format=&quot;%(levelname)s: %(asctime)s: %(filename)s:%(lineno)d * %(thread)d %(message)s&quot;,</span><br><span class="line">             datefmt=&quot;%m-%d %H:%M:%S&quot;):</span><br><span class="line">    formatter = logging.Formatter(format, datefmt)</span><br><span class="line">    logger = logging.getLogger()</span><br><span class="line">    logger.setLevel(level)</span><br><span class="line"></span><br><span class="line">    dir = os.path.dirname(log_path)</span><br><span class="line">    if not os.path.isdir(dir):</span><br><span class="line">        os.makedirs(dir)</span><br><span class="line"></span><br><span class="line">    handler = logging.handlers.TimedRotatingFileHandler(log_path + &quot;.log&quot;,</span><br><span class="line">                                                        when=when,</span><br><span class="line">                                                        backupCount=backup)</span><br><span class="line">    handler.setLevel(level)</span><br><span class="line">    handler.setFormatter(formatter)</span><br><span class="line">    logger.addHandler(handler)</span><br><span class="line"></span><br><span class="line">    handler = logging.handlers.TimedRotatingFileHandler(log_path + &quot;.log.wf&quot;,</span><br><span class="line">                                                        when=when,</span><br><span class="line">                                                        backupCount=backup)</span><br><span class="line">    handler.setLevel(logging.WARNING)</span><br><span class="line">    handler.setFormatter(formatter)</span><br><span class="line">    logger.addHandler(handler)</span><br></pre></td></tr></table></figure></p>
+<h1 id="三、脚本源码"><a href="#三、脚本源码" class="headerlink" title="三、脚本源码"></a>三、脚本源码</h1><p>项目GitHub地址：<a href="https://github.com/fivezh/Keepgoing/tree/master/py_spider" target="_blank" rel="noopener">Fivezh/py_spider</a></p>
+<h1 id="四、参考文献"><a href="#四、参考文献" class="headerlink" title="四、参考文献"></a>四、参考文献</h1><ol>
+<li><a href="http://blog.csdn.net/sding/article/details/5538089?360" target="_blank" rel="noopener">Python 线程池的实现 –不错的多线程模型</a></li>
+<li><a href="http://www.ibm.com/developerworks/cn/aix/library/au-threadingpython/" target="_blank" rel="noopener">IBM developerWorks: 使用 Python 进行线程编程</a></li>
+<li><a href="http://my.oschina.net/cxz001/blog/108550" target="_blank" rel="noopener">标准库：urlparse 之 urljoin() 将相对路径转化成绝对路径</a></li>
+<li><a href="http://my.oschina.net/guol/blog/95699" target="_blank" rel="noopener">Python2.7 urlparse学习</a></li>
+<li><a href="http://dongweiming.github.io/blog/archives/guanyuthreadingyanjiuer/" target="_blank" rel="noopener">关于threading研究（一）</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/23/LeetCode-322-Coin-Change/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [LeetCode] 322. Coin Change | 变换硬币
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/10/Python-Flask-web-dev/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Flask的web项目构建过程</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

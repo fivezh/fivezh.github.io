@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>如何使用Composer创建待发布代码库 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="现代PHP发展过程中，最初原始的文件拷贝、代码Ctrl+C/V的分发模式，phpear分发模式，再发展到composer横空出世，现代PHP库依赖管理通过composer解决各类库的版本依赖管理。 下文介绍如何打包发布自己的代码库：">
+<meta name="keywords" content="PHP,Composer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何使用Composer创建待发布代码库">
+<meta property="og:url" content="http://fivezh.github.io/2018/07/12/ComposerBuildPackage/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="现代PHP发展过程中，最初原始的文件拷贝、代码Ctrl+C/V的分发模式，phpear分发模式，再发展到composer横空出世，现代PHP库依赖管理通过composer解决各类库的版本依赖管理。 下文介绍如何打包发布自己的代码库：">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="如何使用Composer创建待发布代码库">
+<meta name="twitter:description" content="现代PHP发展过程中，最初原始的文件拷贝、代码Ctrl+C/V的分发模式，phpear分发模式，再发展到composer横空出世，现代PHP库依赖管理通过composer解决各类库的版本依赖管理。 下文介绍如何打包发布自己的代码库：">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-ComposerBuildPackage" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/07/12/ComposerBuildPackage/" class="article-date">
+  	<time datetime="2018-07-12T09:04:51.000Z" itemprop="datePublished">2018-07-12</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      如何使用Composer创建待发布代码库
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Composer/">Composer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>现代PHP发展过程中，最初原始的文件拷贝、代码Ctrl+C/V的分发模式，phpear分发模式，再发展到composer横空出世，现代PHP库依赖管理通过composer解决各类库的版本依赖管理。</p>
+<p>下文介绍如何打包发布自己的代码库：<br><a id="more"></a></p>
+<h2 id="新建待发布代码包"><a href="#新建待发布代码包" class="headerlink" title="新建待发布代码包"></a>新建待发布代码包</h2><h3 id="初始化项目"><a href="#初始化项目" class="headerlink" title="初始化项目"></a>初始化项目</h3><ul>
+<li><code>composer init</code></li>
+<li>修改后的composer.json文件如下：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"fivezh/utils"</span>,</span><br><span class="line">    <span class="attr">"description"</span>: <span class="string">"utils"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"library"</span>,</span><br><span class="line">    <span class="attr">"authors"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"fivezh"</span>,</span><br><span class="line">            <span class="attr">"email"</span>: <span class="string">"fivezh@gmail.com"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"require"</span>: &#123;</span><br><span class="line">        <span class="attr">"guzzlehttp/guzzle"</span>: <span class="string">"~6.0"</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="PSR-4配置"><a href="#PSR-4配置" class="headerlink" title="PSR-4配置"></a>PSR-4配置</h3><ul>
+<li>新增目录src/Rrc/Hello.php</li>
+<li><code>composer.json</code>增加psr-4的autoload</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">"autoload" :&#123;</span><br><span class="line">  "psr-4":&#123;</span><br><span class="line">    "Rrc\\":"src/Rrc"</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="更新命名空间"><a href="#更新命名空间" class="headerlink" title="更新命名空间"></a>更新命名空间</h3><ul>
+<li>执行<code>composer dump-autoload</code>更新autoload文件，将更新<code>vendor/composer/autoload_psr4.php</code></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">return</span> <span class="keyword">array</span>(</span><br><span class="line">    <span class="string">'Rrc\\'</span> =&gt; <span class="keyword">array</span>($vendorDir . <span class="string">'/rrc/c2bUtils/src/Rrc'</span>),</span><br><span class="line">    <span class="string">'Psr\\Http\\Message\\'</span> =&gt; <span class="keyword">array</span>($vendorDir . <span class="string">'/psr/http-message/src'</span>),</span><br><span class="line">    <span class="string">'GuzzleHttp\\Psr7\\'</span> =&gt; <span class="keyword">array</span>($vendorDir . <span class="string">'/guzzlehttp/psr7/src'</span>),</span><br><span class="line">    <span class="string">'GuzzleHttp\\Promise\\'</span> =&gt; <span class="keyword">array</span>($vendorDir . <span class="string">'/guzzlehttp/promises/src'</span>),</span><br><span class="line">    <span class="string">'GuzzleHttp\\'</span> =&gt; <span class="keyword">array</span>($vendorDir . <span class="string">'/guzzlehttp/guzzle/src'</span>),</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<h3 id="编写TestCase"><a href="#编写TestCase" class="headerlink" title="编写TestCase"></a>编写TestCase</h3><ul>
+<li>增加phpunit包</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">"require-dev": &#123;</span><br><span class="line">    "phpunit/phpunit": "^6.2"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>增加phpunit.xml</li>
+</ul>
+<p>设置bootstarp加载<code>vendor/autoload.php</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">phpunit</span> <span class="attr">backupGlobals</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">backupStaticAttributes</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">bootstrap</span>=<span class="string">"vendor/autoload.php"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">colors</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">convertErrorsToExceptions</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">convertNoticesToExceptions</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">convertWarningsToExceptions</span>=<span class="string">"true"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">processIsolation</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">stopOnFailure</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">         <span class="attr">syntaxCheck</span>=<span class="string">"false"</span></span></span><br><span class="line"><span class="tag">&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">testsuites</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">testsuite</span> <span class="attr">name</span>=<span class="string">"Application Test Suite"</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">directory</span>&gt;</span>./tests<span class="tag">&lt;/<span class="name">directory</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">testsuite</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">testsuites</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">php</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">env</span> <span class="attr">name</span>=<span class="string">"TEST_CASE"</span> <span class="attr">value</span>=<span class="string">"testing"</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">php</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">phpunit</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>编写testcase测试用例</li>
+</ul>
+<p>新建文件<code>test\DingMsg</code>：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">PHPUnit</span>\<span class="title">Framework</span>\<span class="title">TestCase</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Rrc</span>\<span class="title">DingMsg</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DingMsgTest</span> <span class="keyword">extends</span> <span class="title">TestCase</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testPushSingleMsg</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        $alarm = <span class="keyword">new</span> DingMsg();</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            $res = $alarm-&gt;pushGroupRobotMsg(<span class="string">'invalid_access_token'</span>,</span><br><span class="line">                <span class="string">'hello world'</span>, [<span class="string">'18612345678'</span>], <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">$this</span>-&gt;assertEquals(<span class="keyword">false</span>, $res);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (\<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">            <span class="keyword">$this</span>-&gt;fail(<span class="string">'异常：'</span>.$e-&gt;getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过执行<code>phpunit</code>则运行tests/下全部测试用例</p>
+<p>至此，完整的<code>composer.json</code>文件如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"name"</span>: <span class="string">"rrc/c2bUtils"</span>,</span><br><span class="line">    <span class="attr">"description"</span>: <span class="string">"c2b utils"</span>,</span><br><span class="line">    <span class="attr">"type"</span>: <span class="string">"library"</span>,</span><br><span class="line">    <span class="attr">"authors"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"name"</span>: <span class="string">"zhangxiaowu"</span>,</span><br><span class="line">            <span class="attr">"email"</span>: <span class="string">"zhangxiaowu@renrenche.com"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"require"</span>: &#123;</span><br><span class="line">        <span class="attr">"guzzlehttp/guzzle"</span>: <span class="string">"~6.0"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"require-dev"</span>: &#123;</span><br><span class="line">        <span class="attr">"phpunit/phpunit"</span>: <span class="string">"^6.2"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"autoload"</span> :&#123;</span><br><span class="line">      <span class="attr">"psr-4"</span>:&#123;</span><br><span class="line">        <span class="attr">"Rrc\\"</span>:<span class="string">"src/Rrc"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="发布到svc仓库或packagelist"><a href="#发布到svc仓库或packagelist" class="headerlink" title="发布到svc仓库或packagelist"></a>发布到svc仓库或packagelist</h2><h3 id="上传代码库至私有仓库或github"><a href="#上传代码库至私有仓库或github" class="headerlink" title="上传代码库至私有仓库或github"></a>上传代码库至私有仓库或github</h3><p>一般企业内部私有仓库，则将代码推送至私有仓库远程分支</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">git init</span><br><span class="line">git remote add origin git@github.com:yourusername/yourlibraryname.git</span><br><span class="line">git add --all</span><br><span class="line">git commit -m <span class="string">"initial files"</span></span><br><span class="line">git tag -a v1<span class="number">.0</span><span class="number">.0</span> -m <span class="string">"initial release"</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+<h3 id="发布至packagelist"><a href="#发布至packagelist" class="headerlink" title="发布至packagelist"></a>发布至packagelist</h3><p>访问<a href="https://packagist.org/packages/submit" target="_blank" rel="noopener">packagelist/package/submit</a>，注册、登录、提交Github地址则会被packagelist收录。</p>
+<p>详细参考：<a href="https://juejin.im/entry/57d7c3d2a0bb9f0057f244fc" target="_blank" rel="noopener">如何创建一个自己的 Composer 库</a></p>
+<h2 id="新项目通过composer引用代码库"><a href="#新项目通过composer引用代码库" class="headerlink" title="新项目通过composer引用代码库"></a>新项目通过<code>composer</code>引用代码库</h2><h3 id="vsc托管方式"><a href="#vsc托管方式" class="headerlink" title="vsc托管方式"></a>vsc托管方式</h3><p>如果代码库是内部托管（git/svn/hg等），可通过repositories形式引入包。</p>
+<ol>
+<li>修改新项目的composer.json，增加依赖库引入</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"repositories"</span>: &#123;</span><br><span class="line">  <span class="string">"c2bUtils"</span>: &#123;</span><br><span class="line">    <span class="string">"type"</span>: <span class="string">"vcs"</span>,</span><br><span class="line">    <span class="string">"url"</span>:<span class="string">"git@gitlab.renrenche.com:zhangxiaowu/c2b_php_utils.git"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;,</span><br><span class="line"> <span class="string">"require"</span>: &#123;</span><br><span class="line">  <span class="string">"rrc/c2bUtils"</span>: <span class="string">"^1.0"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<ul>
+<li><code>repositories</code>中的url仅仅是仓库的地址和包名无关</li>
+<li><code>require</code>中为包名，即库项目的<code>composer.json</code>中的<code>name</code>项</li>
+</ul>
+<ol start="2">
+<li>执行<code>composer install -vvv</code>安装依赖库</li>
+</ol>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&gt; composer install -v</span><br><span class="line">Loading composer repositories with <span class="keyword">package</span> information                                                                                                      Updating dependencies (including require-dev)         </span><br><span class="line">Dependency resolution completed in <span class="number">0.001</span> seconds</span><br><span class="line">Analyzed <span class="number">237</span> packages to resolve dependencies</span><br><span class="line">Analyzed <span class="number">303</span> rules to resolve dependencies</span><br><span class="line">Package operations: <span class="number">5</span> installs, <span class="number">0</span> updates, <span class="number">0</span> removals</span><br><span class="line">Installs: guzzlehttp/promises:v1<span class="number">.3</span><span class="number">.1</span>, psr/http-message:<span class="number">1.0</span><span class="number">.1</span>, guzzlehttp/psr7:<span class="number">1.4</span><span class="number">.2</span>, guzzlehttp/guzzle:<span class="number">6.3</span><span class="number">.3</span>, rrc/c2bUtils:<span class="number">1.0</span><span class="number">.0</span></span><br><span class="line">  - Installing guzzlehttp/promises (v1<span class="number">.3</span><span class="number">.1</span>) Loading from cache Extracting archive</span><br><span class="line">  - Installing psr/http-message (<span class="number">1.0</span><span class="number">.1</span>) Loading from cache Extracting archive</span><br><span class="line">  - Installing guzzlehttp/psr7 (<span class="number">1.4</span><span class="number">.2</span>) Loading from cache Extracting archive</span><br><span class="line">  - Installing guzzlehttp/guzzle (<span class="number">6.3</span><span class="number">.3</span>) Loading from cache Extracting archive</span><br><span class="line">  - Installing rrc/c2butils (<span class="number">1.0</span><span class="number">.0</span>) Cloning <span class="number">1</span>ccfd6bcfd95cd3b1ea884594c9f58f8fe7283fd</span><br><span class="line">guzzlehttp/guzzle suggests installing psr/log (Required <span class="keyword">for</span> using the Log middleware)</span><br><span class="line">Writing lock file</span><br><span class="line">Generating autoload files</span><br></pre></td></tr></table></figure>
+<p>此时如果查看<code>vendor/composer/autoload_psr4.php</code>，应该可以看到新增包的PSR-4映射已经加入到此文件中。</p>
+<h3 id="packagelist方式"><a href="#packagelist方式" class="headerlink" title="packagelist方式"></a>packagelist方式</h3><p>如果代码库已提交至packagelist.org，则已被composer可检索。<br>就如同使用guzzlehttp/guzzle包一样，直接通过<code>composer require apptut/web-util -vvv</code>引入进来即可。</p>
+<h3 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h3><h4 id="通过composer-require进来后，autoload无法找到对应命名空间"><a href="#通过composer-require进来后，autoload无法找到对应命名空间" class="headerlink" title="通过composer require进来后，autoload无法找到对应命名空间"></a>通过<code>composer require</code>进来后，autoload无法找到对应命名空间</h4><p>这个问题出发点在于，未对repositories中的type正确设置：</p>
+<ul>
+<li>composer：composer类型的库</li>
+<li>vsc：从git/svn/hg获取</li>
+<li>pear：从pear获取资源</li>
+<li>package：未提供composer支持，需手动进行autoload设置</li>
+</ul>
+<p>如果自有代码仓库，且包含composer.json支持，则配置repositories时指定类型为vsc，可自动加载依赖项目的autoload；<br>如果自有代码仓库，无composer.json支持，说明是静态冷文件，无法自动加载，需要引入代码仓库后，手动进行autoload的设置，classmap/psr-4/files等各种形式都可以。</p>
+<h3 id="通过repositories安装库时无法找到"><a href="#通过repositories安装库时无法找到" class="headerlink" title="通过repositories安装库时无法找到"></a>通过repositories安装库时无法找到</h3><ul>
+<li><code>composer install</code>错误信息如下<code>he requested package could not be found in any version, there may be a typo in the package name.</code></li>
+<li>可能的问题：<ul>
+<li>包名错误</li>
+<li>未找到满足要求的代码库版本</li>
+</ul>
+</li>
+<li>解决：composer依赖tag信息选择版本，代码库必须有对应tag信息</li>
+<li><code>git tag -a v1.0.0 -m &quot;initial release&quot;</code></li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Your requirements could not be resolved to an installable set of packages.</span><br><span class="line"></span><br><span class="line">  Problem <span class="number">1</span></span><br><span class="line">    - The requested <span class="keyword">package</span> rrc/c2b_utils could not be found in any version, there may be a typo in the <span class="keyword">package</span> name.</span><br><span class="line"></span><br><span class="line">Potential causes:</span><br><span class="line"> - A typo in the <span class="keyword">package</span> name</span><br><span class="line"> - The <span class="keyword">package</span> is not available in a stable-enough version according to your minimum-stability setting</span><br><span class="line">   see &lt;https:<span class="comment">//getcomposer.org/doc/04-schema.md#minimum-stability&gt; for more details.</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><ul>
+<li><a href="https://docs.phpcomposer.com/04-schema.html#repositories" target="_blank" rel="noopener">Composer repositories</a></li>
+<li><a href="http://www.darwinbiler.com/creating-composer-package-library/" target="_blank" rel="noopener">Creating Composer Package Library</a></li>
+<li><a href="https://juejin.im/entry/57d7c3d2a0bb9f0057f244fc" target="_blank" rel="noopener">如何创建一个自己的 Composer 库</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/27943241" target="_blank" rel="noopener">基于 Composer 的 PHP 模块化开发</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/11/02/graceful-design-in-php7-src/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PHP7源码中的优雅设计
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/04/03/2017-review-md/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">回顾2017</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

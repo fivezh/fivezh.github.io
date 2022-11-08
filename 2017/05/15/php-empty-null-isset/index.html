@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>PHP中非空判断、三目、类型转换的坑点 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="文章索引：  isset()、empty()、is_null()的区别 == 和 ===区别 类型转换后到底哪些是false？ 三目运算符区别：? : 、?:和?? 访问数组中不存在索引时，会怎么样？  isset()、empty()、is_null()的区别 isset()判断变量是否已设置(set)且非null，isset()官方文档  变量被unset()后，则isset()返回false">
+<meta name="keywords" content="PHP7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP中非空判断、三目、类型转换的坑点">
+<meta property="og:url" content="http://fivezh.github.io/2017/05/15/php-empty-null-isset/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="文章索引：  isset()、empty()、is_null()的区别 == 和 ===区别 类型转换后到底哪些是false？ 三目运算符区别：? : 、?:和?? 访问数组中不存在索引时，会怎么样？  isset()、empty()、is_null()的区别 isset()判断变量是否已设置(set)且非null，isset()官方文档  变量被unset()后，则isset()返回false">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1618079-f8f7f2901b44fdfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1618079-b254225c70ee75a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/1618079-8e9ebdc1700f42a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP中非空判断、三目、类型转换的坑点">
+<meta name="twitter:description" content="文章索引：  isset()、empty()、is_null()的区别 == 和 ===区别 类型转换后到底哪些是false？ 三目运算符区别：? : 、?:和?? 访问数组中不存在索引时，会怎么样？  isset()、empty()、is_null()的区别 isset()判断变量是否已设置(set)且非null，isset()官方文档  变量被unset()后，则isset()返回false">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/1618079-f8f7f2901b44fdfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-php-empty-null-isset" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/15/php-empty-null-isset/" class="article-date">
+  	<time datetime="2017-05-15T03:48:13.000Z" itemprop="datePublished">2017-05-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PHP中非空判断、三目、类型转换的坑点
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7/">PHP7</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>文章索引：</p>
+<ul>
+<li><code>isset()</code>、<code>empty()</code>、<code>is_null()</code>的区别</li>
+<li>== 和 ===区别</li>
+<li>类型转换后到底哪些是false？</li>
+<li>三目运算符区别：? : 、?:和??</li>
+<li>访问数组中不存在索引时，会怎么样？</li>
+</ul>
+<h2 id="isset-、empty-、is-null-的区别"><a href="#isset-、empty-、is-null-的区别" class="headerlink" title="isset()、empty()、is_null()的区别"></a><code>isset()</code>、<code>empty()</code>、<code>is_null()</code>的区别</h2><ul>
+<li><p><code>isset()</code>判断变量是否已设置(set)且非null，<a href="http://php.net/manual/en/function.isset.php" target="_blank" rel="noopener">isset()官方文档</a></p>
+<ul>
+<li>变量被<code>unset()</code>后，则<code>isset()</code>返回false</li>
+<li>变量值为null，则issset()返回false</li>
+<li><code>isset()</code>函数支持多参数，如<code>isset($foo, $bar)</code></li>
+<li><code>isset()</code>判断数组是否包含特定索引值，注意数组值为null的情形<a id="more"></a>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$hello = <span class="string">""</span>;</span><br><span class="line">var_dump(<span class="keyword">isset</span>($hello)); <span class="comment">// true</span></span><br><span class="line">$world = <span class="keyword">null</span>;</span><br><span class="line">var_dump(<span class="keyword">isset</span>($world)); <span class="comment">// false</span></span><br><span class="line">var_dump(<span class="keyword">isset</span>($hello, $world)); <span class="comment">// false</span></span><br><span class="line">$world = <span class="string">"world"</span>;</span><br><span class="line">var_dump(<span class="keyword">isset</span>($hello, $world)); <span class="comment">// true</span></span><br><span class="line"><span class="keyword">unset</span>($world);</span><br><span class="line">var_dump(<span class="keyword">isset</span>($world)); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">$hello = [<span class="string">"hello"</span> =&gt; <span class="string">"a"</span>, <span class="string">"world"</span> =&gt; <span class="keyword">null</span>];  <span class="comment">// 注意，值为null时isset()返回false</span></span><br><span class="line">var_dump(<span class="keyword">isset</span>($hello[<span class="string">"hello"</span>])); <span class="comment">// true</span></span><br><span class="line">var_dump(<span class="keyword">isset</span>($hello[<span class="string">"world"</span>])); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p><code>empty()</code>判断变量值是否为空（且不会产生日E_NOTICE日志事件），<a href="http://php.net/manual/en/function.empty.php" target="_blank" rel="noopener">empty()官方文档</a>，以下皆为空：</p>
+<ul>
+<li>“” (空字符串)</li>
+<li>0 (作为整数的0)</li>
+<li>0.0 (作为浮点数的0)</li>
+<li>“0” (作为字符串的0)</li>
+<li>NULL</li>
+<li>FALSE</li>
+<li>array() (一个空数组)</li>
+<li>$var; (一个声明了，但是没有值的变量)</li>
+</ul>
+</li>
+<li><code>is_null()</code>判断变量是否为null</li>
+<li>null和NULL等价，不区分大小写，<a href="http://php.net/manual/en/language.types.null.php" target="_blank" rel="noopener">官方说明文档</a></li>
+<li>变量为null的三种情形：<ul>
+<li>变量被赋值为null，如<code>$a = null</code></li>
+<li>变量未被定义，如使用未被声明的变量，<code>var_dump($nothing);// null</code></li>
+<li>变量已被<code>unset()</code>，如<code>$a = &#39;a&#39;;unset($a);var_dump($a);// $a now is null</code><br><img src="http://upload-images.jianshu.io/upload_images/1618079-f8f7f2901b44fdfe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="各种判断空值函数.png"></li>
+</ul>
+</li>
+</ul>
+<h3 id="和-区别"><a href="#和-区别" class="headerlink" title="== 和 ===区别"></a>== 和 ===区别</h3><ul>
+<li><code>==</code>等于（Equal），类型转换后相等，则值为true</li>
+<li><code>===</code>恒等（Identical），值和类型均相等，则值为true<br>几个例子：<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">123</span> == <span class="string">"123"</span>; <span class="comment">// true</span></span><br><span class="line"><span class="number">123</span> === <span class="string">"123"</span>; <span class="comment">// false，类型不同</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这里运用官方的两个<a href="http://php.net/manual/zh/types.comparisons.php" target="_blank" rel="noopener">图表</a><br><img src="http://upload-images.jianshu.io/upload_images/1618079-b254225c70ee75a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="等于=="><br><img src="http://upload-images.jianshu.io/upload_images/1618079-8e9ebdc1700f42a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="恒等==="></p>
+<h3 id="类型转换后到底哪些是false？（””、null、false、array-、new-class-等）"><a href="#类型转换后到底哪些是false？（””、null、false、array-、new-class-等）" class="headerlink" title="类型转换后到底哪些是false？（””、null、false、array()、new class()等）"></a>类型转换后到底哪些是false？（””、null、false、array()、new class()等）</h3><ul>
+<li><p>什么值在类型转换后为true/false？<br>下列类型在<a href="http://php.net/manual/en/language.types.boolean.php#language.types.boolean.casting" target="_blank" rel="noopener">类型转换后为false</a>，其余均为true：</p>
+<ul>
+<li>布尔型false</li>
+<li>整型0</li>
+<li>浮点型0.0</li>
+<li>空字符串和<strong>字符串”0”</strong>：特别注意仅包含0的字符串会被转换为false</li>
+<li>空数组</li>
+<li>null类型变量</li>
+<li>从空标签创建的<a href="http://php.net/manual/en/ref.simplexml.php" target="_blank" rel="noopener">SimpleXML对象</a></li>
+</ul>
+</li>
+<li><p>比较运算符是等于（==）还是恒等（===）？<br>二者区别见上文，作为判断条件时注意</p>
+</li>
+</ul>
+<h3 id="三目运算符区别：-、-和"><a href="#三目运算符区别：-、-和" class="headerlink" title="三目运算符区别：? : 、?:和??"></a>三目运算符区别：<code>? : 、?:和??</code></h3><ul>
+<li>标准三目运算符（Ternary Operator）：<code>$res = exp1?exp2:exp3;</code></li>
+<li>简化三目运算符：<code>$res = exp1 ?: exp3; // 当exp1==true时取exp1的值，否则为exp3</code><ul>
+<li>PHP 5.3后新增语法糖</li>
+<li>exp1变量未定义时会产生E_NOTICE事件</li>
+</ul>
+</li>
+<li>比较运算符<code>??</code>的叫法是”NULL 合并操作符（Null Coalescing Operator）”<ul>
+<li>PHP 7中新增语法糖，<a href="http://php.net/manual/en/language.operators.comparison.php#language.operators.comparison.coalesce" target="_blank" rel="noopener">官方文档</a></li>
+<li>表达式 <code>expr1??expr2</code>：当expr1为null时，值为exp2；否则为expr1</li>
+<li>这种形式在左侧单元为null时，不会产生notice事件，和isset()一样，所以<strong>在判断数组索引键时比较实用</strong><blockquote>
+<p>$a ?? $b ?? $c：从左往右第一个存在且不为 NULL 的操作数。如果都没有定义且不为 NULL，则返回 NULL。PHP7开始提供。 </p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<p>实例代码：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$a = “<span class="keyword">default</span>”；</span><br><span class="line">$res = $a ? “success” : <span class="string">"fail"</span>; <span class="comment">// success</span></span><br><span class="line">$res = $a ?: <span class="string">"fail"</span>; <span class="comment">// default</span></span><br><span class="line">$res = $a??<span class="string">"nothing"</span>; <span class="comment">// default</span></span><br><span class="line"></span><br><span class="line">$a = [<span class="string">'a'</span> =&gt; <span class="string">'aaa'</span>, <span class="string">'b'</span>=&gt; <span class="string">'bbb'</span>];</span><br><span class="line">$res = $a[<span class="string">'hello'</span>] ?? <span class="string">'default'</span>; <span class="comment">// default，且没有notice事件日志</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="访问数组不存在的索引时，会怎么样？"><a href="#访问数组不存在的索引时，会怎么样？" class="headerlink" title="访问数组不存在的索引时，会怎么样？"></a>访问数组不存在的索引时，会怎么样？</h3><ul>
+<li>通过<code>isset()</code>来判断数据中是否存在特定索引</li>
+<li><p>直接访问数据中不存在的索引，默认返回值为null，但会有Notice日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[25-Nov-2017 18:59:28 Asia/Shanghai] PHP Notice:  Undefined index: not_exist in /home/work/www/xxxxx/public/index.php on line 4</span><br><span class="line">[25-Nov-2017 18:59:28 Asia/Shanghai] PHP Stack trace:</span><br><span class="line">[25-Nov-2017 18:59:28 Asia/Shanghai] PHP   1. &#123;main&#125;() /home/work/www/xxxxx/public/index.php:0</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注意：Laravel中如果直接数组不存在索引会抛出ErrorException（Laravel 5.x中默认错误级别是<code>error_reporting(-1)）</code>，从而导致接口请求500，框架日志中错误信息如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[2017-11-25 18:57:59] lumen.ERROR: ErrorException: Undefined index: cccc in /home/work/www/xxxxx/app/Http/Controllers/xxxxxController.php:</span><br><span class="line">69 Stack trace:</span><br><span class="line"> #0 /home/work/www/xxxxx/app/Http/Controllers/xxxxxController.php(69):</span><br><span class="line"> Laravel\Lumen\Application-&gt;Laravel\Lumen\Concerns\&#123;closure&#125;(8, &apos;Undefined index...&apos;, &apos;/home/work/www/...&apos;, 69, Array) #1 [internal function]:</span><br><span class="line"> App\Http\Controllers\xxxxxController-&gt;xxxxx(Object(Illuminate\Http\Request)) #2 /home/work/www/xxxxx/vendor/illuminate/container/Container.php(507):</span><br><span class="line"> call_user_func_array(Array, Array) #3 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(586):</span><br><span class="line"> Illuminate\Container\Container-&gt;call(Array, Array) #4 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(552):</span><br><span class="line"> Laravel\Lumen\Application-&gt;callControllerCallable(Array, Array) #5 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(526):</span><br><span class="line"> Laravel\Lumen\Application-&gt;callLumenController(Object(App\Http\Controllers\xxxxxController), &apos;xxxxx&apos;, Array) #6 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(494):</span><br><span class="line"> Laravel\Lumen\Application-&gt;callControllerAction(Array) #7 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(479):</span><br><span class="line"> Laravel\Lumen\Application-&gt;callActionOnArrayBasedRoute(Array) #8 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(376):</span><br><span class="line"> Laravel\Lumen\Application-&gt;handleFoundRoute(Array) #9 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(629):</span><br><span class="line"> Laravel\Lumen\Application-&gt;Laravel\Lumen\Concerns\&#123;closure&#125;() #10 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(382):</span><br><span class="line"> Laravel\Lumen\Application-&gt;sendThroughPipeline(Array, Object(Closure)) #11 /home/work/www/xxxxx/vendor/laravel/lumen-framework/src/Concerns/RoutesRequests.php(327):</span><br><span class="line"> Laravel\Lumen\Application-&gt;dispatch(NULL) #12 /home/work/www/xxxxx/public/index.php(34):</span><br><span class="line"> Laravel\Lumen\Application-&gt;run() #13 &#123;main&#125; [] []</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可在<code>app/Providers/AppServiceProvider.php</code>的<code>register()</code>函数中增加<code>error_reporting(E_ALL ^ E_NOTICE);</code>来自定义错误级别</p>
+</li>
+<li>也可以在程序逻辑中增加数组索引的<code>isset()</code>或<code>empty()</code>判断<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Laravel中正确姿势，进行代码防御</span></span><br><span class="line">$hello = [<span class="string">"a"</span> =&gt; <span class="string">"aaaa"</span>];</span><br><span class="line"><span class="keyword">if</span> (!<span class="keyword">isset</span>($hello[<span class="string">"not_exist"</span>])) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"Undefined index in hello"</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// continue other thing</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// PHP 7可以使用??运算符进行处理</span></span><br><span class="line"><span class="comment">// 数组中不存在则取空字符串，由于??运算符不产生notice，所以不会导致Laravel触发ErrorException</span></span><br><span class="line">$name = $hello[<span class="string">"name"</span>] ?? <span class="string">'default'</span>;  <span class="comment">// 注意不能用简化的三目运算符?:</span></span><br><span class="line">$name = <span class="keyword">empty</span>($hello[<span class="string">'name'</span>])?$hello[<span class="string">'name'</span>]:<span class="string">'default'</span>;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>结论：不产生日志事件的三个操作，其余情况会产生E_NOTICE事件（<code>Undefined variable</code>或<code>Undefined index</code>）</p>
+<ul>
+<li><code>isset($hello[&#39;nothig&#39;])</code></li>
+<li><code>empty($hello[&#39;nothig&#39;])</code></li>
+<li><code>$hello[&#39;nothig&#39;]??&#39;default&#39;</code></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/05/24/Redis-cas/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Redis事务及CAS(Check-And-Set)机制
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/05/11/http-301-case-study/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">301跳转后域名缺失故障分析</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

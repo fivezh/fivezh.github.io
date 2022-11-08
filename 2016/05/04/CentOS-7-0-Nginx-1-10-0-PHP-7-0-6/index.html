@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>CentOS 7.0安装Nginx 1.10.0 + PHP 7.0.6 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文在CentOS 7环境下进行Nginx 1.10.0和PHP 7.0.6编译安装。">
+<meta name="keywords" content="Nginx,PHP7">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CentOS 7.0安装Nginx 1.10.0 + PHP 7.0.6">
+<meta property="og:url" content="http://fivezh.github.io/2016/05/04/CentOS-7-0-Nginx-1-10-0-PHP-7-0-6/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="本文在CentOS 7环境下进行Nginx 1.10.0和PHP 7.0.6编译安装。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CentOS 7.0安装Nginx 1.10.0 + PHP 7.0.6">
+<meta name="twitter:description" content="本文在CentOS 7环境下进行Nginx 1.10.0和PHP 7.0.6编译安装。">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-CentOS-7-0-Nginx-1-10-0-PHP-7-0-6" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/05/04/CentOS-7-0-Nginx-1-10-0-PHP-7-0-6/" class="article-date">
+  	<time datetime="2016-05-04T15:36:47.000Z" itemprop="datePublished">2016-05-04</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CentOS 7.0安装Nginx 1.10.0 + PHP 7.0.6
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/">Nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP7/">PHP7</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>本文在CentOS 7环境下进行Nginx 1.10.0和PHP 7.0.6编译安装。</p>
+<a id="more"></a>
+<h2 id="1-Nginx-1-0-0-编译安装"><a href="#1-Nginx-1-0-0-编译安装" class="headerlink" title="1. Nginx 1.0.0 编译安装"></a>1. Nginx 1.0.0 编译安装</h2><h3 id="1-1-源码下载"><a href="#1-1-源码下载" class="headerlink" title="1.1 源码下载"></a>1.1 源码下载</h3><p>官网下载地址：<a href="http://nginx.org/download/nginx-1.10.0.tar.gz" target="_blank" rel="noopener">nginx-1.10.0</a></p>
+<h3 id="1-2-依赖包安装"><a href="#1-2-依赖包安装" class="headerlink" title="1.2 依赖包安装"></a>1.2 依赖包安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install gcc gcc-c++ autoconf automake libtool make cmake</span><br><span class="line">$ yum -y install zlib zlib-devel openssl openssl-devel pcre-devel</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-新建nginx用户及用户组"><a href="#1-3-新建nginx用户及用户组" class="headerlink" title="1.3 新建nginx用户及用户组"></a>1.3 新建nginx用户及用户组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ groupadd nginx</span><br><span class="line">$ useradd -g nginx -M nginx</span><br></pre></td></tr></table></figure>
+<p><code>useradd</code>命令的<code>-M</code>参数使得不为nginx建立home目录<br>修改<code>/etc/passwd</code>，使得nginx用户无法bash登陆(nginx用户后面由/bin/bash改为/sbin/nologin)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vi /etc/passwd</span><br><span class="line">nginx:x:1002:1003::/home/nginx:/sbin/nologin</span><br></pre></td></tr></table></figure></p>
+<h3 id="1-4-编译配置、编译、安装"><a href="#1-4-编译配置、编译、安装" class="headerlink" title="1.4 编译配置、编译、安装"></a>1.4 编译配置、编译、安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ ./configure --prefix=/usr/local/nginx \</span><br><span class="line">--pid-path=/usr/local/nginx/run/nginx.pid \</span><br><span class="line">--with-http_ssl_module \</span><br><span class="line">--user=nginx \</span><br><span class="line"> --group=nginx \</span><br><span class="line">--with-pcre \</span><br><span class="line">--without-mail_pop3_module \</span><br><span class="line">--without-mail_imap_module \</span><br><span class="line">--without-mail_smtp_module</span><br><span class="line"></span><br><span class="line">$ make</span><br><span class="line">$ sudo make install</span><br></pre></td></tr></table></figure>
+<p>查看安装后的程序版本：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/nginx/sbin/nginx -v</span><br><span class="line">nginx version: nginx/1.10.0</span><br></pre></td></tr></table></figure></p>
+<h3 id="1-5-修改Nginx默认端口："><a href="#1-5-修改Nginx默认端口：" class="headerlink" title="1.5 修改Nginx默认端口："></a>1.5 修改Nginx默认端口：</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo vim /usr/local/nginx/conf/nginx.conf</span><br><span class="line"> 35     server &#123;</span><br><span class="line"> 36         listen       8080;</span><br><span class="line">修改配置后验证配置是否合法：</span><br><span class="line">$ /usr/local/nginx/sbin/nginx -t</span><br></pre></td></tr></table></figure>
+<ul>
+<li>启动Nginx程序、查看进程<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /usr/local/nginx/sbin/nginx</span><br><span class="line">$ ps -ef | grep nginx</span><br><span class="line">root      49357      1  0 19:13 ?        00:00:00 nginx: master process ./nginx</span><br><span class="line">nginx     49358  49357  0 19:13 ?        00:00:00 nginx: worker process</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="1-6-nginx停止、重启"><a href="#1-6-nginx停止、重启" class="headerlink" title="1.6 nginx停止、重启"></a>1.6 nginx停止、重启</h3><p>未添加nginx服务前对nginx的管理只能通过一下方式管理：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ sudo /usr/local/nginx/sbin/nginx -s reload/stop/start</span><br><span class="line"># 从容停止Nginx：</span><br><span class="line">kill -QUIT 主进程号</span><br><span class="line"># 快速停止Nginx：</span><br><span class="line">kill -TERM 主进程号</span><br><span class="line"># 强制停止Nginx：</span><br><span class="line">pkill -9 nginx</span><br><span class="line"># 平滑重启nginx</span><br><span class="line">/usr/nginx/sbin/nginx -s reload</span><br></pre></td></tr></table></figure></p>
+<h2 id="2-PHP-7-0-6编译安装"><a href="#2-PHP-7-0-6编译安装" class="headerlink" title="2. PHP 7.0.6编译安装"></a>2. PHP 7.0.6编译安装</h2><h3 id="2-1-源码下载"><a href="#2-1-源码下载" class="headerlink" title="2.1 源码下载"></a>2.1 源码下载</h3><p>官网地址：<a href="http://php.net/get/php-7.0.6.tar.gz/from/a/mirror" target="_blank" rel="noopener">php Downloads</a><br>解压压缩包：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ tar -xzvf php-7.0.6.tar.gz </span><br><span class="line">$ cd php-7.0.6</span><br></pre></td></tr></table></figure></p>
+<h3 id="2-2-安装编译所需依赖包"><a href="#2-2-安装编译所需依赖包" class="headerlink" title="2.2 安装编译所需依赖包"></a>2.2 安装编译所需依赖包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install libxml2 libxml2-devel openssl openssl-devel curl-devel libjpeg-devel libpng-devel freetype-devel libmcrypt-devel</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-源码编译、安装"><a href="#2-3-源码编译、安装" class="headerlink" title="2.3 源码编译、安装"></a>2.3 源码编译、安装</h3><ul>
+<li><p>2.3.1 通过./configure –help 查看支持的编译配置参数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">$ ./configure --help</span><br><span class="line">`configure&apos; configures this package to adapt to many kinds of systems.</span><br><span class="line"></span><br><span class="line">Usage: ./configure [OPTION]... [VAR=VALUE]...</span><br><span class="line"></span><br><span class="line">To assign environment variables (e.g., CC, CFLAGS...), specify them as</span><br><span class="line">VAR=VALUE.  See below for descriptions of some of the useful variables.</span><br><span class="line"></span><br><span class="line">Defaults for the options are specified in brackets.</span><br><span class="line"></span><br><span class="line">Configuration:</span><br><span class="line">  -h, --help              display this help and exit</span><br><span class="line">      --help=short        display options specific to this package</span><br><span class="line">      --help=recursive    display the short help of all the included packages</span><br><span class="line">  -V, --version           display version information and exit</span><br><span class="line">  -q, --quiet, --silent   do not print `checking ...&apos; messages</span><br><span class="line">      --cache-file=FILE   cache test results in FILE [disabled]</span><br><span class="line">  -C, --config-cache      alias for `--cache-file=config.cache&apos;</span><br><span class="line">  -n, --no-create         do not create output files</span><br><span class="line">      --srcdir=DIR        find the sources in DIR [configure dir or `..&apos;]</span><br><span class="line"></span><br><span class="line">Installation directories:</span><br><span class="line">  --prefix=PREFIX         install architecture-independent files in PREFIX</span><br><span class="line">                          [/usr/local]</span><br><span class="line">  --exec-prefix=EPREFIX   install architecture-dependent files in EPREFIX</span><br><span class="line">                          [PREFIX]</span><br><span class="line"></span><br><span class="line">By default, `make install&apos; will install all the files in</span><br><span class="line">`/usr/local/bin&apos;, `/usr/local/lib&apos; etc.  You can specify</span><br><span class="line">an installation prefix other than `/usr/local&apos; using `--prefix&apos;,</span><br><span class="line">for instance `--prefix=$HOME&apos;.</span><br><span class="line"></span><br><span class="line">For better control, use the options below.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2.3.2 PHP+Nginx组合的编译配置命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">$ ./configure --prefix=/usr/local/php7 \</span><br><span class="line">--with-config-file-path=/usr/local/php7/etc \</span><br><span class="line">--with-config-file-scan-dir=/usr/local/php7/etc/php.d \</span><br><span class="line">--with-mcrypt=/usr/include \</span><br><span class="line">--enable-mysqlnd \</span><br><span class="line">--with-mysqli \</span><br><span class="line">--with-pdo-mysql \</span><br><span class="line">--enable-fpm \</span><br><span class="line">--with-fpm-user=nginx \</span><br><span class="line">--with-fpm-group=nginx \</span><br><span class="line">--with-gd \</span><br><span class="line">--with-iconv \</span><br><span class="line">--with-zlib \</span><br><span class="line">--enable-xml \</span><br><span class="line">--enable-shmop \</span><br><span class="line">--enable-sysvsem \</span><br><span class="line">--enable-inline-optimization \</span><br><span class="line">--enable-mbregex \</span><br><span class="line">--enable-mbstring \</span><br><span class="line">--enable-ftp \</span><br><span class="line">--enable-gd-native-ttf \</span><br><span class="line">--with-openssl \</span><br><span class="line">--enable-pcntl \</span><br><span class="line">--enable-sockets \</span><br><span class="line">--with-xmlrpc \</span><br><span class="line">--enable-zip \</span><br><span class="line">--enable-soap \</span><br><span class="line">--without-pear \</span><br><span class="line">--with-gettext \</span><br><span class="line">--enable-session \</span><br><span class="line">--with-curl \</span><br><span class="line">--with-jpeg-dir \</span><br><span class="line">--with-freetype-dir \</span><br><span class="line">--enable-opcache</span><br><span class="line"></span><br><span class="line"># 执行完成后的结果：</span><br><span class="line">Generating files</span><br><span class="line">configure: creating ./config.status</span><br><span class="line">creating main/internal_functions.c</span><br><span class="line">creating main/internal_functions_cli.c</span><br><span class="line">+--------------------------------------------------------------------+</span><br><span class="line">| License:                                                           |</span><br><span class="line">| This software is subject to the PHP License, available in this     |</span><br><span class="line">| distribution in the file LICENSE.  By continuing this installation |</span><br><span class="line">| process, you are bound by the terms of this license agreement.     |</span><br><span class="line">| If you do not agree with the terms of this license, you must abort |</span><br><span class="line">| the installation process at this point.                            |</span><br><span class="line">+--------------------------------------------------------------------+</span><br><span class="line"></span><br><span class="line">Thank you for using PHP.</span><br><span class="line"></span><br><span class="line">config.status: creating php7.spec</span><br><span class="line">config.status: creating main/build-defs.h</span><br><span class="line">config.status: creating scripts/phpize</span><br><span class="line">config.status: creating scripts/man1/phpize.1</span><br><span class="line">config.status: creating scripts/php-config</span><br><span class="line">config.status: creating scripts/man1/php-config.1</span><br><span class="line">config.status: creating sapi/cli/php.1</span><br><span class="line">config.status: creating sapi/fpm/php-fpm.conf</span><br><span class="line">config.status: creating sapi/fpm/www.conf</span><br><span class="line">config.status: creating sapi/fpm/init.d.php-fpm</span><br><span class="line">config.status: creating sapi/fpm/php-fpm.service</span><br><span class="line">config.status: creating sapi/fpm/php-fpm.8</span><br><span class="line">config.status: creating sapi/fpm/status.html</span><br><span class="line">config.status: creating sapi/cgi/php-cgi.1</span><br><span class="line">config.status: creating ext/phar/phar.1</span><br><span class="line">config.status: creating ext/phar/phar.phar.1</span><br><span class="line">config.status: creating main/php_config.h</span><br><span class="line">config.status: executing default commands</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>2.3.3 编译 + 安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">编译源码：</span><br><span class="line">$ make</span><br><span class="line">Generating phar.php</span><br><span class="line">Generating phar.phar</span><br><span class="line">PEAR package PHP_Archive not installed: generated phar will require PHP&apos;s phar extension be enabled.</span><br><span class="line">directorytreeiterator.inc</span><br><span class="line">pharcommand.inc</span><br><span class="line">directorygraphiterator.inc</span><br><span class="line">invertedregexiterator.inc</span><br><span class="line">clicommand.inc</span><br><span class="line">phar.inc</span><br><span class="line"></span><br><span class="line">Build complete.</span><br><span class="line">Don&apos;t forget to run &apos;make test&apos;.</span><br><span class="line"></span><br><span class="line">对编译结果进行测试：</span><br><span class="line">$ make test</span><br><span class="line">很遗憾，我这里make test报错了，已反馈php test信息。</span><br><span class="line"></span><br><span class="line">安装程序至指定目录：</span><br><span class="line">$ sudo make install</span><br><span class="line">$ /usr/local/php7/bin/php -v</span><br><span class="line">PHP 7.0.6 (cli) (built: May  4 2016 18:37:07) ( NTS )</span><br><span class="line">Copyright (c) 1997-2016 The PHP Group</span><br><span class="line">Zend Engine v3.0.0, Copyright (c) 1998-2016 Zend Technologies</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="2-4-修改配置"><a href="#2-4-修改配置" class="headerlink" title="2.4 修改配置"></a>2.4 修改配置</h3><ul>
+<li><p>修改php配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">查看php加载配置文件路径：</span><br><span class="line">$ /usr/local/php7/bin/php -i | grep php.ini</span><br><span class="line">Configuration File (php.ini) Path =&gt; /usr/local/php7/etc</span><br><span class="line"></span><br><span class="line">php-7.0.6源码目录下：</span><br><span class="line">$ ls | grep ini</span><br><span class="line">php.ini-development</span><br><span class="line">php.ini-production</span><br><span class="line">$ sudo cp php.ini-production /usr/local/php7/etc/php.ini</span><br><span class="line">根据需要对php.ini配置进行配置修改，请参考[此文](http://www.cnblogs.com/hbl/archive/2008/02/15/1069367.htm]l)</span><br><span class="line">$ ../bin/php -i | grep php.ini</span><br><span class="line">Configuration File (php.ini) Path =&gt; /usr/local/php7/etc</span><br><span class="line">Loaded Configuration File =&gt; /usr/local/php7/etc/php.ini</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>启用php-fpm服务</p>
+</li>
+<li>nginx代理php实现访问</li>
+</ul>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="http://php.net/manual/zh/" target="_blank" rel="noopener">PHP 手册-官网中文2016-5-3版</a></li>
+<li><a href="https://segmentfault.com/a/1190000004123048" target="_blank" rel="noopener">编译安装nginx1.9.7+php7.0.0服务器环境</a></li>
+<li><a href="http://jsnwork.kiiuo.com/archives/2118/centos-7-%E5%AE%89%E8%A3%9D-apache-php-mysql-phpmyadmin-ftp" target="_blank" rel="noopener">CentOS 7 安裝 Apache + PHP 7 + MySQL + phpMyAdmin + FTP</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/31/Python-http-packet-parsing/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Python | 解析pcap文件分析HTTP Request/Response报文
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/10/Linux-crontab/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Linux crontab 计划任务定期执行</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

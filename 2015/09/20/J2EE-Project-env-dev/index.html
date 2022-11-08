@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>J2EE项目完整开发、测试、部署、发布环境(updating) | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="J2EE项目目前成熟的框架、工具很多，但个人对整个项目完整的开发、测试、部署、发布及代码管理缺乏系统整理。本文旨在对整个项目管理全生命周期详述，以期改进、总结项目流程  主要围绕下述几个维度和工具展开：  项目配置工具: Maven, Git, Log4j 代码测试: TestNG, Selenium 代码管理: GitLab 代码审核: Gerrit 持续集成及发布: Jenkins">
+<meta name="keywords" content="Java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="J2EE项目完整开发、测试、部署、发布环境(updating)">
+<meta property="og:url" content="http://fivezh.github.io/2015/09/20/J2EE-Project-env-dev/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="J2EE项目目前成熟的框架、工具很多，但个人对整个项目完整的开发、测试、部署、发布及代码管理缺乏系统整理。本文旨在对整个项目管理全生命周期详述，以期改进、总结项目流程  主要围绕下述几个维度和工具展开：  项目配置工具: Maven, Git, Log4j 代码测试: TestNG, Selenium 代码管理: GitLab 代码审核: Gerrit 持续集成及发布: Jenkins">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="J2EE项目完整开发、测试、部署、发布环境(updating)">
+<meta name="twitter:description" content="J2EE项目目前成熟的框架、工具很多，但个人对整个项目完整的开发、测试、部署、发布及代码管理缺乏系统整理。本文旨在对整个项目管理全生命周期详述，以期改进、总结项目流程  主要围绕下述几个维度和工具展开：  项目配置工具: Maven, Git, Log4j 代码测试: TestNG, Selenium 代码管理: GitLab 代码审核: Gerrit 持续集成及发布: Jenkins">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-J2EE-Project-env-dev" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/20/J2EE-Project-env-dev/" class="article-date">
+  	<time datetime="2015-09-20T02:07:44.000Z" itemprop="datePublished">2015-09-20</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      J2EE项目完整开发、测试、部署、发布环境(updating)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <blockquote>
+<p>J2EE项目目前成熟的框架、工具很多，但个人对整个项目完整的开发、测试、部署、发布及代码管理缺乏系统整理。<br>本文旨在对整个项目管理全生命周期详述，以期改进、总结项目流程</p>
+</blockquote>
+<p>主要围绕下述几个维度和工具展开：</p>
+<ul>
+<li>项目配置工具: Maven, Git, Log4j</li>
+<li>代码测试: TestNG, Selenium</li>
+<li>代码管理: GitLab</li>
+<li>代码审核: Gerrit</li>
+<li>持续集成及发布: Jenkins</li>
+</ul>
+<a id="more"></a>
+<h1 id="一、项目配置工具：Maven-Git-Log4j"><a href="#一、项目配置工具：Maven-Git-Log4j" class="headerlink" title="一、项目配置工具：Maven, Git, Log4j"></a>一、项目配置工具：Maven, Git, Log4j</h1><h2 id="1-1-项目管理与构建：Maven"><a href="#1-1-项目管理与构建：Maven" class="headerlink" title="1.1 项目管理与构建：Maven"></a>1.1 项目管理与构建：Maven</h2><blockquote>
+<p>maven是一个项目构建和管理的工具，提供了帮助管理 构建、文档、报告、依赖、scms、发布、分发的方法。可以方便的编译代码、进行依赖管理、管理二进制库等等。</p>
+</blockquote>
+<p><strong>Build Lifecycle</strong>: 是指一个项目build的过程。maven的Build Lifecycle分为三种，分别为default（处理项目的部署）、clean（处理项目的清理）、site（处理项目的文档生成）。他们都包含不同的lifecycle。<br><strong>Pom</strong>: project object Model, 是一个xml，在maven2里为pom.xml。pom文件中包含了项目的信息和maven build项目所需的配置信息，通常有项目信息(如版本、成员)、项目的依赖、插件和goal、build选项等等。</p>
+<blockquote>
+<p>pom是可以继承的，通常对于一个大型的项目或是多个module的情况，子模块的pom需要指定父模块的pom<br>project pom文件的顶级元素<br>modelVersion 所使用的object model版本，为了确保稳定的使用，这个元素是强制性的。除非maven开发者升级模板，否则不需要修改<br>groupId 是项目创建团体或组织的唯一标志符，通常是域名倒写，如groupId  org.apache.maven.plugins就是为所有maven插件预留的<br>artifactId 是项目artifact唯一的基地址名<br>packaging artifact打包的方式，如jar、war、ear等等。默认为jar。这个不仅表示项目最终产生何种后缀的文件，也表示build过程使用什么样的lifecycle。<br>version artifact的版本，通常能看见为类似0.0.1-SNAPSHOT，其中SNAPSHOT表示项目开发中，为开发版本<br>name 表示项目的展现名，在maven生成的文档中使用<br>url表示项目的地址，在maven生成的文档中使用<br>description 表示项目的描述，在maven生成的文档中使用<br>dependencies 表示依赖，在子节点dependencies中添加具体依赖的groupId artifactId和version<br>build 表示build配置<br>parent 表示父pom</p>
+</blockquote>
+<p><em>其中groupId:artifactId:version唯一确定了一个artifact</em><br><strong>Artifact</strong>: 项目产生的文件(jar, 源码, 二进制文件, war, pom)等，每个artifact由groupId:artifactId:version组成的标识符唯一识别。<br><strong>Repositories</strong>: 仓库，用来存储各种不同的Artifact。</p>
+<h3 id="Maven-Build-Lifecycle-Maven构建的生命周期"><a href="#Maven-Build-Lifecycle-Maven构建的生命周期" class="headerlink" title="Maven Build Lifecycle | Maven构建的生命周期"></a>Maven Build Lifecycle | Maven构建的生命周期</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">validate: 验证项目是否正确以及必须的信息是否可用</span><br><span class="line">compile: 编译源代码</span><br><span class="line">test: 测试编译后的代码，即执行单元测试代码</span><br><span class="line">package: 打包编译后的代码，在target目录下生成package文件</span><br><span class="line">integration-test: 处理package以便需要时可以部署到集成测试环境</span><br><span class="line">verify: 检验package是否有效并且达到质量标准</span><br><span class="line">install: 安装package到本地仓库，方便本地其它项目使用</span><br><span class="line">deploy: 部署，拷贝最终的package到远程仓库和替他开发这或项目共享，在集成或发布环境完成</span><br></pre></td></tr></table></figure>
+<h3 id="Maven常用命令和参数"><a href="#Maven常用命令和参数" class="headerlink" title="Maven常用命令和参数"></a>Maven常用命令和参数</h3><h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mvn test-compile: 编译测试代码</span><br><span class="line">mvn test: 运行程序中的单元测试</span><br><span class="line">mvn compile: 编译项目</span><br><span class="line">mvn package: 打包，此时target目录下会出现maven-quickstart-1.0-SNAPSHOT.jar文件，即为打包后文件</span><br><span class="line">mvn install: 打包并安装到本地仓库，此时本机仓库会新增maven-quickstart-1.0-SNAPSHOT.jar文件。</span><br></pre></td></tr></table></figure>
+<p>每个phase都可以作为goal，也可以联合，如<code>mvn clean install</code>将先执行<code>mvn clean</code>清理项目，再执行<code>mvn install</code>安装package到本地库。</p>
+<h3 id="常用参数"><a href="#常用参数" class="headerlink" title="常用参数"></a>常用参数</h3><blockquote>
+<p>mvn -e 显示详细错误<br>mvn -U 强制更新snapshot类型的插件或依赖库（否则maven一天只会更新一次snapshot依赖）<br>mvn -o 运行offline模式，不联网更新依赖<br>mvn -N仅在当前项目模块执行命令，关闭reactor<br>mvn -pl module_name在指定模块上执行命令<br>mvn -ff 在递归执行命令过程中，一旦发生错误就直接退出<br>mvn -Dxxx=yyy指定java全局属性<br>mvn -Pxxx引用profile xxx</p>
+</blockquote>
+<h3 id="常用指令"><a href="#常用指令" class="headerlink" title="常用指令"></a>常用指令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mvn archetype:generate 创建maven项目</span><br><span class="line">mvn package 打包，上面已经介绍过了</span><br><span class="line">mvn package -Prelease打包，并生成部署用的包，比如deploy/*.tgz</span><br><span class="line">mvn install 打包并安装到本地库</span><br><span class="line">mvn eclipse:eclipse 生成eclipse项目文件</span><br><span class="line">mvn eclipse:clean 清除eclipse项目文件</span><br><span class="line">mvn site 生成项目相关信息的网站</span><br></pre></td></tr></table></figure>
+<h3 id="Maven实例"><a href="#Maven实例" class="headerlink" title="Maven实例"></a>Maven实例</h3><ul>
+<li>Maven创建quick start项目<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn archetype:generate -DgroupId=com.trinea.maven.test -DartifactId=maven-quickstart -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>其中DgroupId指定groupId，DartifactId指定artifactId，DarchetypeArtifactId指定ArchetypeId，<br>DinteractiveMode表示是否使用交互模式，交互模式会让用户填写版本信息之类的，非交互模式采用默认值</p>
+<ul>
+<li>Maven创建web项目<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mvn archetype:generate -DgroupId=com.trinea.maven.web.test -DartifactId=maven-web -DarchetypeArtifactId=maven-archetype-webapp -DinteractiveMode=false</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>本小节参考文章：</p>
+<ol>
+<li><a href="http://www.trinea.cn/android/maven/" target="_blank" rel="noopener">Maven介绍，包括作用、核心概念、用法、常用命令、扩展及配置</a></li>
+<li><a href="http://www.importnew.com/12408.html" target="_blank" rel="noopener">Maven工程配置实例</a></li>
+</ol>
+<h2 id="1-2-版本控制-Git"><a href="#1-2-版本控制-Git" class="headerlink" title="1.2 版本控制: Git"></a>1.2 版本控制: Git</h2><blockquote>
+<p>Git 定义<br>Git主要用法<br>git rebase强调说明<br>git 生命周期</p>
+</blockquote>
+<h2 id="1-3-运行日志-Log4j"><a href="#1-3-运行日志-Log4j" class="headerlink" title="1.3 运行日志: Log4j"></a>1.3 运行日志: Log4j</h2><h1 id="二、代码测试：TestNG-Selenium"><a href="#二、代码测试：TestNG-Selenium" class="headerlink" title="二、代码测试：TestNG, Selenium"></a>二、代码测试：TestNG, Selenium</h1><h1 id="2-1-单元测试：TestNG"><a href="#2-1-单元测试：TestNG" class="headerlink" title="2.1 单元测试：TestNG"></a>2.1 单元测试：TestNG</h1><p>关于JUnit和TestNG的对比，可参考<a href="http://www.ibm.com/developerworks/cn/java/j-cq08296/" target="_blank" rel="noopener">追求代码质量: JUnit 4 与 TestNG 的对比</a></p>
+<h1 id="2-2-功能测试-Selenium"><a href="#2-2-功能测试-Selenium" class="headerlink" title="2.2 功能测试: Selenium"></a>2.2 功能测试: Selenium</h1><p>自动化功能测试，Selenium模拟浏览器操作，进行页面元素的判断。不仅局限于测试，可以开发很多工具。</p>
+<h1 id="三、代码管理：GitLab"><a href="#三、代码管理：GitLab" class="headerlink" title="三、代码管理：GitLab"></a>三、代码管理：GitLab</h1><p>GitLab提供媲美GitHub的功能，适合团队内部构建自己的代码管理系统，官网：<a href="https://about.gitlab.com/downloads" target="_blank" rel="noopener">GitLab Download</a><br>由于国内网络环境的特殊原因，推荐方式基本无法顺利进行。<br>同时官网也特别提到<code>If you are located in China, try using the GitLab CE mirror hosted by TUNA</code><br>建议国内用户采用<a href="https://mirror.tuna.tsinghua.edu.cn/help/gitlab-ce/" target="_blank" rel="noopener">清华TUNA</a>方式安装GitLab<br>采用清华TUNA源的GitLab安装步骤如下：</p>
+<h2 id="3-1信任GitLab的GPG公钥"><a href="#3-1信任GitLab的GPG公钥" class="headerlink" title="3.1信任GitLab的GPG公钥"></a>3.1信任GitLab的GPG公钥</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl https://packages.gitlab.com/gpg.key 2&gt; /dev/null | sudo apt-key add - &amp;&gt;/dev/null</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-下载并安装GitLab安装包"><a href="#3-2-下载并安装GitLab安装包" class="headerlink" title="3.2 下载并安装GitLab安装包"></a>3.2 下载并安装GitLab安装包</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">* 添加deb https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu trusty main到文件gitlab-ce.list中。</span><br><span class="line">sudo touch /etc/apt/sources.list.d/gitlab-ce.list</span><br><span class="line">* apt-get update更新源</span><br><span class="line">sudo apt-get update</span><br><span class="line">* 安装gitlab-ce</span><br><span class="line">sudo apt-get install gitlab-ce</span><br><span class="line">five@node10:/etc/apt/sources.list.d$ sudo apt-get install gitlab-ce</span><br><span class="line">Reading package lists... Done</span><br><span class="line">Building dependency tree      </span><br><span class="line">Reading state information... Done</span><br><span class="line">The following NEW packages will be installed:</span><br><span class="line">  gitlab-ce</span><br><span class="line">0 upgraded, 1 newly installed, 0 to remove and 125 not upgraded.</span><br><span class="line">Need to get 267 MB of archives.</span><br><span class="line">After this operation, 786 MB of additional disk space will be used.</span><br><span class="line">Get:1 https://mirrors.tuna.tsinghua.edu.cn/gitlab-ce/ubuntu/ trusty/main gitlab-ce amd64 8.5.8-ce.0 [267 MB]</span><br><span class="line">75% [1 gitlab-ce 200 MB]                                      301 kB/s 3min 40s</span><br><span class="line"> </span><br><span class="line">Fetched 267 MB in 16min 25s (271 kB/s)                                        </span><br><span class="line">Selecting previously unselected package gitlab-ce.</span><br><span class="line">(Reading database ... 64819 files and directories currently installed.)</span><br><span class="line">Preparing to unpack .../gitlab-ce_8.5.8-ce.0_amd64.deb ...</span><br><span class="line">Unpacking gitlab-ce (8.5.8-ce.0) ...</span><br><span class="line">Setting up gitlab-ce (8.5.8-ce.0) ...</span><br><span class="line">gitlab: Thank you for installing GitLab!</span><br><span class="line">gitlab: To configure and start GitLab, RUN THE FOLLOWING COMMAND:</span><br><span class="line"> </span><br><span class="line">sudo gitlab-ctl reconfigure</span><br><span class="line"> </span><br><span class="line">gitlab: GitLab should be reachable at http://node10</span><br><span class="line">gitlab: Otherwise configure GitLab for your system by editing /etc/gitlab/gitlab.rb file</span><br><span class="line">gitlab: And running reconfigure again.</span><br><span class="line">gitlab:</span><br><span class="line">gitlab: For a comprehensive list of configuration options please see the Omnibus GitLab readme</span><br><span class="line">gitlab: https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/README.md</span><br><span class="line">gitlab:</span><br><span class="line">It looks like GitLab has not been configured yet; skipping the upgrade script.</span><br></pre></td></tr></table></figure>
+<h2 id="3-3-配置GitLab"><a href="#3-3-配置GitLab" class="headerlink" title="3.3 配置GitLab"></a>3.3 配置GitLab</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">* 修改GitLab使用端口为8081，避免冲突</span><br><span class="line">sudo vi /etc/gitlab/gitlab.rb</span><br><span class="line">external_url &apos;http://localhost:8081&apos;</span><br><span class="line">* 配置邮箱等其他配置</span><br><span class="line"></span><br><span class="line">* 重新配置gitlab使变更生效(任何配置更改后续执行reconfigure使配置生效)</span><br><span class="line">sudo gitlab-ctl reconfigure</span><br></pre></td></tr></table></figure>
+<h2 id="3-4-浏览器访问页面"><a href="#3-4-浏览器访问页面" class="headerlink" title="3.4 浏览器访问页面"></a>3.4 浏览器访问页面</h2><p>安装后本地访问地址：<a href="http://localhost:8081" target="_blank" rel="noopener">http://localhost:8081</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Username: root</span><br><span class="line">Password: 5iveL!fe</span><br></pre></td></tr></table></figure></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>初始化的默认配置比较简单，但若要自定义化满足组织实际需求，需要按照官网文档仔细配置。<br>这将在下一篇文章《GitLab自定义配置指南》中详述。</p>
+<h1 id="四、代码审核：Gerrit"><a href="#四、代码审核：Gerrit" class="headerlink" title="四、代码审核：Gerrit"></a>四、代码审核：Gerrit</h1><h1 id="五、持续集成、发布-Jenkins"><a href="#五、持续集成、发布-Jenkins" class="headerlink" title="五、持续集成、发布: Jenkins"></a>五、持续集成、发布: Jenkins</h1><h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="http://longgeek.com/2013/12/24/ci-build-system-a-basic-environmental-setting-planning/" target="_blank" rel="noopener">CI 系统搭建：一. 基础环境设置、规划</a></li>
+<li><a href="http://longgeek.com/2013/12/26/ci-system-structures-ii-gitlab-installation/" target="_blank" rel="noopener">CI 系统搭建：二. GitLab 的安装配置</a></li>
+<li><a href="http://blog.csdn.net/stwstw0123/article/details/47615535" target="_blank" rel="noopener">Ubuntu之Gitlab、Gerrit、Jenkins协调工作配置</a></li>
+<li><a href="http://www.importnew.com/12408.html" target="_blank" rel="noopener">Java EE7和Maven工程入门</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/09/22/LeetCode-172-Factorial-Trailing-Zeroes/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [LeetCode]172.Factorial Trailing Zeroes | 计算阶乘的尾数零的数量
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/09/14/LeetCode-135-Candy/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[LeetCode]135. Candy | 分糖果</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

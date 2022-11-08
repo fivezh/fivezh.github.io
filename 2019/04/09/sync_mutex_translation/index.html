@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[译]sync.RWMutex - 解决并发读写问题 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文地址：https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0 原文作者：Michał Łowicki 译文出处：https://medium.com 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md 译者：fi">
+<meta name="keywords" content="Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]sync.RWMutex - 解决并发读写问题">
+<meta property="og:url" content="http://fivezh.github.io/2019/04/09/sync_mutex_translation/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="原文地址：https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0 原文作者：Michał Łowicki 译文出处：https://medium.com 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md 译者：fi">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1000/1*qmHZVxZmPP9w5iMqN7GWMw.jpeg">
+<meta property="og:image" content="https://cdn-images-1.medium.com/max/1000/1*Gg_vmyWlU35r3w_L4r4SYw.jpeg">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]sync.RWMutex - 解决并发读写问题">
+<meta name="twitter:description" content="原文地址：https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0 原文作者：Michał Łowicki 译文出处：https://medium.com 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md 译者：fi">
+<meta name="twitter:image" content="https://cdn-images-1.medium.com/max/1000/1*qmHZVxZmPP9w5iMqN7GWMw.jpeg">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-sync_mutex_translation" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/04/09/sync_mutex_translation/" class="article-date">
+  	<time datetime="2019-04-09T06:41:21.000Z" itemprop="datePublished">2019-04-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [译]sync.RWMutex - 解决并发读写问题
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <ul>
+<li>原文地址：<a href="https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0" target="_blank" rel="noopener">https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0</a></li>
+<li>原文作者：<a href="https://medium.com/@mlowicki" target="_blank" rel="noopener">Michał Łowicki</a></li>
+<li>译文出处：<a href="https://medium.com" target="_blank" rel="noopener">https://medium.com</a></li>
+<li>本文永久链接：<a href="https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md" target="_blank" rel="noopener">https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md</a></li>
+<li>译者：<a href="https://github.com/fivezh" target="_blank" rel="noopener">fivezh</a></li>
+<li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
+</ul>
+<a id="more"></a>
+<p><img src="https://cdn-images-1.medium.com/max/1000/1*qmHZVxZmPP9w5iMqN7GWMw.jpeg" alt></p>
+<p>当多个线程访问共享数据时，会出现并发读写问题（<a href="https://en.wikipedia.org/wiki/readers%E2%80%93writers_problem" target="_blank" rel="noopener">reader-writer problems</a>）。有两种访问数据的线程类型：</p>
+<ul>
+<li>读线程 reader：只进行数据读取</li>
+<li>写线程 writer：进行数据修改</li>
+</ul>
+<p>当 writer 获取到数据的访问权限后，其他任何线程（reader 或 writer）都无权限访问此数据。这种约束亦存在于现实中，比如，当 writer 在修改数据无法保证原子性时（如数据库），此时读取未完成的修改必须被阻塞，以防止加载脏数据（译者注：数据库中的脏读）。还有许多诸如此类的核心问题，例如：</p>
+<ul>
+<li>writer 不能无限等待</li>
+<li>reader 不能无限等待</li>
+<li>不允许线程出现无限等待</li>
+</ul>
+<p>多读/单写互斥锁（如<a href="https://golang.org/pkg/sync/#RWMutex" target="_blank" rel="noopener">sync.RWMutex</a>）的具体实现解决了一种并发读写问题。接下来，让我们看下在 Go 语言中是如何实现的，同时它提供了哪些的数据可靠性保证机制。</p>
+<p>作为额外的工作，我们将深入研究分析竞态情况下的互斥锁。</p>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><p>在深入研究实现细节之前，我们先看看<code>sync.RWMutex</code>的使用实例。下面的程序使用读写互斥锁来保护临界区–<code>sleep()</code>。为了更好的展示整个过程，临界区部分计算了当前正在执行的 reader 和 writer 的数量（<a href="https://play.golang.org/p/xoiqW0RQQE9" target="_blank" rel="noopener">源码</a>）。<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"strings"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">    rand.Seed(time.Now().Unix())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">sleep</span><span class="params">()</span></span> &#123;</span><br><span class="line">    time.Sleep(time.Duration(rand.Intn(<span class="number">1000</span>)) * time.Millisecond)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">reader</span><span class="params">(c <span class="keyword">chan</span> <span class="keyword">int</span>, m *sync.RWMutex, wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">    sleep()</span><br><span class="line">    m.RLock()</span><br><span class="line">    c &lt;- <span class="number">1</span></span><br><span class="line">    sleep()</span><br><span class="line">    c &lt;- <span class="number">-1</span></span><br><span class="line">    m.RUnlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">writer</span><span class="params">(c <span class="keyword">chan</span> <span class="keyword">int</span>, m *sync.RWMutex, wg *sync.WaitGroup)</span></span> &#123;</span><br><span class="line">    sleep()</span><br><span class="line">    m.Lock()</span><br><span class="line">    c &lt;- <span class="number">1</span></span><br><span class="line">    sleep()</span><br><span class="line">    c &lt;- <span class="number">-1</span></span><br><span class="line">    m.Unlock()</span><br><span class="line">    wg.Done()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> m sync.RWMutex</span><br><span class="line">    <span class="keyword">var</span> rs, ws <span class="keyword">int</span></span><br><span class="line">    rsCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    wsCh := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">for</span> &#123;</span><br><span class="line">            <span class="keyword">select</span> &#123;</span><br><span class="line">            <span class="keyword">case</span> n := &lt;-rsCh:</span><br><span class="line">                rs += n</span><br><span class="line">            <span class="keyword">case</span> n := &lt;-wsCh:</span><br><span class="line">                ws += n</span><br><span class="line">            &#125;</span><br><span class="line">            fmt.Printf(<span class="string">"%s%s\n"</span>, strings.Repeat(<span class="string">"R"</span>, rs),</span><br><span class="line">                    strings.Repeat(<span class="string">"W"</span>, ws))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;()</span><br><span class="line">    wg := sync.WaitGroup&#123;&#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> reader(rsCh, &amp;m, &amp;wg)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">3</span>; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> writer(wsCh, &amp;m, &amp;wg)</span><br><span class="line">    &#125;</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>play.golang.org 加载的程序环境是确定的（比如开始时间），所以<code>rand.Seed(time.Now().Unix())</code>总是返回相同的数值，此时程序的执行结果可能总是相同的。为了避免这种情况，可通过修改不同的随机种子值或者在自己的机器上执行程序。</p>
+</blockquote>
+<p>程序执行结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">W</span><br><span class="line"></span><br><span class="line">R</span><br><span class="line">RR</span><br><span class="line">RRR</span><br><span class="line">RRRR</span><br><span class="line">RRRRR</span><br><span class="line">RRRR</span><br><span class="line">RRR</span><br><span class="line">RRRR</span><br><span class="line">RRR</span><br><span class="line">RR</span><br><span class="line">R</span><br><span class="line"></span><br><span class="line">W</span><br><span class="line"></span><br><span class="line">R</span><br><span class="line">RR</span><br><span class="line">RRR</span><br><span class="line">RRRR</span><br><span class="line">RRR</span><br><span class="line">RR</span><br><span class="line">R</span><br><span class="line"></span><br><span class="line">W</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>译者注：不同机器上运行的结果会有所不同<br>每次执行完一组 goroutine（reader 和 writer）的临界区代码后，都会打印新的一行。很显然，RWMutex 允许至少一个 reader（一个或多个 reader）存在而 writer 同时只能存在一个。</p>
+</blockquote>
+<p>同样重要且将进一步讨论的是：writer 调用到<code>Lock()</code>时，将会使新的 reader/writer 被阻塞。当存在 reader 加了 RLock 时，writer 会等待这一组 reader 完成正在执行的任务，当这一组任务完成后，writer 将开始执行。从输出可以很明显的看到，每一行的 R 都会递减一个，直到没有 R 之后将打印一个 W。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">RRRRR</span><br><span class="line">RRRR</span><br><span class="line">RRR</span><br><span class="line">RR</span><br><span class="line">R</span><br><span class="line"></span><br><span class="line">W</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<p>一旦 writer 结束，之前被阻塞的 reader 将恢复执行，然后下一个 writer 也将开始启动。值得一提的是，如果一个 writer 完成，并且有 reader 和 writer 都在等待，那么首个 reader 将解除阻塞，然后才轮到 writer。这种交替执行的方式使得 writer 需等待当前这组 reader 完成，所以无论 reader 还是 writer 都不会有无限等待的情况。</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><img src="https://cdn-images-1.medium.com/max/1000/1*Gg_vmyWlU35r3w_L4r4SYw.jpeg" alt></p>
+<blockquote>
+<p>注意，本文针对的<code>RWMutex</code>实现(<a href="https://github.com/golang/go/blob/718d6c5880fe3507b1d224789b29bc2410fc9da5/src/sync/rwmutex.go" target="_blank" rel="noopener">Go commit: 718d6c58</a>)在 Go 不同版本中可能随时有修改。<br><code>RWMutex</code>为 reader 提供两个方法（<code>RLock</code>和<code>RUnlock</code>）、也为 writer 提供了两个方法（<code>Lock</code>和<code>Unlock</code>）</p>
+</blockquote>
+<h2 id="读锁-RLock"><a href="#读锁-RLock" class="headerlink" title="读锁 RLock"></a>读锁 RLock</h2><p>为了简洁起见，我们先跳过源码中竞态检测相关部分（它们将被<code>...</code>代替）。<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RLock</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> atomic.AddInt32(&amp;rw.readerCount, <span class="number">1</span>) &lt; <span class="number">0</span> &#123;    </span><br><span class="line">        runtime_SemacquireMutex(&amp;rw.ReadeSem, <span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>readerCount</code>字段是<code>int32</code>类型的值，表示待处理的 reader 数量（正在读取数据或被 writer 阻塞）。这基本上是已调用 RLock 函数，但尚未调用 RUnlock 函数的 reader 数量。</p>
+<p><a href="https://golang.org/pkg/sync/atomic/#AddInt32" target="_blank" rel="noopener">atomic.AddInt32</a>等价于如下原子性表达：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">*addr += delta</span><br><span class="line"><span class="keyword">return</span> *addr</span><br></pre></td></tr></table></figure></p>
+<p><code>addr</code>是<code>*int32</code>类型变量，<code>delta</code>是<code>int32</code>类型。因为此操作具有原子性，所以累加<code>delta</code>操作不会影响其他线程（更多详见<a href="https://en.wikipedia.org/wiki/Fetch-and-add" target="_blank" rel="noopener">Fetch-and-add</a>）。</p>
+<blockquote>
+<p>如果没有 writer，则<code>readerCount</code>总是会大于或等于 0（译者注：因为 writer 会把 readerCount 置为负数，通过 Lock 函数的 atomic.AddInt32(&amp;rw.readerCount, -rwmutexMaxreaders)，此时 reader 是一种运行速度很快的非阻塞方式，因为只需要调用<code>atomic.AddInt32</code>。</p>
+</blockquote>
+<h2 id="信号量-Semaphore"><a href="#信号量-Semaphore" class="headerlink" title="信号量 Semaphore"></a>信号量 Semaphore</h2><p>信号量是 Edsger Dijkstra 发明的数据结构，在解决多种同步问题时很有用。其本质是一个整数，并关联两个操作：</p>
+<ul>
+<li>申请<code>acquire</code>（也称为 <code>wait</code>、<code>decrement</code> 或 <code>P</code> 操作）</li>
+<li>释放<code>release</code>（也称 <code>signal</code>、<code>increment</code> 或 <code>V</code> 操作）</li>
+</ul>
+<p><code>acquire</code>操作将信号量减 1，如果结果值为负则线程阻塞，且直到其他线程进行了信号量累加为正数才能恢复。如结果为正数，线程则继续执行。</p>
+<p><code>release</code>操作将信号量加 1，如存在被阻塞的线程，此时他们中的一个线程将解除阻塞。</p>
+<p>Go 运行时提供的<code>runtime_SemacquireMutex</code>和<code>runtime_Semrelease</code>函数可用来实现<code>sync.RWMutex</code>互斥锁。</p>
+<h2 id="锁-Lock"><a href="#锁-Lock" class="headerlink" title="锁 Lock"></a>锁 Lock</h2><p>实现源码：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Lock</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    rw.w.Lock()</span><br><span class="line">    r := atomic.AddInt32(&amp;rw.readerCount, -rwmutexMaxreader) + rwmutexMaxreader</span><br><span class="line">    <span class="keyword">if</span> r != <span class="number">0</span> &amp;&amp; atomic.AddInt32(&amp;rw.readerWait, r) != <span class="number">0</span> &#123;     </span><br><span class="line">        runtime_SemacquireMutex(&amp;rw.writerSem, <span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>writer 通过<code>Lock</code>方法获取共享数据的独占权限。首先，它会申请阻塞其他写操作的互斥锁（<code>rw.w.Lock()</code>），此互斥锁在<code>Unlock</code>函数的最后才会进行解锁。下一步，将<code>readerCount</code>减去<code>rwmutexMaxreader</code>（值为 1 左移 30 位, <code>1&lt;&lt;30</code>）使其为负数。当<code>readerCount</code>变为负数时，Rlock 将阻塞接下来的所有读请求。</p>
+<p>再回过头来看下<code>Rlock()</code>函数中逻辑：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> atomic.AddInt32(&amp;rw.readerCount, <span class="number">1</span>) &lt; <span class="number">0</span> &#123;</span><br><span class="line">    <span class="comment">// A writer is pending, wait for it.    </span></span><br><span class="line">    runtime_SemacquireMutex(&amp;rw.SeadeSem, <span class="literal">false</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>后续的 reader 将会被阻塞，那么已运行的 reader 会怎样呢？<code>readerWait</code>字段用来记录当前 reader 执行的数量。writer 被信号量<code>writerSem</code>阻塞，直到最后一个 reader 在使用后面讨论的<code>RUnlock</code>方法解锁后会把<code>writerSem</code>加 1，此时信号量将变成 0，<code>writer</code>被解除阻塞（译者注：RUnlock 函数中的<code>runtime_Semrelease(&amp;rw.writerSem, false)</code>）</p>
+<p>如果没有有效的 reader，那么 writer 将继续其执行。</p>
+<h2 id="最大-reader-数-rwmutexMaxreader"><a href="#最大-reader-数-rwmutexMaxreader" class="headerlink" title="最大 reader 数 rwmutexMaxreader"></a>最大 reader 数 rwmutexMaxreader</h2><p>在<a href="https://github.com/golang/go/blob/718d6c5880fe3507b1d224789b29bc2410fc9da5/src/sync/rwmutex.go" target="_blank" rel="noopener">rwmutex.go</a>中定义的常量：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> rwmutexMaxreader = <span class="number">1</span> &lt;&lt; <span class="number">30</span></span><br></pre></td></tr></table></figure>
+<p>那么，其用途是什么，以及<code>1&lt;&lt;30</code>表示什么意义呢？</p>
+<p><code>readerCount</code>字段是<a href="https://golang.org/pkg/builtin/#int32" target="_blank" rel="noopener">int32</a>类型，其范围为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[-1 &lt;&lt; 31, (1 &lt;&lt; 31) — 1] or [-2147483648, 2147483647]</span><br></pre></td></tr></table></figure></p>
+<p><code>RWMutext</code>使用此字段来计算挂起的 reader 和 writer 的标记（置为负数）。在<code>Lock</code>方法中：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">r := atomic.AddInt32(&amp;rw.readerCount, -rwmutexMaxreader) + rwmutexMaxreader</span><br></pre></td></tr></table></figure>
+<p><code>Lock</code>会将<code>readerCount</code>字段减去<code>1&lt;&lt;30</code>，当<code>readerCount</code>负值时表示 writer 调用了<code>Lock</code>正等待被处理，<code>atomic.AddInt32(&amp;rw.readerCount, -rwmutexMaxreaders) + rwmutexMaxreaders</code>这个操作既让<code>readerCount</code>变为负数又使<code>r</code>存储回了 readerCount。<code>rwmutexMaxreaders</code>也可以限制被挂起 reader 的数量。如果有<code>rwmutexMaxreader</code>个或更多挂起的 reader，那么<code>readerCount</code>将是非负值，此时将导致整个机制的崩溃。所以，reader 实际的限制数是：<code>rwmutexMaxreader - 1</code>，此值<code>1073741823</code>超过了<code>10亿</code>。</p>
+<h2 id="解读锁-RUnlock"><a href="#解读锁-RUnlock" class="headerlink" title="解读锁 RUnlock"></a>解读锁 RUnlock</h2><p>实现源码：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">RUnlock</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> r := atomic.AddInt32(&amp;rw.readerCount, <span class="number">-1</span>); r &lt; <span class="number">0</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> r+<span class="number">1</span> == <span class="number">0</span> || r+<span class="number">1</span> == -rwmutexMaxreader &#123;</span><br><span class="line">            race.Enable()</span><br><span class="line">            thrSw(<span class="string">"sync: RUnlock of unlocked RWMutex"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// A writer is pending.</span></span><br><span class="line">        <span class="keyword">if</span> atomic.AddInt32(&amp;rw.readerWait, <span class="number">-1</span>) == <span class="number">0</span> &#123;</span><br><span class="line">            <span class="comment">// The last reader unblocks the writer.       </span></span><br><span class="line">            runtime_Semrelease(&amp;rw.WriteSem, <span class="literal">false</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>每次调用此方法将使<code>readerCount</code>减 1（RLock 方法中增加 1）。如果减完后<code>readerCount</code>值为负，则表示当前存在 writer 正在等待或运行。这是因为在<code>Lock()</code>方法中<code>readerCount</code>减去了<code>rwmutexMaxreader</code>。然后，当检查到将完成的 reader 数量（readerWait 数值）最终为 0 时，则表示 writer 可以最终申请信号量。（译者注：<code>r &lt; 0</code>时，存在两个分支，当走 r+1 == 0 的分支时，表示 readerCount 此时为 0 即没有 RLock，所以 throw 了。当走下面那个分支时，<code>r &lt; 0</code>则是因为存在 writer 把 readerCount 置为了负数在等待 reader 结束，那么当最后一个 reader 解锁时需要将 WriteSem 信号量加 1，唤醒 writer）</p>
+<h2 id="解锁-Unlock"><a href="#解锁-Unlock" class="headerlink" title="解锁 Unlock"></a>解锁 Unlock</h2><p>实现源码：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(rw *RWMutex)</span> <span class="title">Unlock</span><span class="params">()</span></span> &#123;</span><br><span class="line">    ...</span><br><span class="line">    r := atomic.AddInt32(&amp;rw.readerCount, rwmutexMaxreader)</span><br><span class="line">    <span class="keyword">if</span> r &gt;= rwmutexMaxreader &#123;</span><br><span class="line">        race.Enable()</span><br><span class="line">        throw(<span class="string">"sync: Unlock of unlocked RWMutex"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="keyword">int</span>(r); i++ &#123;</span><br><span class="line">        runtime_Semrelease(&amp;rw.readerSem, <span class="literal">false</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    rw.w.Unlock()</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>解锁被 writer 持有的互斥锁时，首先通过<code>atomic.AddInt32</code>将<code>readerCount</code>加上<code>rwmutexMaxreader</code>，这时<code>readerCount</code>将变成非负值。如<code>readerCount</code>比 0 大，则表示存在 reader 正在等待 writer 执行完成，此时应唤醒这些等待的 reader。之后写锁将被释放，从而允许其他 writer 为了写入而锁定互斥锁。（译者注：如果还存在挂起的 reader，则在 writer 解锁之前需要通过信号量 readerSem 唤醒这些 reader 执行）</p>
+<p>如果 reader 或 writer 尝试解锁未锁定的互斥锁时，调用<code>Unlock</code>或<code>Runlock</code>方法将抛出错误（<a href="https://play.golang.org/p/YMdFET74olU" target="_blank" rel="noopener">示例源码</a>）。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">m := sync.RWMutex&#123;&#125;</span><br><span class="line">m.Unlock()</span><br></pre></td></tr></table></figure>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fatal error: sync: Unlock of unlocked RWMutex</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
+<h2 id="递归读锁定-Recursive-read-locking"><a href="#递归读锁定-Recursive-read-locking" class="headerlink" title="递归读锁定 Recursive read locking"></a>递归读锁定 Recursive read locking</h2><p>文档描述：</p>
+<blockquote>
+<p>如果一个 reader goroutine 持有了读锁，而此时另一个 writer goroutine 调用<code>Lock</code>申请加写锁，此后在最初的读锁被释放前其他 goroutine 不能获取到读锁。特定情况下，这能防止递归读锁，这种策略保证了锁的可用性，<code>Lock</code>的调用会阻止其他新的 reader 来获得锁。</p>
+</blockquote>
+<p>RWMutex 的工作方式是，如果有一个 writer 调用了 Lock，则所有调用 RLock 都将被锁定，无论是否已经获得了读锁定（<a href="https://play.golang.org/p/oHvZh4u3nJl" target="_blank" rel="noopener">示例源码</a>）:<br>示例代码：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> m sync.RWMutex</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">(n <span class="keyword">int</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> n &lt; <span class="number">1</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    fmt.Println(<span class="string">"RLock"</span>)</span><br><span class="line">    m.RLock()</span><br><span class="line">    <span class="keyword">defer</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        fmt.Println(<span class="string">"RUnlock"</span>)</span><br><span class="line">        m.RUnlock()</span><br><span class="line">    &#125;()</span><br><span class="line">    time.Sleep(<span class="number">100</span> * time.Millisecond)</span><br><span class="line">    <span class="keyword">return</span> f(n<span class="number">-1</span>) + n</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    done := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>)</span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        time.Sleep(<span class="number">200</span> * time.Millisecond)</span><br><span class="line">        fmt.Println(<span class="string">"Lock"</span>)</span><br><span class="line">        m.Lock()</span><br><span class="line">        fmt.Println(<span class="string">"Unlock"</span>)</span><br><span class="line">        m.Unlock()</span><br><span class="line">        done &lt;- <span class="number">1</span></span><br><span class="line">    &#125;()</span><br><span class="line">    f(<span class="number">4</span>)</span><br><span class="line">    &lt;-done</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>输出：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RLock</span><br><span class="line">RLock</span><br><span class="line">RLock</span><br><span class="line">Lock</span><br><span class="line">RLock</span><br><span class="line">fatal error: all goroutines are asleep - deadlock!</span><br></pre></td></tr></table></figure></p>
+<p>译者注（至下一节以前均为译者注）：为什么会发送死锁呢？原作者用递归函数在 defer 里面解锁，那么在加第三层读锁的时候，还没有读锁解锁。这时，readCount 是 3，此时正好加了一个 Lock 写锁，由于 readCount 是 3</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> r != <span class="number">0</span> &amp;&amp; atomic.AddInt32(&amp;rw.readerWait, r) != <span class="number">0</span> &#123;</span><br><span class="line">         runtime_Semacquire(&amp;rw.writerSem)</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>由上可知，此时 writer 需要等待所有进行中的 reader 完成，此时又调用了 RLock，</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> atomic.AddInt32(&amp;rw.readerCount, <span class="number">1</span>) &lt; <span class="number">0</span> &#123;</span><br><span class="line">	<span class="comment">// A writer is pending, wait for it.</span></span><br><span class="line">	runtime_Semacquire(&amp;rw.readerSem)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于在第四个 RLock 前，加了 Lock 操作，使得 readerCount 为负数。所以就造成了死锁，即 reader 在等待 readerSem，writer 在等待 writerSem*</p>
+<h2 id="复制锁-Copying-locks"><a href="#复制锁-Copying-locks" class="headerlink" title="复制锁 Copying locks"></a>复制锁 Copying locks</h2><p><code>go tool vet</code>可以检测锁是否被复制了，因为复制锁会导致死锁。更多关于此问题可参考之前的文章：<a href="https://medium.com/golangspec/detect-locks-passed-by-value-in-go-efb4ac9a3f2b" target="_blank" rel="noopener">Detect locks passed by value in Go</a></p>
+<h2 id="性能-Performance"><a href="#性能-Performance" class="headerlink" title="性能 Performance"></a>性能 Performance</h2><p>之前有人发现，在 CPU 核数增多时 RWMutex 的性能会有下降，详见：<a href="https://github.com/golang/go/issues/17973" target="_blank" rel="noopener">sync: RWMutex scales poorly with CPU count</a></p>
+<h2 id="争用-Contention"><a href="#争用-Contention" class="headerlink" title="争用 Contention"></a>争用 Contention</h2><p>Go 版本 ≥ 1.8 之后，支持分析争用的互斥锁（<a href="https://github.com/golang/go/commit/ca922b6d363b6ca47822188dcbc5b92d912c7a4b" target="_blank" rel="noopener">runtime: Profile goroutines holding contended mutexes.</a>）。我们来看下如何做：<br><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    _ <span class="string">"net/http/pprof"</span></span><br><span class="line">    <span class="string">"runtime"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> mu sync.Mutex</span><br><span class="line">    runtime.SetMutexProfileFraction(<span class="number">5</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">for</span> &#123;</span><br><span class="line">                mu.Lock()</span><br><span class="line">                time.Sleep(<span class="number">100</span> * time.Millisecond)</span><br><span class="line">                mu.Unlock()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">    http.ListenAndServe(<span class="string">":8888"</span>, <span class="literal">nil</span>)</span><br><span class="line">&#125;</span><br><span class="line">&gt; <span class="keyword">go</span> build mutexcontention.<span class="keyword">go</span></span><br><span class="line">&gt; ./mutexcontention</span><br></pre></td></tr></table></figure></p>
+<p>当<code>mutexcontention</code>程序运行时，执行 pprof：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&gt; go tool pprof mutexcontention http://localhost:8888/debug/pprof/mutex?debug=1</span><br><span class="line">Fetching profile over HTTP from http://localhost:8888/debug/pprof/mutex?debug=1</span><br><span class="line">Saved profile in /Users/mlowicki/pprof/pprof.mutexcontention.contentions.delay.003.pb.gz</span><br><span class="line">File: mutexcontention</span><br><span class="line">Type: delay</span><br><span class="line">Entering interactive mode (type &quot;help&quot; for commands, &quot;o&quot; for options)</span><br><span class="line">(pprof) list main</span><br><span class="line">Total: 57.28s</span><br><span class="line">ROUTINE main.main.func1 in .../src/github.com/mlowicki/mutexcontention/mutexcontention.go</span><br><span class="line">0     57.28s (flat, cum)   100% of Total</span><br><span class="line">.          .     14:   for i := 0; i &lt; 10; i++ &#123;</span><br><span class="line">.          .     15:           go func() &#123;</span><br><span class="line">.          .     16:                   for &#123;</span><br><span class="line">.          .     17:                           mu.Lock()</span><br><span class="line">.          .     18:                           time.Sleep(100 * time.Millisecond)</span><br><span class="line">.     57.28s     19:                           mu.Unlock()</span><br><span class="line">.          .     20:                   &#125;</span><br><span class="line">.          .     21:           &#125;()</span><br><span class="line">.          .     22:   &#125;</span><br><span class="line">.          .     23:</span><br><span class="line">.          .     24:   http.ListenAndServe(&quot;:8888&quot;, nil)</span><br></pre></td></tr></table></figure></p>
+<p>注意，为什么这里耗时 57.28s，且指向了<code>mu.Unlock()</code>呢？</p>
+<p>当 goroutine 调用<code>Lock</code>而阻塞时，会记录当前发生的准确时间–叫做<code>acquiretime</code>。当另一个 groutine 解锁，至少存在一个 goroutine 在等待获得锁，则其中一个解除阻塞并调用其<code>mutexevent</code>函数。该<code>mutexevent</code>函数通过检查<code>SetMutexProfileFraction</code>设置的速率来决定此事件应被保留还是丢弃。此事件包含整个等待的时间（当前时间 - 获得时间）。从上面的例子可以看出，所有阻塞在特定互斥锁的 goroutines 的总等待时间会被收集和展示。</p>
+<p>在 Go 1.11（<a href="https://github.com/golang/go/commit/88ba64582703cea0d66a098730215554537572de" target="_blank" rel="noopener">sync: enable profiling of RWMutex</a>）中将增加读锁（Rlock 和 RUnlock）的争用。</p>
+<h3 id="资料-Resources"><a href="#资料-Resources" class="headerlink" title="资料 Resources"></a>资料 Resources</h3><ul>
+<li>Allen B. Downey: The Little Book of Semaphores</li>
+<li><a href="https://golang.org/pkg/sync/#RWMutex" target="_blank" rel="noopener">Documentation of sync.RWMutex</a></li>
+<li><a href="https://en.wikipedia.org/wiki/reader%E2%80%93writer_problem" target="_blank" rel="noopener">Wikipedia: reader-writer problem</a></li>
+<li><a href="https://medium.com/golangspec/reusable-barriers-in-golang-156db1f75d0b" target="_blank" rel="noopener">Reusable barriers in Golang</a></li>
+<li><a href="https://medium.com/golangspec/synchronization-queues-in-golang-554f8e3a31a4" target="_blank" rel="noopener">Synchronization queues in Golang</a></li>
+</ul>
+<p>备注：</p>
+<ul>
+<li>critical section：临界区</li>
+<li>Mutual exclusion，缩写 Mutex：互斥锁 </li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/04/24/ali-message-service/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          阿里云多种消息服务的差异及选型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/02/11/cache-things/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">缓存系统中面临的雪崩/穿透/一致性问题</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

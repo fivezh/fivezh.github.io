@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>多路冗余、堆叠方案下网络连接故障分析 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="目前机房两台NGFW400-UF万兆防火墙的部署方案实施后，发现存在偶发性链路不稳定的情况。这两天根据不同设备间抓包分析，定位问题点，经与厂商工程师反复沟通确认后，确认了故障原因。 一、物理拓扑图 堆叠设备采用多虚一技术(思科VSS、华为CSS等)实现统一管理配置、简化网络结构 各网段网关均设置为核心交换机 为避免环路，采用多个物理口链路聚合的形式解决 链路聚合厂商支持程度存在差异: 交换机支持跨">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多路冗余、堆叠方案下网络连接故障分析">
+<meta property="og:url" content="http://fivezh.github.io/2016/03/08/Firewall-connections-check-failure/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="目前机房两台NGFW400-UF万兆防火墙的部署方案实施后，发现存在偶发性链路不稳定的情况。这两天根据不同设备间抓包分析，定位问题点，经与厂商工程师反复沟通确认后，确认了故障原因。 一、物理拓扑图 堆叠设备采用多虚一技术(思科VSS、华为CSS等)实现统一管理配置、简化网络结构 各网段网关均设置为核心交换机 为避免环路，采用多个物理口链路聚合的形式解决 链路聚合厂商支持程度存在差异: 交换机支持跨">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/firewall-topology.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/firewall-agg.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/firewall-ping-request.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/firewall-ping-reply.png">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多路冗余、堆叠方案下网络连接故障分析">
+<meta name="twitter:description" content="目前机房两台NGFW400-UF万兆防火墙的部署方案实施后，发现存在偶发性链路不稳定的情况。这两天根据不同设备间抓包分析，定位问题点，经与厂商工程师反复沟通确认后，确认了故障原因。 一、物理拓扑图 堆叠设备采用多虚一技术(思科VSS、华为CSS等)实现统一管理配置、简化网络结构 各网段网关均设置为核心交换机 为避免环路，采用多个物理口链路聚合的形式解决 链路聚合厂商支持程度存在差异: 交换机支持跨">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/firewall-topology.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Firewall-connections-check-failure" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/03/08/Firewall-connections-check-failure/" class="article-date">
+  	<time datetime="2016-03-08T12:26:53.000Z" itemprop="datePublished">2016-03-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      多路冗余、堆叠方案下网络连接故障分析
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>目前机房两台NGFW400-UF万兆防火墙的部署方案实施后，发现存在偶发性链路不稳定的情况。<br>这两天根据不同设备间抓包分析，定位问题点，经与厂商工程师反复沟通确认后，确认了故障原因。</p>
+<h1 id="一、物理拓扑图"><a href="#一、物理拓扑图" class="headerlink" title="一、物理拓扑图"></a>一、物理拓扑图</h1><ul>
+<li>堆叠设备采用多虚一技术(思科VSS、华为CSS等)实现统一管理配置、简化网络结构</li>
+<li>各网段网关均设置为核心交换机</li>
+<li>为避免环路，采用多个物理口链路聚合的形式解决</li>
+<li>链路聚合厂商支持程度存在差异: 交换机支持跨设备链路聚合，防火墙仅支持一台设备不同端口的聚合</li>
+<li>防火墙设备HA采用连接保护模式，心跳线仅用于策略和连接同步，不传输网络数据</li>
+<li>交换机虚拟化技术中两台设备间的链路存在数据传输<a id="more"></a>
+<img src="/assets/post_images/firewall-topology.png" alt="物理拓扑结构图"></li>
+</ul>
+<p><strong>增加链路聚合，避免环路的拓扑：</strong><br><img src="/assets/post_images/firewall-agg.png" alt="链路聚合，避免环路"></p>
+<ul>
+<li>图中网络设备存在多个冗余设备虚拟化为单一逻辑设备的情况(A1+A2, B1+B2, C1+C2, D1+D2)</li>
+</ul>
+<h1 id="二、拓扑设计思想"><a href="#二、拓扑设计思想" class="headerlink" title="二、拓扑设计思想"></a>二、拓扑设计思想</h1><ol>
+<li>设备多虚一的堆叠方案，既保证设备冗余性，又便于统一管理配置</li>
+<li>链路多路冗余，任一设备均有2条上连物理链路</li>
+<li>任一设备、链路故障，理论上均不会对网络服务产生影响<br><em>PS: </em>这个方案的确定有一个前提: 对可靠性高度要求、对设备利用率不敏感</li>
+</ol>
+<h1 id="三、问题分析"><a href="#三、问题分析" class="headerlink" title="三、问题分析"></a>三、问题分析</h1><p>通过网管软件监控网路设备状态时发现以下问题：</p>
+<ol>
+<li>部分网络设备、服务器的网络时断时连</li>
+<li>部分服务器需要添加双向策略，才能保证服务稳定</li>
+<li>部分终端能Ping通某服务器，而部分终端不能Ping通</li>
+<li>增加双向策略后，网络时断时连问题可解决</li>
+</ol>
+<p>SSH登录防火墙后执行tcpdump抓包分析<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 抓取源IP到目的IP所有端口的报文(该模式下仅显示发送报文信息)</span></span><br><span class="line">tcpdump -ni any <span class="keyword">and</span> host <span class="number">192.168</span><span class="number">.1</span><span class="number">.1</span> <span class="keyword">and</span> host <span class="number">192.168</span><span class="number">.2</span><span class="number">.1</span></span><br><span class="line"><span class="comment"># 抓取源IP到目的IP制定端口的报文(该模式下可显示发送\接收报文信息)</span></span><br><span class="line">tcpdump -ni bond1 vlan <span class="number">11</span> <span class="keyword">and</span> host <span class="number">192.168</span><span class="number">.1</span><span class="number">.1</span> <span class="keyword">and</span> host <span class="number">192.168</span><span class="number">.2</span><span class="number">.1</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="3-1-网络数据流分析-Ping-Request"><a href="#3-1-网络数据流分析-Ping-Request" class="headerlink" title="3.1 网络数据流分析: Ping Request"></a>3.1 网络数据流分析: Ping Request</h2><p>注：下述图示为存在网络异常时的数据流向，正常数据流向优先从单一设备收发以提高效率。<br>以服务器F对服务器E发起Ping为例(二者跨网段，需要经核心交换机路由), Request的报文路径如下图：<br>Ping Request的路径为：F -&gt; D2 -&gt; B1(防火墙策略允许，放行，连接同步至B2) -&gt; A1(核心交换机VLAN间路由) -&gt; B2(放行并<em>洪范</em>转发) -&gt; C1 -&gt; E<br><img src="/assets/post_images/firewall-ping-request.png" alt="Ping Request报文路径"></p>
+<ul>
+<li>防火墙策略：允许服务器F-&gt;E</li>
+<li>链路聚合后多条链路选择的均衡算法为：基于源MAC和目的MAC</li>
+<li>防火墙A建立放行连接后，将通过心跳线将该连接同步至防火墙B<br>注意: 防火墙B2中看到其将Request报文<strong>洪泛</strong>至所有端口，而非直接转发至目的端口(目的MAC所在端口)</li>
+</ul>
+<h2 id="3-2-网络数据流分析-Ping-Reply"><a href="#3-2-网络数据流分析-Ping-Reply" class="headerlink" title="3.2 网络数据流分析: Ping Reply"></a>3.2 网络数据流分析: Ping Reply</h2><p>Ping Reply的路径为：E -&gt; C1 -&gt; B1(防火墙认为与Request同一个连接，放行) -&gt; A1(核心交换机VLAN间路由) -&gt; B2(收到Reply报文，但未发送任何Reply报文) —–<strong>Reply中断传输</strong>—– -&gt; D1 -&gt; F<br><img src="/assets/post_images/firewall-ping-reply.png" alt="Ping Reply报文路径"></p>
+<h2 id="3-3-故障点分析"><a href="#3-3-故障点分析" class="headerlink" title="3.3 故障点分析"></a>3.3 故障点分析</h2><ol>
+<li>在Request转发阶段，B2中首次收到Request时，本身应以有该条连接(从B1同步而来), 应直接放心Request并转发至制定端口。<br> 但B2在收到Request后，并未单播转发，而是洪泛至所有端口，异常！</li>
+<li>在Reply转发阶段，B2收到Reply后，应根据已有连接，判定Reply与Request属于同一连接，放行并转发，但并未发送。<br> 可能由于某种原因，导致未匹配ACL规则，直接丢弃了Reply报文。</li>
+</ol>
+<h2 id="3-4-厂商工程师沟通"><a href="#3-4-厂商工程师沟通" class="headerlink" title="3.4 厂商工程师沟通"></a>3.4 厂商工程师沟通</h2><p>经过与厂商工程师的多次推敲和验证，确定结论如下：</p>
+<ol>
+<li>确认防火墙B2上是否存在目的服务器E的MAC地址？<br> 注：防火墙B2的MAC表中，确实无服务器E的MAC地址记录。</li>
+<li>若B2中无E的MAC记录，则受到Request时将洪泛至除来源接口外的所有其他接口。<br> 注：这与我抓包分析是一直的，洪泛原因可以确定为”防火墙B2中无目标服务器的MAC地址”, 同时作为二层透传模式，其不会进行ARP地址解析，只能将Request洪泛。</li>
+<li>当防火墙发生报文<strong>洪泛时，将自动清理该报文所属的连接记录</strong><br> 注：防火墙研发认为，不存在其MAC地址，洪泛出去的报文说明是不完整的连接，应删除连接。当再次请求时建立完整连接。</li>
+<li>由于防火墙B2已清理该连接，当Reply报文抵达B2时，被认为是非法的连接请求(防火墙ACL中无E-&gt;F的允许策略)，报文丢弃。<br> 注：这与我们在B2上看到收到Reply，但未发送Reply报文的现象一致; 同时也<code>解释了为什么增加双向策略后网络正常</code>。</li>
+<li>防火墙是不能改变洪泛后清理连接的模式，问题在于B2上为何没有服务器E的MAC地址。<br> 注：由于交换机C1、C2的链路聚合设置，服务器E的报文转发只会从聚合链路中选择一条路径传输，而不会向该聚合口下的所有链路转发。<br> 这就导致了防火墙B2可能从未收到过E发送的报文，也就不存在E的MAC地址。</li>
+</ol>
+<h1 id="四、故障结论"><a href="#四、故障结论" class="headerlink" title="四、故障结论"></a>四、故障结论</h1><p>由于报文往返路径不一致，防火墙的洪泛后清理连接的机制，以及交换机聚合口数据发送原理，导致了这种异常网络现象的发生。<br>总结出现这类故障的特征：</p>
+<ul>
+<li>服务器间跨网段通信(需经防火墙、核心交换机)</li>
+<li>往返路径不一致，这是由交换机、防火墙根据局和端口的均衡算法决定的</li>
+<li>网络服务时断时连，由于报文转发过程只有往返链路不一时存在此故障</li>
+</ul>
+<h1 id="五、解决方案"><a href="#五、解决方案" class="headerlink" title="五、解决方案"></a>五、解决方案</h1><p>临时解决：</p>
+<blockquote>
+<p>防火墙ACL中对服务器间跨网段访问增加双向策略。(当前采用快速解决方案)</p>
+</blockquote>
+<p>优化方案：</p>
+<blockquote>
+<p>与防火墙、交换机厂商进一步确认均衡算法，优化往返链路为单一链路。<br>由于该方案设计多家厂商设备，该方案还需沟通后确认是否可行。</p>
+</blockquote>
+<p>备用优化方案：</p>
+<blockquote>
+<p>修改当前大二层拓扑结构，改为三层路由方式，从而避免洪泛导致的连接清理问题。<br>但该方案变化对网络拓扑影响较大，需指定详尽的计划方案和实施细则，避免对网络震荡。</p>
+</blockquote>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/27/OpenCode-webbench-source-code-reading/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [OpenCode]WebBench source reading | WebBench源码分析
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/06/Life-is-the-all-the-time-of-now/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">相视一笑</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

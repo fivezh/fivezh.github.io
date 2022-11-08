@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[译]Go compiler intrinsics Go编译器内建函数 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="原文地址：https://dave.cheney.net/2019/08/20/go-compiler-intrinsics 原文作者：Dave Cheney 译文出处：https://dave.cheney.net/ 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md">
+<meta name="keywords" content="Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[译]Go compiler intrinsics Go编译器内建函数">
+<meta property="og:url" content="http://fivezh.github.io/2019/09/09/go-compiler-intrinsics/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="原文地址：https://dave.cheney.net/2019/08/20/go-compiler-intrinsics 原文作者：Dave Cheney 译文出处：https://dave.cheney.net/ 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T10:51:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[译]Go compiler intrinsics Go编译器内建函数">
+<meta name="twitter:description" content="原文地址：https://dave.cheney.net/2019/08/20/go-compiler-intrinsics 原文作者：Dave Cheney 译文出处：https://dave.cheney.net/ 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-go-compiler-intrinsics" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/09/09/go-compiler-intrinsics/" class="article-date">
+  	<time datetime="2019-09-09T10:44:03.000Z" itemprop="datePublished">2019-09-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [译]Go compiler intrinsics Go编译器内建函数
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <ul>
+<li>原文地址：<a href="https://dave.cheney.net/2019/08/20/go-compiler-intrinsics" target="_blank" rel="noopener">https://dave.cheney.net/2019/08/20/go-compiler-intrinsics</a></li>
+<li>原文作者：<a href="https://dave.cheney.net/" target="_blank" rel="noopener">Dave Cheney</a></li>
+<li>译文出处：<a href="https://dave.cheney.net/" target="_blank" rel="noopener">https://dave.cheney.net/</a></li>
+<li>本文永久链接：<a href="https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md" target="_blank" rel="noopener">https://github.com/gocn/translator/blob/master/2019/w35_go_compiler_intrinsics.md</a></li>
+<li>译者：<a href="https://github.com/fivezh" target="_blank" rel="noopener">fivezh</a>、<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
+<li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a><a id="more"></a>
+</li>
+</ul>
+<p>如有需要，Go 允许使用者通过汇来编写函数。这被称作 <em>stub</em> 或 <em>forward</em> 声明.</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> asm</span><br><span class="line"></span><br><span class="line"><span class="comment">// Add returns the sum of a and b.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Add</span><span class="params">(a <span class="keyword">int64</span>, b <span class="keyword">int64</span>)</span> <span class="title">int64</span></span></span><br></pre></td></tr></table></figure>
+<p>这里，我们声明了 <code>Add</code> 函数，其接受 2 个 <code>int64</code> 类型入参，并返回二者之和。<code>Add</code> 函数相较于 Go 常见形式的函数声明，缺少了函数体部分。</p>
+<p>如果我们尝试编译这个包时，编译器自然是会给出警告信息的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">%</span><span class="bash"> go build</span></span><br><span class="line">examples/asm</span><br><span class="line">./decl.go:4:6: missing function body</span><br></pre></td></tr></table></figure>
+<p>为了满足编译器要求，我们通过汇编的方式为 <code>Add</code> 提供函数体，这里可以在同一个包下新增 <code>.s</code> 文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">TEXT ·Add(SB),$0-24</span><br><span class="line">        MOVQ a+0(FP), AX</span><br><span class="line">        ADDQ b+8(FP), AX</span><br><span class="line">        MOVQ AX, ret+16(FP)</span><br><span class="line">        RET</span><br></pre></td></tr></table></figure>
+<p>现在我们可以进行 <code>build</code> ，<code>test</code> 操作，像普通的 Go 代码一样使用 <code>Add</code> 函数。但是，有一个问题，汇编函数无法被内联。</p>
+<p>这一直是被 Go 开发者所抱怨的，他们希望通过汇编来提高性能或访问未被语言暴露的操作。比如说，矢量指令，原子指令等等。如果没有内联汇编函数的能力，在 Go 中编写这些函数会产生相对较大的负担。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Result <span class="keyword">int64</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkAddNative</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> r <span class="keyword">int64</span></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">                r = <span class="keyword">int64</span>(i) + <span class="keyword">int64</span>(i)</span><br><span class="line">        &#125;</span><br><span class="line">        Result = r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkAddAsm</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> r <span class="keyword">int64</span></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">                r = Add(<span class="keyword">int64</span>(i), <span class="keyword">int64</span>(i))</span><br><span class="line">        &#125;</span><br><span class="line">        Result = r</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">BenchmarkAddNative-8  1000000000        0.300 ns/op</span><br><span class="line">BenchmarkAddAsm-8     606165915         1.93 ns/op</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>译者注：Go 原生的方式，性能优于汇编方式，这也是本文所关注的 Go 内建函数的优化。</p>
+</blockquote>
+<p>多年来，已经有多种提案来支持内联汇编的语法，比如类似与 gcc 的 <code>asm(...)</code> 指令。但没有任何一个提案被 Go 团队接受。相反，Go 添加了一种内建函数 <em>intrinsic functions</em> 。</p>
+<blockquote>
+<p>注 1：内建函数 可能不是他们的正式名称，但是这个词在编译器及其测试中是很常用的。</p>
+<p>译者注：参见维基百科<a href="https://en.wikipedia.org/wiki/Intrinsic_function" target="_blank" rel="noopener">Intrinsic function</a></p>
+</blockquote>
+<p>内建函数<em>intrinsic function</em>是使用常规 Go 编写的 Go 代码。这些函数在 Go 编译器中是已知的，它包含可在编译期间进行替换的待替换元素。从 Go 1.13 开始，编译器支持的包有：</p>
+<ul>
+<li><code>math/bits</code></li>
+<li><code>sync/atomic</code></li>
+</ul>
+<p>这些包中的函数具有巴洛克式签名（译者注：形容繁琐且富于变化的签名形式），但在你的系统架构支持更有效的执行方式时，编译器可以使用相近的原生指令来进行透明的替换函数调用。</p>
+<p>对于本文的其余部分，我们将研究 Go 编译器使用内建函数 <em>intrinsic function</em> 生成更高效代码的两种不同方式。</p>
+<h2 id="Ones-count-位为-1-的计数"><a href="#Ones-count-位为-1-的计数" class="headerlink" title="Ones count 位为 1 的计数"></a>Ones count 位为 1 的计数</h2><p>一个词中位为 <code>1</code> 的数量，这类计数是一种重要的加密和压缩原语。因为这是一项基础且重要的操作，所以大多数现代 CPU 都提供了原生硬件实现。</p>
+<p><code>math/bits</code> 包通过 <code>OnesCount</code> 系列函数提供了对该操作的支持。 各种 <code>OnesCount</code> 函数被编译器识别，并且取决于 CPU 架构和 Go 的版本，将被本机硬件指令替换。</p>
+<p>要了解这有多么有效，我们可以比较三种不同的计数实现。 第一个是 Kernighan 在《The C Programming Language 2nd Ed, 1998》书中提到的算法。</p>
+<blockquote>
+<p>注 2：Kernighan 《The C Programming Language 2nd Ed, 1998》，C 语言 Bible</p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">kernighan</span><span class="params">(x <span class="keyword">uint64</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> count <span class="keyword">int</span></span><br><span class="line">        <span class="keyword">for</span> ; x &gt; <span class="number">0</span>; x &amp;= (x - <span class="number">1</span>) &#123;</span><br><span class="line">                count++</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> count</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该算法最大循环次数由数字本身的位数决定; 数字具有的位数越多，则它的循环次数越多。</p>
+<p>第二个算法会令黑客们会心一笑，来自<a href="https://github.com/golang/go/issues/14813" target="_blank" rel="noopener">issue 14813</a>。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">hackersdelight</span><span class="params">(x <span class="keyword">uint64</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">        <span class="keyword">const</span> m1 = <span class="number">0x5555555555555555</span></span><br><span class="line">        <span class="keyword">const</span> m2 = <span class="number">0x3333333333333333</span></span><br><span class="line">        <span class="keyword">const</span> m4 = <span class="number">0x0f0f0f0f0f0f0f0f</span></span><br><span class="line">        <span class="keyword">const</span> h01 = <span class="number">0x0101010101010101</span></span><br><span class="line"></span><br><span class="line">        x -= (x &gt;&gt; <span class="number">1</span>) &amp; m1</span><br><span class="line">        x = (x &amp; m2) + ((x &gt;&gt; <span class="number">2</span>) &amp; m2)</span><br><span class="line">        x = (x + (x &gt;&gt; <span class="number">4</span>)) &amp; m4</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">int</span>((x * h01) &gt;&gt; <span class="number">56</span>)</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>如果输入是一个常量（如果编译器可以在编译时间找出答案的话，整个事情会优化掉），这个版本算法中很多比特位都会在恒定时间内运行并且非常好地优化。</p>
+<p>让我们根据 <code>math/bits.OnesCount64</code> 对这些实现进行基准测试。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> Result <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkKernighan</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> r <span class="keyword">int</span></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">                r = kernighan(<span class="keyword">uint64</span>(i))</span><br><span class="line">        &#125;</span><br><span class="line">        Result = r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkPopcnt</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> r <span class="keyword">int</span></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">                r = hackersdelight(<span class="keyword">uint64</span>(i))</span><br><span class="line">        &#125;</span><br><span class="line">        Result = r</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">BenchmarkMathBitsOnesCount64</span><span class="params">(b *testing.B)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> r <span class="keyword">int</span></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; b.N; i++ &#123;</span><br><span class="line">                r = bits.OnesCount64(<span class="keyword">uint64</span>(i))</span><br><span class="line">        &#125;</span><br><span class="line">        Result = r</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了保持公平，我们在为每个被测函数提供相同的输入：从零到 <code>b.N</code> 的整数序列。这对于 Kernighan 的方法更为公平，因为它的运行时间随着入参的位数而逐渐增加。</p>
+<blockquote>
+<p>注 3：作为加分小作业，可以尝试将 <code>0xdeadbeefdeadbeef</code> 传递给每个被测试的函数，看看运行结果如何。</p>
+</blockquote>
+<p>来看下测试结果：<code>go test -bench=. -run=none</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">BenchmarkKernighan-8        100000000       11.2 ns/op</span><br><span class="line">BenchmarkPopcnt-8           618312062       2.02 ns/op</span><br><span class="line">BenchmarkMathBitsOnesCount64-8  1000000000  0.565 ns/op</span><br></pre></td></tr></table></figure>
+<p><code>math/bits.OnesCount64</code> 以近 4 倍的速度优势胜出，但是这真的是因为使用硬件指令，还是因为编译器在代码优化方面做得更好呢？让我们来检查下汇编的过程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">% go test -c</span><br><span class="line">% go tool objdump -s MathBitsOnesCount popcnt-intrinsic.test</span><br><span class="line">TEXT examples/popcnt-intrinsic.BenchmarkMathBitsOnesCount64(SB) </span><br><span class="line">/examples/popcnt-intrinsic/popcnt_test.go</span><br><span class="line">   popcnt_test.go:45     0x10f8610    65488b0c2530000000  MOVQ GS:0x30, CX</span><br><span class="line">   popcnt_test.go:45     0x10f8619    483b6110            CMPQ 0x10(CX), SP</span><br><span class="line">   popcnt_test.go:45     0x10f861d    7668                JBE 0x10f8687</span><br><span class="line">   popcnt_test.go:45     0x10f861f    4883ec20            SUBQ $0x20, SP</span><br><span class="line">   popcnt_test.go:45     0x10f8623    48896c2418          MOVQ BP, 0x18(SP)</span><br><span class="line">   popcnt_test.go:45     0x10f8628    488d6c2418          LEAQ 0x18(SP), BP</span><br><span class="line">   popcnt_test.go:47     0x10f862d    488b442428          MOVQ 0x28(SP), AX</span><br><span class="line">   popcnt_test.go:47     0x10f8632    31c9                XORL CX, CX</span><br><span class="line">   popcnt_test.go:47     0x10f8634    31d2                XORL DX, DX</span><br><span class="line">   popcnt_test.go:47     0x10f8636    eb03                JMP 0x10f863b</span><br><span class="line">   popcnt_test.go:47     0x10f8638    48ffc1              INCQ CX</span><br><span class="line">   popcnt_test.go:47     0x10f863b    48398808010000      CMPQ CX, 0x108(AX)</span><br><span class="line">   popcnt_test.go:47     0x10f8642    7e32                JLE 0x10f8676</span><br><span class="line">   popcnt_test.go:48     0x10f8644    803d29d5150000      CMPB $0x0, runtime.x86HasPOPCNT(SB)</span><br><span class="line">   popcnt_test.go:48     0x10f864b    740a                JE 0x10f8657</span><br><span class="line">   popcnt_test.go:48     0x10f864d    4831d2              XORQ DX, DX</span><br><span class="line">   popcnt_test.go:48     0x10f8650    f3480fb8d1          POPCNT CX, DX // math/bits.OnesCount64</span><br><span class="line">   popcnt_test.go:48     0x10f8655    ebe1                JMP 0x10f8638</span><br><span class="line">   popcnt_test.go:47     0x10f8657    48894c2410          MOVQ CX, 0x10(SP)</span><br><span class="line">   popcnt_test.go:48     0x10f865c    48890c24            MOVQ CX, 0(SP)</span><br><span class="line">   popcnt_test.go:48     0x10f8660    e87b28f8ff          CALL math/bits.OnesCount64(SB)</span><br><span class="line">   popcnt_test.go:48     0x10f8665    488b542408          MOVQ 0x8(SP), DX</span><br><span class="line">   popcnt_test.go:47     0x10f866a    488b442428          MOVQ 0x28(SP), AX</span><br><span class="line">   popcnt_test.go:47     0x10f866f    488b4c2410          MOVQ 0x10(SP), CX</span><br><span class="line">   popcnt_test.go:48     0x10f8674    ebc2                JMP 0x10f8638</span><br><span class="line">   popcnt_test.go:50     0x10f8676    48891563d51500      MOVQ DX, examples/</span><br><span class="line">   popcnt-intrinsic.Result(SB)</span><br><span class="line">   popcnt_test.go:51     0x10f867d    488b6c2418          MOVQ 0x18(SP), BP</span><br><span class="line">   popcnt_test.go:51     0x10f8682    4883c420            ADDQ $0x20, SP</span><br><span class="line">   popcnt_test.go:51     0x10f8686    c3                  RET</span><br><span class="line">   popcnt_test.go:45     0x10f8687    e884eef5ff          CALL runtime.morestack_noctxt(SB)</span><br><span class="line">   popcnt_test.go:45     0x10f868c    eb82                JMP examples/</span><br><span class="line">   popcnt-intrinsic.BenchmarkMathBitsOnesCount64(SB)</span><br><span class="line">   :-1                   0x10f868e    cc                  INT $0x3</span><br><span class="line">   :-1                   0x10f868f    cc                  INT $0x3</span><br></pre></td></tr></table></figure>
+<p>这里输出了很多内容，但关键的内容是第 48 行（取自 <code>_test.go</code> 文件的源代码），程序确实使用了我们期望的 x86 <code>POPCNT</code> 指令。事实证明这比操作位运算更快。</p>
+<p>有趣的是比较 <code>POPCNT</code> 之前的两条指令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CMPB $0x0, runtime.x86HasPOPCNT(SB)</span><br></pre></td></tr></table></figure>
+<p>并非所有的英特尔 CPU 都支持 <code>POPCNT</code> ，如果 CPU 支持此指令，那么 Go 运行时在启动时，就会将此结果存储在 <code>runtime.x86HasPOPCNT</code> 中。这样每次进行基准测试循环时，程序通过检查 <em>CPU 是否支持 POPCNT</em> ，然后再发出 <code>POPCNT</code> 请求。</p>
+<p><code>runtime.x86HasPOPCNT</code> 的值在程序执行期间不会变化，因此检查结果是高度可预测的，这使得这种检查的成本相对低廉。</p>
+<h2 id="Atomic-counter-原子计数器"><a href="#Atomic-counter-原子计数器" class="headerlink" title="Atomic counter 原子计数器"></a>Atomic counter 原子计数器</h2><p>除了生成更高效的代码之外，内建函数<em>intrinsic functions</em>只是常规的 Go 代码，内联规则（包括中间堆栈内联）同样适用于它们。</p>
+<p>这是一个原子计数器类型的例子。它有类型的方法，深层的方法调用，多个包等情况。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> (</span><br><span class="line">         <span class="string">"sync/atomic"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> counter <span class="keyword">uint64</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c counter)</span> <span class="title">get</span><span class="params">()</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">         <span class="keyword">return</span> atomic.LoadUint64((<span class="keyword">uint64</span>)(c))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c counter)</span> <span class="title">inc</span><span class="params">()</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> atomic.AddUint64((<span class="keyword">uint64</span>)(c), <span class="number">1</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c counter)</span> <span class="title">reset</span><span class="params">()</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">        <span class="keyword">return</span> atomic.SwapUint64((<span class="keyword">uint64</span>)(c), <span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> c counter</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span> <span class="title">uint64</span></span> &#123;</span><br><span class="line">        c.inc()</span><br><span class="line">        c.get()</span><br><span class="line">        <span class="keyword">return</span> c.reset()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>译者注：原文代码有误无法编译，代码进行了部分修改，<code>(uint64)(c)</code> 修改为 <code>(*uint64)(&amp;c)</code></p>
+</blockquote>
+<p>你或许会认为上述这种操作会产生很多开销，这是可以理解的。但由于内联和编译器内建函数之间的交互，这些代码在大多数平台上会转换为很高效的原生代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">TEXT main.f(SB) examples/counter/counter.go</span><br><span class="line">   counter.go:23   0x10512e0   90                      NOPL</span><br><span class="line">   counter.go:29   0x10512e1   b801000000              MOVL $0x1, AX</span><br><span class="line">   counter.go:13   0x10512e6   488d0d0bca0800          LEAQ main.c(SB), CX</span><br><span class="line">   counter.go:13   0x10512ed   f0480fc101              LOCK XADDQ AX, 0(CX) // c.inc</span><br><span class="line">   counter.go:24   0x10512f2   90                      NOPL</span><br><span class="line">   counter.go:10   0x10512f3   488b05fec90800          MOVQ main.c(SB), AX // c.get</span><br><span class="line">   counter.go:25   0x10512fa   90                      NOPL</span><br><span class="line">   counter.go:16   0x10512fb   31c0                    XORL AX, AX</span><br><span class="line">   counter.go:16   0x10512fd   488701                  XCHGQ AX, 0(CX) // c.reset</span><br><span class="line">   counter.go:16   0x1051300               c3                      RET</span><br></pre></td></tr></table></figure>
+<p>下面我们逐一解释下。第一个操作，<code>counter.go:13</code> 是 <code>c.inc</code> 一个 <code>LOCK</code> 和 <code>XADDQ</code> 指令，这在 x86 上是一个原子性的增量。第二个，<code>counter.go:10</code> 是 <code>c.get</code> ，由于 x86 强大的内存一致性模型，它是内存级的常规操作。最后一个操作，<code>counter.go:16</code> ，<code>c.reset</code> 是 <code>CX</code> 中地址与 <code>AX</code> 的原子交换，而 <code>AX</code> 在前一行被归零(<code>XORL AX, AX</code>，按位异或，相当于清零)。这将 <code>AX</code> 中的值（零）放入存储在 <code>CX</code> 中的地址中，而先前存储在 <code>(CX)</code> 的值被丢弃。</p>
+<h2 id="Conclusion-总结"><a href="#Conclusion-总结" class="headerlink" title="Conclusion 总结"></a>Conclusion 总结</h2><p>内建函数是一种简洁的解决方案，它使 Go 程序员可以进行低层架构的操作，而无需扩展语言规范。如果某个体系结构没有特定的 <code>sync/atomic</code> 原语（比如某些 ARM 的变体）或者 <code>math/bits</code> 操作，那么编译器会隐式地降级为用纯 Go 编写的操作。</p>
+<h2 id="Related-posts-相关文章"><a href="#Related-posts-相关文章" class="headerlink" title="Related posts 相关文章"></a>Related posts 相关文章</h2><ol>
+<li><a href="https://dave.cheney.net/2012/10/07/notes-on-exploring-the-compiler-flags-in-the-go-compiler-suite" title="Notes on exploring the compiler flags in the Go compiler suite" target="_blank" rel="noopener">Notes on exploring the compiler flags in the Go compiler suite</a></li>
+<li><a href="https://dave.cheney.net/2015/10/09/padding-is-hard" title="Padding is hard" target="_blank" rel="noopener">Padding is hard</a></li>
+<li><a href="https://dave.cheney.net/2016/03/19/should-methods-be-declared-on-t-or-t" title="Should methods be declared on T or *T" target="_blank" rel="noopener">Should methods be declared on T or *T</a></li>
+<li><a href="https://dave.cheney.net/2015/11/18/wednesday-pop-quiz-spot-the-race" title="Wednesday pop quiz: spot the race" target="_blank" rel="noopener">Wednesday pop quiz: spot the race</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/10/17/uber-go-style-guide/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [译]Uber Go 语言代码风格指南
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/09/06/chaset-encoding-things/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PHP中编码检测</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Flask的web项目构建过程 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="主要内容：  Flask介绍与安装 Flask构建Hello world Flask使用详解">
+<meta name="keywords" content="Flask">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask的web项目构建过程">
+<meta property="og:url" content="http://fivezh.github.io/2016/01/10/Python-Flask-web-dev/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="主要内容：  Flask介绍与安装 Flask构建Hello world Flask使用详解">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Flask的web项目构建过程">
+<meta name="twitter:description" content="主要内容：  Flask介绍与安装 Flask构建Hello world Flask使用详解">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Python-Flask-web-dev" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/01/10/Python-Flask-web-dev/" class="article-date">
+  	<time datetime="2016-01-10T15:09:03.000Z" itemprop="datePublished">2016-01-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Flask的web项目构建过程
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Flask/">Flask</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>主要内容：</p>
+<ul>
+<li>Flask介绍与安装</li>
+<li>Flask构建Hello world</li>
+<li>Flask使用详解<a id="more"></a>
+<h1 id="一、Flask介绍与安装"><a href="#一、Flask介绍与安装" class="headerlink" title="一、Flask介绍与安装"></a>一、Flask介绍与安装</h1><blockquote>
+<p>What is Flask?<br>Flask两个重要外部库：<a href="http://jinja.pocoo.org/2/" target="_blank" rel="noopener">Jinja2</a>模板引擎和<a href="http://werkzeug.pocoo.org/" target="_blank" rel="noopener">Werkzeug</a> WSGI套件。</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="1-1-pip安装"><a href="#1-1-pip安装" class="headerlink" title="1.1 pip安装"></a>1.1 pip安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># pip安装</span><br><span class="line">[five@nagios-server ~]$ sudo yum search python-pip</span><br><span class="line"></span><br><span class="line"># pip升级至最新版8.1.1</span><br><span class="line">[five@nagios-server ~]$ sudo pip install --upgrade pip</span><br></pre></td></tr></table></figure>
+<h2 id="1-2-virtualevn安装"><a href="#1-2-virtualevn安装" class="headerlink" title="1.2 virtualevn安装"></a>1.2 virtualevn安装</h2><blockquote>
+<p>virtualevn是Python开发必备工具，可在不同项目目录生成全新的Python开发环境，指定不同版本的Python及模块。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># virtualenv安装</span><br><span class="line">[five@nagios-server ~]$ sudo pip install virtualenv</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<hr>
+<p>创建项目独有的Pthon开发环境：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"># 创建venv环境</span><br><span class="line">[five@nagios-server hello_flask]$ virtualenv venv</span><br><span class="line">New python executable in /home/five/hello_flask/venv/bin/python</span><br><span class="line">Installing setuptools, pip, wheel...done.</span><br><span class="line">[five@nagios-server hello_flask]$ ll</span><br><span class="line">total 0</span><br><span class="line">drwxrwxr-x. 5 five five 77 Apr 16 19:21 venv</span><br><span class="line">[five@nagios-server hello_flask]$ ll venv/</span><br><span class="line">total 8</span><br><span class="line">drwxrwxr-x. 2 five five 4096 Apr 16 19:21 bin</span><br><span class="line">drwxrwxr-x. 2 five five   22 Apr 16 19:20 include</span><br><span class="line">drwxrwxr-x. 3 five five   22 Apr 16 19:20 lib</span><br><span class="line">lrwxrwxrwx. 1 five five    3 Apr 16 19:20 lib64 -&gt; lib</span><br><span class="line">-rw-rw-r--. 1 five five   60 Apr 16 19:21 pip-selfcheck.json</span><br><span class="line">[five@nagios-server hello_flask]$ ll venv/bin/</span><br><span class="line">total 52</span><br><span class="line">-rw-rw-r--. 1 five five 2086 Apr 16 19:21 activate</span><br><span class="line">-rw-rw-r--. 1 five five 1028 Apr 16 19:21 activate.csh</span><br><span class="line">-rw-rw-r--. 1 five five 2226 Apr 16 19:21 activate.fish</span><br><span class="line">-rw-rw-r--. 1 five five 1137 Apr 16 19:21 activate_this.py</span><br><span class="line">-rwxrwxr-x. 1 five five  255 Apr 16 19:20 easy_install</span><br><span class="line">-rwxrwxr-x. 1 five five  255 Apr 16 19:20 easy_install-2.7</span><br><span class="line">-rwxrwxr-x. 1 five five  227 Apr 16 19:20 pip</span><br><span class="line">-rwxrwxr-x. 1 five five  227 Apr 16 19:20 pip2</span><br><span class="line">-rwxrwxr-x. 1 five five  227 Apr 16 19:20 pip2.7</span><br><span class="line">-rwxrwxr-x. 1 five five 7136 Apr 16 19:20 python</span><br><span class="line">lrwxrwxrwx. 1 five five    6 Apr 16 19:20 python2 -&gt; python</span><br><span class="line">lrwxrwxrwx. 1 five five    6 Apr 16 19:20 python2.7 -&gt; python</span><br><span class="line">-rwxrwxr-x. 1 five five 2345 Apr 16 19:21 python-config</span><br><span class="line">-rwxrwxr-x. 1 five five  234 Apr 16 19:20 wheel</span><br><span class="line"># 激活venv环境, 通过which来确认以切换至venv环境</span><br><span class="line">[five@nagios-server hello_flask]$ . venv/bin/activate 或 source venv/bin/activate</span><br><span class="line">(venv) [five@nagios-server hello_flask]$ which python</span><br><span class="line">~/hello_flask/venv/bin/python</span><br></pre></td></tr></table></figure></p>
+<p>后续操作以当前项目<code>hello_flask</code>为前提，所有操作在项目的venv环境下执行。<br>退出当前venv环境使用<code>deactivate</code>命令。<br>venv参考阅读：</p>
+<ul>
+<li><a href="http://www.liaoxuefeng.com/wiki/0014316089557264a6b348958f449949df42a6d3a2e542c000/001432712108300322c61f256c74803b43bfd65c6f8d0d0000" target="_blank" rel="noopener">python virtualenv</a></li>
+<li><a href="http://www.nowamagic.net/academy/detail/1330228" target="_blank" rel="noopener">用virtualenv建立多个Python独立开发环境</a></li>
+</ul>
+<h2 id="1-3-Flask安装"><a href="#1-3-Flask安装" class="headerlink" title="1.3 Flask安装"></a>1.3 Flask安装</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">(venv) [five@nagios-server hello_flask]$ pip install Flask</span><br><span class="line">Collecting Flask</span><br><span class="line">Successfully built Flask itsdangerous MarkupSafe</span><br><span class="line">Installing collected packages: Werkzeug, MarkupSafe, Jinja2, itsdangerous, Flask</span><br><span class="line">Successfully installed Flask-0.10.1 Jinja2-2.8 MarkupSafe-0.23 Werkzeug-0.11.8 itsdangerous-0.24</span><br><span class="line">(venv) [five@nagios-server hello_flask]$ pip list</span><br><span class="line">Flask (0.10.1)</span><br><span class="line">itsdangerous (0.24)</span><br><span class="line">Jinja2 (2.8)</span><br><span class="line">MarkupSafe (0.23)</span><br><span class="line">pip (8.1.1)</span><br><span class="line">setuptools (20.9.0)</span><br><span class="line">Werkzeug (0.11.8)</span><br><span class="line">wheel (0.29.0)</span><br></pre></td></tr></table></figure>
+<h1 id="二、Flash构建hello-world"><a href="#二、Flash构建hello-world" class="headerlink" title="二、Flash构建hello world"></a>二、Flash构建hello world</h1><h2 id="2-1-hello-py"><a href="#2-1-hello-py" class="headerlink" title="2.1 hello.py"></a>2.1 hello.py</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">from flask import Flask</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">@app.route(&apos;/&apos;)</span><br><span class="line">def hello_world():</span><br><span class="line">    return &apos;Hello World!&apos;</span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<h2 id="2-2-python-hello-py"><a href="#2-2-python-hello-py" class="headerlink" title="2.2 python hello.py"></a>2.2 python hello.py</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 运行hello.py</span><br><span class="line">(venv) [five@nagios-server hello_flask]$ python hello.py </span><br><span class="line"> * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)</span><br><span class="line"></span><br><span class="line"># 本地访问 http://127.0.0.1:5000/</span><br><span class="line">[five@nagios-server ~]$ curl http://127.0.0.1:5000/</span><br><span class="line">Hello World!</span><br></pre></td></tr></table></figure>
+<p>注: 目前该web服务只能通过本地访问，无法对外服务。</p>
+<h2 id="2-3-代码解析"><a href="#2-3-代码解析" class="headerlink" title="2.3 代码解析"></a>2.3 代码解析</h2><ol>
+<li>导入Flask类, 该类的实例将作为本例的WSGI应用。</li>
+<li>新建Flask类实例，第一个参数应为模块或应用的名字，本例就是<strong>name</strong>(单一模块的情况下建议使用<strong>name</strong>；若是采用包的方式时，应采用包名或包名/文件名的方式。)<br><code>__name__</code>参数的作用：根据当前模块是作为应用还是作为模块导入而不同，可能值为<code>__main__</code>和模块名。该值被用于据文件系统查找合适的资源，提高调试信息完整性。<blockquote>
+<p>About the First Parameter<br>The idea of the first parameter is to give Flask an idea what belongs to your application. This name is used to find resources on the file system, can be used by extensions to improve debugging information and a lot more.</p>
+<p>So it’s important what you provide there. If you are using a single module, <strong>name</strong> is always the correct value. If you however are using a package, it’s usually recommended to hardcode the name of your package there.</p>
+</blockquote>
+</li>
+<li>使用@app.route()注入路由说明：URL为<code>/</code>时触发函数<code>hello_world</code>。</li>
+<li>函数名<code>hello_world</code>为特定的函数产生URLs，且返回内容至用户浏览器。</li>
+<li>最终，调用<code>run()</code>为本应用运行服务器程序。<code>__name__ == &#39;__main__&#39;:</code>确保只有本文件被python直接解析执行时运行服务器程序，而作为模块导入时不会运行服务器程序。<blockquote>
+<p>Ctrl+C停止当前服务</p>
+</blockquote>
+</li>
+</ol>
+<h1 id="三、开放外部访问的服务"><a href="#三、开放外部访问的服务" class="headerlink" title="三、开放外部访问的服务"></a>三、开放外部访问的服务</h1><p>上述例子中，运行服务器程序后只能本地访问<code>http://127.0.0.1:5000/</code>，而无法通过外部地址访问，也就是并未开放对外服务。<br>缺省模式下，处于安全考虑(调试模式下该应用的用户可执行任意本地的Python代码)默认设置就是禁止外部访问服务的。<br>如果<strong>关闭调试模式</strong>或<strong>信任用户</strong>，可开放服务的外部访问。修改如下:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">vim hello.py</span><br><span class="line">app.run(host=&apos;0.0.0.0&apos;)</span><br><span class="line"></span><br><span class="line">(venv) [five@nagios-server hello_flask]$ python hello.py </span><br><span class="line"> * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)</span><br><span class="line"> 192.168.8.1 - - [17/Apr/2016 15:06:51] &quot;GET / HTTP/1.1&quot; 200 -</span><br><span class="line"> 192.168.8.1 - - [17/Apr/2016 15:06:59] &quot;GET /favicon.ico HTTP/1.1&quot; 404 -</span><br><span class="line"> 192.168.8.1 - - [17/Apr/2016 15:07:25] &quot;GET / HTTP/1.1&quot; 200 -</span><br></pre></td></tr></table></figure></p>
+<h1 id="四、调试模式"><a href="#四、调试模式" class="headerlink" title="四、调试模式"></a>四、调试模式</h1><p><code>run()</code>方法很方便的运行本地开发版服务器，但每次代码修改后需要手动重启程序。<br>开启调试模式，可使得服务器程序在代码更改后自动重启, 而且会在程序异常时给出友好的提示信息。<br>开启调试模式的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">app.debug = True</span><br><span class="line">app.run()</span><br><span class="line">或</span><br><span class="line">app.run(debug=True)</span><br><span class="line"></span><br><span class="line"># 开启调试模式后运行</span><br><span class="line">(venv) [five@nagios-server hello_flask]$ python hello.py </span><br><span class="line"> * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)</span><br><span class="line"> * Restarting with stat</span><br><span class="line"> * Debugger is active!</span><br><span class="line"> * Debugger pin code: 209-179-100</span><br><span class="line">192.168.8.1 - - [17/Apr/2016 17:29:48] &quot;GET / HTTP/1.1&quot; 200 -</span><br><span class="line">192.168.8.1 - - [17/Apr/2016 17:29:54] &quot;GET / HTTP/1.1&quot; 200 -</span><br></pre></td></tr></table></figure></p>
+<p><code>注意：</code>调试模式强烈不建议在生产环境下开启，存在安全隐患~</p>
+<h1 id="五、路由"><a href="#五、路由" class="headerlink" title="五、路由"></a>五、路由</h1><p>现在web应用均采用优雅的URL来定义网页地址，这样有意义的URL可提高用户直接访问的可能，而不是完全无意义的一堆字母。<br>前文中利用<code>route()</code>将一个函数绑定到特定URL，类似的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@app.route(&apos;/&apos;)</span><br><span class="line">def index():</span><br><span class="line">    return &apos;Index Page&apos;</span><br><span class="line"></span><br><span class="line">@app.route(&apos;/hello&apos;)</span><br><span class="line">def hello():</span><br><span class="line">    return &apos;Hello World&apos;</span><br></pre></td></tr></table></figure></p>
+<h2 id="5-1-动态URL之变量规则"><a href="#5-1-动态URL之变量规则" class="headerlink" title="5.1 动态URL之变量规则"></a>5.1 动态URL之变量规则</h2><p>在URL中加入变量的语法规则是<code>&lt;variable_name&gt;</code>, 如需类型转换可采用这种规则<code>&lt;converter:variable_name&gt;</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@app.route(&apos;/user/&lt;username&gt;&apos;)</span><br><span class="line">def show_user_profile(username):</span><br><span class="line">    # show the user profile for that user</span><br><span class="line">    return &apos;User %s&apos; % username</span><br><span class="line"></span><br><span class="line">@app.route(&apos;/post/&lt;int:post_id&gt;&apos;)</span><br><span class="line">def show_post(post_id):</span><br><span class="line">    # show the post with the given id, the id is an integer</span><br><span class="line">    return &apos;Post %d&apos; % post_id</span><br></pre></td></tr></table></figure></p>
+<p>当前支持的converter转换器有：</p>
+<blockquote>
+<p>int: 接受整型<br>float: 接受浮点数<br>path: 和默认情况相同，也接受斜线/</p>
+</blockquote>
+<h2 id="5-2-唯一URL和重定向"><a href="#5-2-唯一URL和重定向" class="headerlink" title="5.2 唯一URL和重定向"></a>5.2 唯一URL和重定向</h2><p>Flask的URL规则基于Werkzeug的路由模块</p>
+<h2 id="5-3-URL构建"><a href="#5-3-URL构建" class="headerlink" title="5.3 URL构建"></a>5.3 URL构建</h2><h2 id="5-4-HTTP方法"><a href="#5-4-HTTP方法" class="headerlink" title="5.4 HTTP方法"></a>5.4 HTTP方法</h2><h1 id="六、静态文件"><a href="#六、静态文件" class="headerlink" title="六、静态文件"></a>六、静态文件</h1><h1 id="七、渲染模板"><a href="#七、渲染模板" class="headerlink" title="七、渲染模板"></a>七、渲染模板</h1><h1 id="八、操作请求数据"><a href="#八、操作请求数据" class="headerlink" title="八、操作请求数据"></a>八、操作请求数据</h1><h1 id="九、重定向和错误"><a href="#九、重定向和错误" class="headerlink" title="九、重定向和错误"></a>九、重定向和错误</h1><h1 id="十、关于响应"><a href="#十、关于响应" class="headerlink" title="十、关于响应"></a>十、关于响应</h1><h1 id="十一、会话Session"><a href="#十一、会话Session" class="headerlink" title="十一、会话Session"></a>十一、会话Session</h1><h1 id="十二、消息闪现"><a href="#十二、消息闪现" class="headerlink" title="十二、消息闪现"></a>十二、消息闪现</h1><h1 id="十三、日志"><a href="#十三、日志" class="headerlink" title="十三、日志"></a>十三、日志</h1><h1 id="十四、集成WSGI中间件"><a href="#十四、集成WSGI中间件" class="headerlink" title="十四、集成WSGI中间件"></a>十四、集成WSGI中间件</h1><h1 id="十五、部署至网络服务器"><a href="#十五、部署至网络服务器" class="headerlink" title="十五、部署至网络服务器"></a>十五、部署至网络服务器</h1><h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="https://dormousehole.readthedocs.org/en/latest/" target="_blank" rel="noopener">Flask readthedocs.org</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/01/18/Python-BFS-multithredings-web-crawler/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          [Python]广度优先的多线程Python网页抓取脚本
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/01/10/Redis-install-and-tutorial/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Redis安装及使用</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

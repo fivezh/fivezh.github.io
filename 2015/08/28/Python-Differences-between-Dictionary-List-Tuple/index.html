@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[Python]字典Dictionary、列表List、元组Tuple差异化理解 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述：Python中这三种形式的定义相近，易于混淆，应注意区分.1234Python中字典Dictionary、列表List、元组Tuple定义形式：aDict=&amp;#123;&amp;apos;a&amp;apos;:1, &amp;apos;b&amp;apos;:2, &amp;apos;c&amp;apos;:3, &amp;apos;d&amp;apos;:4, &amp;apos;e&amp;apos;:5&amp;#125;aList=[1,2,3,4,5]aTuple=">
+<meta name="keywords" content="Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[Python]字典Dictionary、列表List、元组Tuple差异化理解">
+<meta property="og:url" content="http://fivezh.github.io/2015/08/28/Python-Differences-between-Dictionary-List-Tuple/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="概述：Python中这三种形式的定义相近，易于混淆，应注意区分.1234Python中字典Dictionary、列表List、元组Tuple定义形式：aDict=&amp;#123;&amp;apos;a&amp;apos;:1, &amp;apos;b&amp;apos;:2, &amp;apos;c&amp;apos;:3, &amp;apos;d&amp;apos;:4, &amp;apos;e&amp;apos;:5&amp;#125;aList=[1,2,3,4,5]aTuple=">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[Python]字典Dictionary、列表List、元组Tuple差异化理解">
+<meta name="twitter:description" content="概述：Python中这三种形式的定义相近，易于混淆，应注意区分.1234Python中字典Dictionary、列表List、元组Tuple定义形式：aDict=&amp;#123;&amp;apos;a&amp;apos;:1, &amp;apos;b&amp;apos;:2, &amp;apos;c&amp;apos;:3, &amp;apos;d&amp;apos;:4, &amp;apos;e&amp;apos;:5&amp;#125;aList=[1,2,3,4,5]aTuple=">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 17.14px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.43px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 12.86px;">Life</a> <a href="/tags/Linux/" style="font-size: 14.29px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.43px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 14.29px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.43px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.43px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.57px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.43px;">PHP7</a> <a href="/tags/Python/" style="font-size: 15.71px;">Python</a> <a href="/tags/Redis/" style="font-size: 14.29px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-Python-Differences-between-Dictionary-List-Tuple" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/08/28/Python-Differences-between-Dictionary-List-Tuple/" class="article-date">
+  	<time datetime="2015-08-28T03:16:25.000Z" itemprop="datePublished">2015-08-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [Python]字典Dictionary、列表List、元组Tuple差异化理解
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>概述：Python中这三种形式的定义相近，易于混淆，应注意区分.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Python中字典Dictionary、列表List、元组Tuple定义形式：</span><br><span class="line">aDict=&#123;&apos;a&apos;:1, &apos;b&apos;:2, &apos;c&apos;:3, &apos;d&apos;:4, &apos;e&apos;:5&#125;</span><br><span class="line">aList=[1,2,3,4,5]</span><br><span class="line">aTuple=(1,2,3,4,5)</span><br></pre></td></tr></table></figure></p>
+<a id="more"></a>
+<h1 id="一、字典Dictionary"><a href="#一、字典Dictionary" class="headerlink" title="一、字典Dictionary"></a>一、字典Dictionary</h1><blockquote>
+<p>语法形式：aDict={‘a’:1, ‘b’:2, ‘c’:3, ‘d’:4, ‘e’:5}<br>Python手册说明：<a href="https://docs.python.org/2.7/library/stdtypes.html#dict" target="_blank" rel="noopener">https://docs.python.org/2.7/library/stdtypes.html#dict</a></p>
+</blockquote>
+<ul>
+<li>Dictionary是Python内置数据类型，定义了”键-值”间的一一对应关系。</li>
+<li>每个元素都是key-value对，整个元素集合用<strong>大括号</strong>扩起来。</li>
+<li>可通过key获取对应值，但不能根据value获取key。</li>
+<li><strong>key不能相同</strong>，相同key则将覆盖就值。</li>
+<li>key大小写敏感，value可支持任意数据类型（字符串、整数、对象或其他Dictionary）。</li>
+<li>del可通过key删除字典中特定元素<code>del dict[k]</code>。</li>
+<li>clear将清空字典中所有元素，空的大括号表示没有元素的字典。</li>
+</ul>
+<h1 id="二、列表List"><a href="#二、列表List" class="headerlink" title="二、列表List"></a>二、列表List</h1><blockquote>
+<p>语法形式：aList=[1,2,3,4,5]</p>
+</blockquote>
+<ul>
+<li>List中元素是可变的。</li>
+<li>List是使用<strong>中括号</strong>括起来的有序元素集合。</li>
+<li>List列表索引从0开始。</li>
+<li>负数索引表示从List的尾部开始向前存取元素，list[-1]表示最后一个元素，可以理解list[-n]=list[len(list)-n]</li>
+<li>List[m:n]表示List中m&lt;=k&lt;n的子集，被称为slice，详见<a href="https://docs.python.org/2.7/library/stdtypes.html#typesseq" target="_blank" rel="noopener">手册</a>。</li>
+<li>List[:]返回与List中元素相同的一个新list，List[1:]取1-len(List)中所有元素</li>
+<li>List列表方法：insert()插入新的元素，append()在尾部追加新元素、列表，extend()将一个列表扩展到原列表中,index()返回首个出现的元素索引，k in list返回是否存在</li>
+<li>List可通过+连接两个列表，等价于list.extend(anotherList)。</li>
+<li>List中<strong>元素可以相同</strong>。</li>
+</ul>
+<h1 id="三、元组Tuple"><a href="#三、元组Tuple" class="headerlink" title="三、元组Tuple"></a>三、元组Tuple</h1><blockquote>
+<p>语法形式：aTuple=(1,2,3,4,5)</p>
+</blockquote>
+<ul>
+<li>Tuple元组是不可变的List，不能改变元组中的元素值。</li>
+<li>创建Tuple的形式与List相同，区别在于将[]换为()。</li>
+<li>Tuple元组没有append、extend、remove、pop、index等方法，但可使用in判断元素是否存在。</li>
+<li>空元组可以用()表示，但只有一个元素的元组为避免歧义应当使用(n,)表示，而避免只用(n)的形式，Python可能误解为加了小括号的数字n。</li>
+<li>列表和元组的相互转化：<code>atuple=tuple(alist)</code>和<code>alist=list(atuple)</code></li>
+<li>无关闭分隔符：任何以逗号分隔的无符号对象都认为是元组，如<code>x,y = 1,2</code>则<code>print &quot;Value of x,y:&quot;, x, y</code></li>
+<li>Tuple好处：速度比List快，代码安全。</li>
+</ul>
+<p>Python元组包含了以下内置函数:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">1. cmp(tuple1, tuple2)：比较两个元组元素。</span><br><span class="line">2. len(tuple)：计算元组元素个数。</span><br><span class="line">3. max(tuple)：返回元组中元素最大值。</span><br><span class="line">4. min(tuple)：返回元组中元素最小值。</span><br><span class="line">5. tuple(seq)：将列表转换为元组。</span><br></pre></td></tr></table></figure></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="http://www.cnblogs.com/Michael-Kong/archive/2012/07/11/2585840.html" target="_blank" rel="noopener">Python list、tuple、dict区别</a></li>
+<li><a href="http://blog.csdn.net/jubincn/article/details/8570327" target="_blank" rel="noopener">Python中的List，Tuple和Dictionary</a></li>
+<li><a href="http://www.jb51.net/article/47986.htm" target="_blank" rel="noopener">Python 元组(Tuple)操作详解</a></li>
+<li><a href="http://blog.csdn.net/michaelpp/article/details/11137501" target="_blank" rel="noopener">Python tuple 元组详解</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/09/06/LeetCode-110-Balanced-Binary-Tree/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          LeetCode 110 Balanced Binary Tree | 平衡二叉树判断
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/08/11/LeetCode-257-Binary-Tree-Paths/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[LeetCode] 257. Binary Tree Paths | 二叉树输出路径</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2022 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
