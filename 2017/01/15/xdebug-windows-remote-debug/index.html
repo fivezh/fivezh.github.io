@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>xdebug远程调试 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="开发环境： Windows笔记本：日常开发使用机器，安装PHPStrom Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182 【注意】，Windows通过vpn访问到Linux服务器，也就是说Windows-&amp;gt;Linux是可以通过IP直接访问的，而Linux-&amp;gt;Windows无法直接连通，因为对Linux而言，Windows开发机的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xdebug远程调试">
+<meta property="og:url" content="http://fivezh.github.io/2017/01/15/xdebug-windows-remote-debug/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="开发环境： Windows笔记本：日常开发使用机器，安装PHPStrom Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182 【注意】，Windows通过vpn访问到Linux服务器，也就是说Windows-&amp;gt;Linux是可以通过IP直接访问的，而Linux-&amp;gt;Windows无法直接连通，因为对Linux而言，Windows开发机的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/assets/post_images/sftp.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/xdebug-settings-servers.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/edit-debug-configuration.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/xshell-tunnel.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/xshell-tunnel-connecting.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/start-debug.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/xdebug-waiting.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/debugging.png">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="xdebug远程调试">
+<meta name="twitter:description" content="开发环境： Windows笔记本：日常开发使用机器，安装PHPStrom Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182 【注意】，Windows通过vpn访问到Linux服务器，也就是说Windows-&amp;gt;Linux是可以通过IP直接访问的，而Linux-&amp;gt;Windows无法直接连通，因为对Linux而言，Windows开发机的">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/assets/post_images/sftp.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-xdebug-windows-remote-debug" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/01/15/xdebug-windows-remote-debug/" class="article-date">
+  	<time datetime="2017-01-15T05:34:08.000Z" itemprop="datePublished">2017-01-15</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      xdebug远程调试
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <h2 id="开发环境："><a href="#开发环境：" class="headerlink" title="开发环境："></a>开发环境：</h2><ul>
+<li>Windows笔记本：日常开发使用机器，安装PHPStrom</li>
+<li>Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182</li>
+<li>【注意】，Windows<strong>通过vpn访问到Linux服务器</strong>，也就是说Windows-&gt;Linux是可以通过IP直接访问的，而Linux-&gt;Windows无法直接连通，因为对Linux而言，Windows开发机的IP只有VPN的网关地址</li>
+<li>Windows和Linux之前通过PhpStorm的sftp进行代码同步</li>
+</ul>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>远程调试（remote debug）：也就是在windows本地调试远程服务器（Linux）上的代码</li>
+<li>日常开发用Windows中在PhpStorm中设置断点，可调试远程Linux远程服务器（172.16.0.182）的代码<a id="more"></a>
+</li>
+</ul>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><ol>
+<li><p>Linux远程服务器上，PHP安装Xdebug插件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zend_extension = /home/work/php70/lib/php/extensions/no-debug-non-zts<span class="number">-20151012</span>/xdebug.so</span><br><span class="line"></span><br><span class="line">xdebug.remote_host=<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line">; <span class="comment">//注意这里是，客户端的ip&lt;即IDE的机器的ip,不是你的web server&gt;</span></span><br><span class="line"></span><br><span class="line">xdebug.remote_enable=on</span><br><span class="line">xdebug.remote_port = <span class="number">9001</span></span><br><span class="line">;<span class="comment">//注意这里是，客户端的端口&lt;即IDE的机器的ip,不是你的web server&gt;</span></span><br><span class="line">;<span class="comment">// 由于VPN缘故，Linux无法直接访问Windows，需要先指定为Linux本机的9001端口，再通过ssh端口映射的功能转发至Windows机器</span></span><br><span class="line"></span><br><span class="line">xdebug.remote_log = /tmp/xdebug.log</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Windows上配置phpStorm</p>
+<p>2.1 SFTP同步远程代码</p>
+<p><img src="/assets/post_images/assets/post_images/sftp.png" alt></p>
+<p>2.2 设置PHP-Servers为远程Linux服务器，调试模式为Xdebug</p>
+<p><img src="/assets/post_images/xdebug-settings-servers.png" alt="servers设置"></p>
+<p>2.3 新建调试配置：Run-&gt; Edit Debug Configuration</p>
+<p><img src="/assets/post_images/edit-debug-configuration.png" alt></p>
+</li>
+<li><p>Windows上开启Xshell端口映射（隧道-&gt;TCP/IP转移）</p>
+<p>将Linux的9001端口请求转发至Windows的9001端口上，这里通过Xshell的隧道方式实现：<strong>类型选择Remote(Incomming)</strong> </p>
+<p><img src="/assets/post_images/xshell-tunnel.png" alt></p>
+<p>在xshell中通过ssh连接Linux远程服务器后，查看-&gt;隧道窗格-&gt;转移规则，可见远程9001已和本地的9001建立连接</p>
+<p><img src="/assets/post_images/xshell-tunnel-connecting.png" alt></p>
+</li>
+<li><p>Windows开启调试，访问远程服务器代码的url：<code>http://172.16.0.182:8088/</code></p>
+<ul>
+<li>选择新建的Xdebug配置项</li>
+<li>点击绿虫子调试按钮（Shift+F9）开启调试</li>
+</ul>
+<p><img src="/assets/post_images/start-debug.png" alt></p>
+<ul>
+<li><p>点击调试按钮后，会自动打开浏览器访问：<code>http://172.16.0.182:8088/?XDEBUG_SESSION_START=17461</code></p>
+<p>这里<code>XDEBUG_SESSION_START=17461</code>会在cookie中设置<code>XDEBUG_SESSION=17461</code>，而phpStorm一直在监听17461的idekey来访问，如下图：</p>
+<p><img src="/assets/post_images/xdebug-waiting.png" alt></p>
+<p>访问到断点时会进入ide的debug模式，Enjoy~</p>
+<p><img src="/assets/post_images/debugging.png" alt></p>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li><p>此例中只通过任意的idekey和phpStorm的调试按钮来协调开始调试模式，而不是一些教程中设置特定的idekey=PHPSTORM和浏览器插件（Xdebug Helper）来启动调试，后者在笔者环境下未成功，望知晓</p>
+</li>
+<li><p>本案例中特殊之处在于vpn访问的特殊网络结构，单向通信容易，逆向则需要借助端口转发工具</p>
+</li>
+<li><p>为避免调试过程中Nginx返回502超时，需要修改php-fpm和nginx设置，如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">// 修改php-fpm.conf配置</span><br><span class="line">; The timeout for serving a single request after which the worker process will</span><br><span class="line">; be killed. This option should be used when the &apos;max_execution_time&apos; ini option</span><br><span class="line">; does not stop script execution for some reason. A value of &apos;0&apos; means &apos;off&apos;.</span><br><span class="line">; Available units: s(econds)(default), m(inutes), h(ours), or d(ays)</span><br><span class="line">; Default Value: 0</span><br><span class="line">;request_terminate_timeout = 0</span><br><span class="line">request_terminate_timeout = 300 //这里用0或设置5分钟</span><br><span class="line"></span><br><span class="line">// 修改nginx中fastcgi超时时间</span><br><span class="line">fastcgi_read_timeout 7200s;  // 设置fastcgi_read表示nginx从php-fpm读取返回数据的时间</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="参考文档："><a href="#参考文档：" class="headerlink" title="参考文档："></a>参考文档：</h2><ul>
+<li><a href="http://www.thinkphp.cn/topic/46349.html" target="_blank" rel="noopener">http://www.thinkphp.cn/topic/46349.html</a></li>
+<li><a href="http://www.cnblogs.com/yjken/p/6555438.html" target="_blank" rel="noopener">http://www.cnblogs.com/yjken/p/6555438.html</a></li>
+<li><a href="http://www.cnblogs.com/jice/p/5064838.html" target="_blank" rel="noopener">http://www.cnblogs.com/jice/p/5064838.html</a></li>
+<li><a href="https://xdebug.org/docs/remote" target="_blank" rel="noopener">https://xdebug.org/docs/remote</a></li>
+<li><a href="https://confluence.jetbrains.com/plugins/servlet/mobile#content/view/50497722" target="_blank" rel="noopener">https://confluence.jetbrains.com/plugins/servlet/mobile#content/view/50497722</a></li>
+<li><a href="https://confluence.jetbrains.com/display/PhpStorm/Troubleshooting+PhpStorm+debugging" target="_blank" rel="noopener">https://confluence.jetbrains.com/display/PhpStorm/Troubleshooting+PhpStorm+debugging</a></li>
+<li><a href="https://intellij-support.jetbrains.com/hc/en-us/community/posts/205972064-PHPSTORM-not-receiving-debug-connection-from-xdebug-2-5" target="_blank" rel="noopener">https://intellij-support.jetbrains.com/hc/en-us/community/posts/205972064-PHPSTORM-not-receiving-debug-connection-from-xdebug-2-5</a></li>
+<li><a href="https://stackoverflow.com/questions/8049776/xdebug-for-remote-server-not-connecting" target="_blank" rel="noopener">https://stackoverflow.com/questions/8049776/xdebug-for-remote-server-not-connecting</a></li>
+<li><a href="https://stackoverflow.com/questions/2374567/eclipse-xdebug-session-never-completes" target="_blank" rel="noopener">https://stackoverflow.com/questions/2374567/eclipse-xdebug-session-never-completes</a></li>
+<li><a href="http://mrcelite.blog.51cto.com/2977858/1612320" target="_blank" rel="noopener">http://mrcelite.blog.51cto.com/2977858/1612320</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/04/16/2016-review/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          回首2016
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/20/PHP-return-response-while-running-background-script/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[PHP]请求接口后直接返回信息,同时server端继续执行脚本</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

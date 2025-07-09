@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>阿里云多种消息服务的差异及选型 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="背景：消息中间件日益在应用系统中必不可少，阿里云提供多种消息MessageQueue服务，有历史原因也有产品线不统一或尽可能提供用户更多选择的原因。笔者根据实际使用，总结下阿里云消息服务的历史、不同消息服务的差异、最后给出推荐选用原则。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阿里云多种消息服务的差异及选型">
+<meta property="og:url" content="http://fivezh.github.io/2019/04/24/ali-message-service/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="背景：消息中间件日益在应用系统中必不可少，阿里云提供多种消息MessageQueue服务，有历史原因也有产品线不统一或尽可能提供用户更多选择的原因。笔者根据实际使用，总结下阿里云消息服务的历史、不同消息服务的差异、最后给出推荐选用原则。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/MNS_ONS.png">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阿里云多种消息服务的差异及选型">
+<meta name="twitter:description" content="背景：消息中间件日益在应用系统中必不可少，阿里云提供多种消息MessageQueue服务，有历史原因也有产品线不统一或尽可能提供用户更多选择的原因。笔者根据实际使用，总结下阿里云消息服务的历史、不同消息服务的差异、最后给出推荐选用原则。">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/MNS_ONS.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-ali-message-service" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/04/24/ali-message-service/" class="article-date">
+  	<time datetime="2019-04-24T09:14:17.000Z" itemprop="datePublished">2019-04-24</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      阿里云多种消息服务的差异及选型
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p><strong>背景</strong>：消息中间件日益在应用系统中必不可少，阿里云提供多种消息MessageQueue服务，有历史原因也有产品线不统一或尽可能提供用户更多选择的原因。笔者根据实际使用，总结下阿里云消息服务的历史、不同消息服务的差异、最后给出推荐选用原则。<br><a id="more"></a></p>
+<h2 id="阿里云消息服务现状"><a href="#阿里云消息服务现状" class="headerlink" title="阿里云消息服务现状"></a>阿里云消息服务现状</h2><p>目前阿里云提供多种消息队列服务：</p>
+<ul>
+<li><a href="https://cn.aliyun.com/product/mns" target="_blank" rel="noopener">阿里云消息服务MNS</a></li>
+<li><a href="https://www.aliyun.com/product/rocketmq" target="_blank" rel="noopener">消息队列RocketMQ</a></li>
+<li><a href="https://www.aliyun.com/product/amqp" target="_blank" rel="noopener">消息队列AMQP(RabbitMQ)</a></li>
+<li><a href="https://www.aliyun.com/product/mq4iot" target="_blank" rel="noopener">微消息队列MQTT for IoT</a></li>
+<li><a href="https://www.aliyun.com/product/kafka" target="_blank" rel="noopener">消息队列 Kafka</a></li>
+</ul>
+<p>这里我们只关注笔者目前使用的两个<code>消息队列Message Queue</code>中间件：</p>
+<ul>
+<li>消息服务MNS</li>
+<li>消息队列RocketMQ</li>
+</ul>
+<h2 id="阿里云消息服务MNS和RocketMQ的历史"><a href="#阿里云消息服务MNS和RocketMQ的历史" class="headerlink" title="阿里云消息服务MNS和RocketMQ的历史"></a>阿里云消息服务MNS和RocketMQ的历史</h2><h3 id="消息服务MNS"><a href="#消息服务MNS" class="headerlink" title="消息服务MNS"></a>消息服务MNS</h3><p>原名MQS，阿里在2012年立项自研项目，2014年阿里云上线公测，2015年改名MNS服务，最后更新时间为2015年12月。</p>
+<p>从历史可以看到MNS消息队列从最早12年立项自研，历经MQS改名为MNS，15年后稳定提供云服务。</p>
+<p>笔者从16年接触使用MNS，到目前仍有100+队列线上运行，从实际使用情况看，总结如下：</p>
+<ul>
+<li>稳定性：三年未发生过大的事故，除了某次阿里云机房故障，各云服务均受影响</li>
+<li>可靠性：线上未发生消息丢失，多方对账验证也未发现</li>
+<li>顺序性：<strong>不保证消息有序</strong>，虽然提供<code>Python</code>版的内存排序方案，但无法保证严格有序</li>
+<li>价格：非常便宜，2元/百万次，几乎相当于不要钱了</li>
+<li>不足：监控、报警由于不开放API，只能依赖阿里云的云监控，收费项目</li>
+</ul>
+<h3 id="消息队列RocketMQ"><a href="#消息队列RocketMQ" class="headerlink" title="消息队列RocketMQ"></a>消息队列RocketMQ</h3><p>阿里借鉴Kafka设计思想，并优化低延迟、高可靠性方案，研发出来内部高性能、高可靠、功能完备的RocketMQ，同时提供开源和云服务。</p>
+<blockquote>
+<p>消息队列 RocketMQ 是阿里巴巴集团自主研发的专业消息中间件，基于高可用分布式集群技术，提供消息订阅和发布、消息轨迹查询以及定时（延时）消息、资源统计、监控报警等一系列消息云服务，是企业级互联网架构的核心产品。 消息队列 RocketMQ 历史超过9年，为分布式应用系统提供异步解耦、削峰填谷的能力，同时具备海量消息堆积、高吞吐、可靠重试等互联网应用所需的特性，是阿里巴巴双11使用的核心产品。</p>
+</blockquote>
+<p>主要特性：</p>
+<ul>
+<li>消息类型：普通消息、定时/延时消息、顺序消息、事务消息</li>
+<li>消息<code>Exactly-Once 投递</code>，此<a href="https://help.aliyun.com/document_detail/102777.html" target="_blank" rel="noopener">特性</a>仅支持Java SDK</li>
+<li>顺序消息：云服务RocketMQ支持<strong>全局有序</strong>和分区有序<ul>
+<li>全局有序这个太厉害了，目前开源实现版本貌似不支持</li>
+</ul>
+</li>
+<li>支持消息回溯</li>
+<li>支持消息轨迹（消息状态跟踪）</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>消息重复无法避免，业务上应根据唯一Key来做幂等性处理<ul>
+<li>发送时消息重复：发送过程网络或Client异常，重试则消息重复</li>
+<li>投递时消息重复：接收过程网络或Client异常，为保证<code>At Least Once</code>，重试则消息重复</li>
+<li>负载均衡时消息重复：Broker重启、扩容、缩容，触发消息Rebalance，可能消息重复</li>
+</ul>
+</li>
+<li>MessageId不保证全局唯一，业务上应设置MessageKey来保证唯一性</li>
+<li>TCP版SDK仅支持Java、C/C++、.NET，不支持PHP/Go/Python等语言</li>
+<li>HTTP版SDK支持Go/Python/Nodejs/PHP/Java/C++/C#</li>
+<li><strong>RocketMQ未支持优先级队列</strong></li>
+</ul>
+<h3 id="消息队列-AMQP（RabbitMQ）"><a href="#消息队列-AMQP（RabbitMQ）" class="headerlink" title="消息队列 AMQP（RabbitMQ）"></a>消息队列 AMQP（RabbitMQ）</h3><blockquote>
+<p>消息队列 AMQP 由阿里云基于 AMQP 标准协议研发，完全兼容 RabbitMQ 开源生态以及多语言客户端，打造分布式、高吞吐、低延迟、高可扩展的云消息服务。开箱即用，用户无需部署免运维，轻松实现快速上云，阿里云提供全托管服务，更专业、更可靠、更安全。</p>
+</blockquote>
+<p>特性及注意事项：</p>
+<ul>
+<li>定时消息：开源版RabbitMQ不支持</li>
+<li>死信队列</li>
+<li>完全兼容 AMQP 标准协议和 RabbitMQ 开源生态</li>
+<li>目前阿里云版仅提供Java版SDK</li>
+</ul>
+<h2 id="云服务：MNS和ONS中消息队列RocketMQ的对比"><a href="#云服务：MNS和ONS中消息队列RocketMQ的对比" class="headerlink" title="云服务：MNS和ONS中消息队列RocketMQ的对比"></a>云服务：MNS和ONS中消息队列RocketMQ的对比</h2><p><img src="/assets/post_images/MNS_ONS.png" alt><br>引用阿里中间件团队的<a href="http://jm.taobao.org/2016/04/01/kafka-vs-rabbitmq-vs-rocketmq-message-send-performance/" target="_blank" rel="noopener">RocketMQ、RabbitMQ、Kafka同步发送性能对比</a>：Kafka &gt; RocketMQ &gt; RabbitMQ</p>
+<h2 id="推荐选用原则"><a href="#推荐选用原则" class="headerlink" title="推荐选用原则"></a>推荐选用原则</h2><p>分析业务实际需求、潜在需求，对消息系统的功能性要求有哪些，主要考虑的特性：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>RocketMQ</th>
+<th>MNS</th>
+<th>RabbitMQ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>有序性</td>
+<td>全局有序+分区有序</td>
+<td><strong>Client内存排序</strong></td>
+<td>单Producer+同Exchange/Queue+单消费Channel可保证有序</td>
+</tr>
+<tr>
+<td>可靠性</td>
+<td>高</td>
+<td>高</td>
+<td>高</td>
+</tr>
+<tr>
+<td>拉取模式</td>
+<td>Pull/Push</td>
+<td>Pull/Push</td>
+<td>Pull/Push</td>
+</tr>
+<tr>
+<td>发送性能</td>
+<td>1万</td>
+<td>3000</td>
+<td>1万</td>
+</tr>
+<tr>
+<td>优先级队列</td>
+<td><strong>不支持</strong></td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>延时队列</td>
+<td>支持</td>
+<td>支持</td>
+<td><strong>非原生支持</strong></td>
+</tr>
+<tr>
+<td>价格</td>
+<td>普通：2元/百万次API请求；事务/顺序/定时消息：5倍计费</td>
+<td>2元/百万次API请求</td>
+<td>同RocketMQ</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>RabbitMQ非原生支持延时队列，仅支持消息或队列的TTL超时，但无法灵活实现延时策略，<a href="https://github.com/rabbitmq/rabbitmq-delayed-message-exchange" target="_blank" rel="noopener">rabbitmq-delayed-message-exchange</a>插件支持毫秒级延时队列方案，但对性能等影响应全面评估。</p>
+</blockquote>
+<p>如果在云服务选择的话，建议：</p>
+<ul>
+<li>要求顺序性：选择RocketMQ</li>
+<li>要求优先级：可用RabbitMQ或MNS</li>
+<li>要求发送速度：超过5000，选择RocketMQ；低于2000/s，均可</li>
+<li>价格上二者相当，按调用次数或套餐包、Topic使用费计费</li>
+<li>注意：使用云服务，则必须使用阿里云的云监控来做监控报警</li>
+</ul>
+<h2 id="我们团队目前的选择"><a href="#我们团队目前的选择" class="headerlink" title="我们团队目前的选择"></a>我们团队目前的选择</h2><ul>
+<li>团队基于RabbitMQ搭建的消息队列集群服务<ul>
+<li>由5台4C8G集群组成</li>
+<li>开启持久化、队列镜像</li>
+<li>性能满足10倍扩容的需求</li>
+</ul>
+</li>
+<li>基于RabbitMQ API和Prometheus增加报警监控</li>
+<li>增加多租户配置管理后台，减少接入配置成本</li>
+<li>增加SDK降低使用方Client接入成本</li>
+<li>增加消息跟踪，支持生产者、消费者两端的消息状态查询</li>
+<li>增加消息重放，在消息跟踪的基础上实现</li>
+</ul>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://help.aliyun.com/document_detail/27417.html" target="_blank" rel="noopener">阿里云MNS发展历史</a></li>
+<li><a href="http://blog.wentong.me/2016/01/message-queue-research/" target="_blank" rel="noopener">几款消息中间的调研</a></li>
+<li><a href="http://jm.taobao.org/2016/04/01/kafka-vs-rabbitmq-vs-rocketmq-message-send-performance/" target="_blank" rel="noopener">Kafka、RabbitMQ、RocketMQ消息中间件的对比 —— 消息发送性能</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/09/06/chaset-encoding-things/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          PHP中编码检测
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/04/09/sync_mutex_translation/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[译]sync.RWMutex - 解决并发读写问题</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

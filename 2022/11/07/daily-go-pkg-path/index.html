@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>[基础库] path包使用 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Go标准库中自带path包使用说明：  Package path implements utility routines for manipulating slash-separated paths.The path package should only be used for paths separated by forward slashes, such as the paths in UR">
+<meta name="keywords" content="Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[基础库] path包使用">
+<meta property="og:url" content="http://fivezh.github.io/2022/11/07/daily-go-pkg-path/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="Go标准库中自带path包使用说明：  Package path implements utility routines for manipulating slash-separated paths.The path package should only be used for paths separated by forward slashes, such as the paths in UR">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2022-11-08T02:54:47.832Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[基础库] path包使用">
+<meta name="twitter:description" content="Go标准库中自带path包使用说明：  Package path implements utility routines for manipulating slash-separated paths.The path package should only be used for paths separated by forward slashes, such as the paths in UR">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-daily-go-pkg-path" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2022/11/07/daily-go-pkg-path/" class="article-date">
+  	<time datetime="2022-11-07T14:04:00.000Z" itemprop="datePublished">2022-11-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      [基础库] path包使用
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p><code>Go</code>标准库中自带<code>path包</code>使用说明：</p>
+<blockquote>
+<p>Package path implements utility routines for manipulating slash-separated paths.<br>The path package should only be used for paths separated by forward slashes, such as the paths in URLs. This package does not deal with Windows paths with drive letters or backslashes; to manipulate operating system paths, use the path/filepath package.<br><a id="more"></a></p>
+</blockquote>
+<blockquote>
+<p>包路径实现了用于操作斜杠分隔路径的实用程序。<br>path 包只能用于由正斜杠分隔的路径，例如 URL 中的路径。 此软件包不处理带有驱动器号或反斜杠的 Windows 路径； 要操作操作系统路径，请使用 path/filepath 包。<br><a href="https://pkg.go.dev/path" target="_blank" rel="noopener">官方文档</a></p>
+</blockquote>
+<h3 id="核心要点"><a href="#核心要点" class="headerlink" title="核心要点"></a>核心要点</h3><ul>
+<li><code>path</code>包包含了以<code>/</code>分割的路径处理操作</li>
+<li>将路径字符串以<code>/</code>分割后，按每个元素来处理</li>
+<li><code>dir</code>是目录，输出时会剔除尾部的<code>/</code></li>
+<li><code>.</code>、<code>..</code>、<code>/</code>均为特殊处理case</li>
+</ul>
+<p>函数列表：</p>
+<ul>
+<li>func Base(path string) string: 返回路径中的最后一个元素</li>
+<li>func Clean(path string) string: 标准化path处理</li>
+<li>func Dir(path string) string: 获取路径的目录</li>
+<li>func Ext(path string) string: 获取路径的文件名后缀</li>
+<li>func IsAbs(path string) bool: 是否绝对路径</li>
+<li>func Join(elem …string) string：路径拼接</li>
+<li>func Match(pattern, name string) (matched bool, err error)：路径<code>name</code>是否匹配shell格式的<code>pattern</code></li>
+<li>func Split(path string) (dir, file string): 将全路径分割为目录和文件名</li>
+</ul>
+<h2 id="func-Base-path-string-string"><a href="#func-Base-path-string-string" class="headerlink" title="func Base(path string) string"></a><code>func Base(path string) string</code></h2><p>函数说明：</p>
+<ul>
+<li><code>Base</code>返回路径中的最后一个元素</li>
+<li>将路径<code>path</code>按<code>/</code>拆分后，最后一个元素为<code>basename</code></li>
+<li>和Linux中命令<code>basename</code>操作一致</li>
+</ul>
+<p>注意事项：</p>
+<ul>
+<li>空字符串时返回’.’</li>
+<li>全斜线(一个或多个)的字符串返回’/‘</li>
+<li>结尾的<code>/</code>将会被移除，也就是说<code>Base{&quot;/home/&quot;}</code>和<code>Base{&quot;/home&quot;}</code>返回结果一样，都是<code>&quot;home&quot;</code></li>
+</ul>
+<h2 id="func-Clean-path-string-string"><a href="#func-Clean-path-string-string" class="headerlink" title="func Clean(path string) string"></a><code>func Clean(path string) string</code></h2><p>函数说明：<br>作用：路径标准化处理，返回等价的最短路径</p>
+<ul>
+<li>多个连续<code>/</code>合并为单个</li>
+<li>消除当前目录的<code>.</code>标识</li>
+<li>消除<code>..</code>路径元素和它之前的<code>非..</code>元素</li>
+<li>将根路径下的<code>/..</code>替换为<code>/</code></li>
+<li>只有当路径为<code>/</code>时返回路径才会以<code>/</code>结尾</li>
+<li>空路径处理后返回<code>.</code></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 处理效果，可执行源码参见[path#example-Clean](https://pkg.go.dev/path#example-Clean)</span></span><br><span class="line">Clean(<span class="string">"a/c"</span>) = <span class="string">"a/c"</span></span><br><span class="line">Clean(<span class="string">"a//c"</span>) = <span class="string">"a/c"</span></span><br><span class="line">Clean(<span class="string">"a/c/."</span>) = <span class="string">"a/c"</span></span><br><span class="line">Clean(<span class="string">"a/c/b/.."</span>) = <span class="string">"a/c"</span></span><br><span class="line">Clean(<span class="string">"/../a/c"</span>) = <span class="string">"/a/c"</span></span><br><span class="line">Clean(<span class="string">"/../a/b/../././/c"</span>) = <span class="string">"/a/c"</span></span><br><span class="line">Clean(<span class="string">""</span>) = <span class="string">"."</span></span><br></pre></td></tr></table></figure>
+<h2 id="func-Dir-path-string-string"><a href="#func-Dir-path-string-string" class="headerlink" title="func Dir(path string) string"></a><code>func Dir(path string) string</code></h2><p>作用：获取路径中的目录</p>
+<ul>
+<li>返回路径中除最后一个元素外的路径，通常未path指向的目录</li>
+<li>通过Split分割路径，剔除最后一个元素和结尾的<code>/</code></li>
+<li>路径为空，则返回<code>.</code></li>
+<li>除下述情况返回以<code>/</code>结尾外，其他情况均不会返回以<code>/</code>结尾<ul>
+<li>path为多个连续<code>/</code>，后跟<code>非/</code>元素，入<code>////foo</code>将返回<code>/</code></li>
+</ul>
+</li>
+</ul>
+<h2 id="func-Ext-path-string-string"><a href="#func-Ext-path-string-string" class="headerlink" title="func Ext(path string) string"></a><code>func Ext(path string) string</code></h2><p>作用：获取路径中的文件扩展名</p>
+<ul>
+<li>获取路径中的文件扩展名</li>
+<li>扩展名是<code>/</code>分割的最后一个元素中，以最末尾的<code>.</code>开始的后缀部分</li>
+<li>如果最后一个元素没有<code>.</code>，则返回空</li>
+</ul>
+<h2 id="func-IsAbs-path-string-bool"><a href="#func-IsAbs-path-string-bool" class="headerlink" title="func IsAbs(path string) bool"></a><code>func IsAbs(path string) bool</code></h2><p>作用：判断输出path是否为绝对路径</p>
+<p>绝对路径：只有以<code>/</code>开始的全路径才是绝对路径</p>
+<h2 id="func-Join-elem-string-string"><a href="#func-Join-elem-string-string" class="headerlink" title="func Join(elem ...string) string"></a><code>func Join(elem ...string) string</code></h2><p>作用：路径拼接</p>
+<ul>
+<li>使用<code>/</code>拼接多个元素为路径</li>
+<li>空元素将被忽略</li>
+<li>返回结果会调用<code>Clean()</code>标准化处理</li>
+<li>如果多个入参均为空字符串，则返回结果也为空字符串</li>
+</ul>
+<h2 id="func-Match-pattern-name-string-matched-bool-err-error"><a href="#func-Match-pattern-name-string-matched-bool-err-error" class="headerlink" title="func Match(pattern, name string) (matched bool, err error)"></a><code>func Match(pattern, name string) (matched bool, err error)</code></h2><p>作用：路径<code>name</code>是否匹配shell格式的<code>pattern</code></p>
+<h2 id="func-Split-path-string-dir-file-string"><a href="#func-Split-path-string-dir-file-string" class="headerlink" title="func Split(path string) (dir, file string)"></a><code>func Split(path string) (dir, file string)</code></h2><p>作用：将全路径分割为目录和文件名</p>
+<ul>
+<li>按最后一个<code>/</code>进行路径分割，分割为目录和文件名两部分</li>
+<li>如果路径中没有<code>/</code>，则返回目录为空、文件名=path</li>
+<li><code>path = dir + file</code></li>
+</ul>
+<h1 id="参考阅读"><a href="#参考阅读" class="headerlink" title="参考阅读"></a>参考阅读</h1><ul>
+<li><a href="http://books.studygolang.com/The-Golang-Standard-Library-by-Example/chapter06/06.2.html" target="_blank" rel="noopener">《Go语言标准库》6.2 path/filepath</a></li>
+<li><a href="https://pkg.go.dev/path" target="_blank" rel="noopener">pkg.go.dev/path</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2022/02/01/golang-json-tag/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">GoLang 中 Json Tag用法汇总</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

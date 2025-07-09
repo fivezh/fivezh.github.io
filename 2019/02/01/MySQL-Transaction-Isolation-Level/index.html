@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>解析MySQL事务隔离级别 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
+<meta name="keywords" content="MySQL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解析MySQL事务隔离级别">
+<meta property="og:url" content="http://fivezh.github.io/2019/02/01/MySQL-Transaction-Isolation-Level/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/transaction_isolation_levels.png">
+<meta property="og:updated_time" content="2020-01-31T14:13:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="解析MySQL事务隔离级别">
+<meta name="twitter:description" content="事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。MySQL InnoDB事务隔离级别官方说明中对MySQL的事务隔离机制有详细介绍。  结合示例，本文对事务隔离级别相关术语进行解析。">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/transaction_isolation_levels.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-MySQL-Transaction-Isolation-Level" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/02/01/MySQL-Transaction-Isolation-Level/" class="article-date">
+  	<time datetime="2019-02-01T03:22:26.000Z" itemprop="datePublished">2019-02-01</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      解析MySQL事务隔离级别
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/">MySQL</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>事务隔离是分布式系统对一致性保证的重要机制，是保证ACID的重要基础设施。<a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html" target="_blank" rel="noopener">MySQL InnoDB事务隔离级别官方说明</a>中对MySQL的事务隔离机制有详细介绍。</p>
+<p><img src="/assets/post_images/transaction_isolation_levels.png" alt="ANSI SQL STANDARD不同隔离级别对应问题"></p>
+<p>结合示例，本文对<code>事务隔离级别</code>相关术语进行解析。<br><a id="more"></a></p>
+<h2 id="MySQL四类事务隔离级别"><a href="#MySQL四类事务隔离级别" class="headerlink" title="MySQL四类事务隔离级别"></a>MySQL四类事务隔离级别</h2><p>事务隔离级别从高到低为：</p>
+<ul>
+<li><strong>READ UNCOMMITTED</strong>：未提交读<ul>
+<li>读取未提交内容，所有事务可看到其他未提交事务的结果，很少实际使用</li>
+<li>读取未提交的数据称为脏读（Dirty Read）</li>
+</ul>
+</li>
+<li><strong>READ COMMITTED</strong>：提交读<ul>
+<li>多数数据库的默认隔离级别（MySQL默认不是，默认为REPEATABLE-READ）</li>
+<li>满足隔离的简单定义：<strong>一个事务只能看到已提交事务所做的改变</strong></li>
+<li>这种隔离级别，支持所谓的不可重读（Non-repeatable Read），同一事务的其他实例在该实例过程中可能有新commit，所以同一个select可能返回不同结果（<strong>同一个事务如何做到其他实例？</strong>）</li>
+</ul>
+</li>
+<li><strong>REPEATABLE READ</strong>：重复读<ul>
+<li>可重复读(MySQL默认事务隔离)，但可能出现幻读(Phantom Read)</li>
+<li><code>幻读(Phantom Read)</code>：当用户读取某范围数据行时，另一事务在此范围内<strong>插入新行</strong>，当用户再次读取此范围数据行时，读取到新的幻影行</li>
+<li>InnoDB通过多版本并发控制MVCC机制解决该问题</li>
+<li>PS：新版MySQL采用<code>Next-Key锁</code>来解决幻读问题</li>
+</ul>
+</li>
+<li><strong>SERIALIZABLE</strong>：串行化<ul>
+<li>最高隔离级别，强制事务排序（串行化），不会互相冲突</li>
+<li>每个读数据航增加共享锁</li>
+<li>此级别，可能导致大量超时现象和锁竞争</li>
+</ul>
+</li>
+</ul>
+<p>按事务隔离级别来说，级别越低数据一致性保障效果越差，而并发能力则越强。（一致性VS并发性是天然矛盾体）</p>
+<h2 id="脏读、不可重复读、幻读"><a href="#脏读、不可重复读、幻读" class="headerlink" title="脏读、不可重复读、幻读"></a>脏读、不可重复读、幻读</h2><p>上述四种隔离级别采用不同的锁实现，对应级别下可能发生问题：</p>
+<ul>
+<li><strong>脏读（Dirty Read）</strong>：某事务已更新一份数据，而另一个事务此时读取了同一份数据，某些原因前一个更新做了回滚Rollback操作，则后一个事务数据是不正确的（读到了脏的数据）</li>
+<li><strong>不可重复读（Non-repeatable read）</strong>：在<strong>一个事务的两次查询</strong>中数据不一致，可能是两次查询过程中另一个事务更新了数据。</li>
+<li><strong>幻读（Phantom Read）</strong>：一个事务的两次查询中数据不一致。例如一个事务查询数据，而另一个事务却插入新的数据，先前事务的查询中，发现一些数据是之前查询中没有的<ul>
+<li>参考阅读：<a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-next-key-locking.html" target="_blank" rel="noopener">MySQL Phantom Rows</a></li>
+<li>幻读破坏了ACID中的隔离性：事务在执行过程中已读取数据不应该被改变</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>注意</strong>：根据<code>ANSI SQL Standard</code>在可重复读级别下允许出现幻读，MySQL实现满足标准，这不是Bug。但PostgreSQL在可重复读时不会出现幻读问题，这是不同引擎实现机制上的差异。<br>By default, InnoDB operates in REPEATABLE READ transaction isolation level. In this case, InnoDB uses next-key locks for searches and index scans, which prevents phantom rows (see Section 15.7.4, “Phantom Rows”). 缺省的，MySQL采用<code>REPEATABLE READ</code>事务隔离级别，采用<code>Next-key</code>锁机制来避免幻读问题</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>隔离级别</th>
+<th>脏读</th>
+<th>不可重读</th>
+<th>幻读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>读未提交(Read Uncommitted)</td>
+<td><strong>yes</strong></td>
+<td>yes</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>读已提交(Read Committed)</td>
+<td>no</td>
+<td><strong>yes</strong></td>
+<td>yes</td>
+</tr>
+<tr>
+<td>可重复读(Repeatable Read)</td>
+<td>no</td>
+<td>no</td>
+<td><strong>yes</strong></td>
+</tr>
+<tr>
+<td>可串行化(Searializable)</td>
+<td>no</td>
+<td>no</td>
+<td>no</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>注意：MySQL采用<code>REPEATABLE READ</code>事务隔离级别，通过<code>Next-Key锁</code>来解决幻读问题</p>
+</blockquote>
+<h3 id="示例1：脏读"><a href="#示例1：脏读" class="headerlink" title="示例1：脏读"></a>示例1：脏读</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">read</span> uncommitted; <span class="comment">-- 设置会话隔离级别为 未提交读</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx; <span class="comment">-- 此时为空，事务未提交</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话2</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> xxx <span class="keyword">values</span>(<span class="number">1</span>); <span class="comment">-- 未提交事务中，插入数据</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xx; <span class="comment">-- 读取到会话2中未提交数据，这被称为 脏读</span></span><br></pre></td></tr></table></figure>
+<p><code>脏读(Dirty Read)</code>是对一致性有要求的情况下无法接受的，所有<code>未提交读</code>在实际应用场景中几乎很少使用。</p>
+<h3 id="示例2：不可重复读"><a href="#示例2：不可重复读" class="headerlink" title="示例2：不可重复读"></a>示例2：不可重复读</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会话1中操作：</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>; <span class="comment">-- 此时数据状态为a</span></span><br><span class="line"><span class="comment">-- 注意此会话中开启事务，未提交</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 切换至会话2操作</span></span><br><span class="line"><span class="keyword">update</span> xxx <span class="keyword">set</span> xxx=newValue <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>; <span class="comment">-- 更新数据至新的状态b</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 再次切换至会话1操作</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>;</span><br><span class="line"><span class="comment">-- 此时查询出的数据状态就有两种选择：新状态b、老状态a</span></span><br><span class="line"><span class="comment">-- 所谓的连续读：同一个事务中的两次读操作，数据状态保持一致</span></span><br></pre></td></tr></table></figure>
+<p>结论：</p>
+<ul>
+<li>在<code>read committed</code>事务隔离级别下，切换会话1后读取到新的状态b，因为会话2中事务已提交。</li>
+<li>在<code>repeatable read</code>事务隔离级别下，切换会话1后仍读取原始状态a，这就是所谓的【可重复读】</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>操作顺序</th>
+<th>会话1</th>
+<th>会话2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>start transaction;select * from xxx where id=1;</code></td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td><code>update xxx set xxx=newValue where id=1;</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>select * from xxx where id=1;</code></td>
+<td></td>
+</tr>
+<tr>
+<td>结果：<code>read committed</code>级别</td>
+<td>newValue新状态数据（此时为<code>不可重复读</code>问题）</td>
+<td></td>
+</tr>
+<tr>
+<td>结果：<code>repeatable read</code>级别</td>
+<td>原状态数据，满足<code>重复读</code>要求</td>
+</tr>
+</tbody>
+</table>
+<h3 id="示例3：幻读"><a href="#示例3：幻读" class="headerlink" title="示例3：幻读"></a>示例3：幻读</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx;</span><br><span class="line"><span class="comment">-- 此时查询表为空，且事务未提交</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话2</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> xxx <span class="keyword">values</span>(<span class="number">1</span>); <span class="comment">-- 新增一条记录</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 会话1</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx;</span><br><span class="line"><span class="comment">-- 此时查询表仍为空，表示满足[可重复读]特性</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">update</span> xxx <span class="keyword">set</span> age=<span class="number">99</span> <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">1</span>; <span class="comment">-- 更新会话2中插入记录(此时会话1并不可见)</span></span><br><span class="line">Query OK, 1 row affected</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line"><span class="comment">-- 更新1条记录，隐约感觉不安</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> xxx;</span><br><span class="line"><span class="comment">-- 再次读取时，竟然读取到内容(前一次读取时为空，2次读取时读取到内容)，出现`幻读`</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>操作顺序</th>
+<th>会话1</th>
+<th>会话2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>start transaction;select * from xxx where id=1;</code>–空表</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td><code>insert into xxx values(1);</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>select * from xxx;</code> – 新插入元素对会话1中查询不可见，满足<code>可重复读</code></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>update xxx set age=99 where id=1;select * from xxx;</code> – 新插入元素在会话1竟然可以被成功更新，<code>再次读时</code>读取到新内容，复现<code>幻读</code>问题</td>
+<td></td>
+</tr>
+<tr>
+<td>结果：<code>repeatable read</code>级别时</td>
+<td>一个事务中，两次读操作，第二次读时发现了首次读时不存在的内容，这被称为<code>幻读</code>问题</td>
+</tr>
+</tbody>
+</table>
+<h2 id="附录：事务相关SQL命令"><a href="#附录：事务相关SQL命令" class="headerlink" title="附录：事务相关SQL命令"></a>附录：事务相关SQL命令</h2><blockquote>
+<p>注：在MySQL 8.0中，事务相关变量名修改为<code>transaction_isolation</code></p>
+</blockquote>
+<ul>
+<li><p>设置自动提交</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 取消autocommit</span></span><br><span class="line"><span class="keyword">set</span> autocommit=<span class="number">0</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">"%autocommit%"</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看隔离级别</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 查看隔离级别</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> @@global.tx_isolation;</span><br><span class="line"><span class="keyword">SELECT</span> @@session.tx_isolation;</span><br><span class="line"><span class="keyword">SELECT</span> @@tx_isolation;</span><br><span class="line"><span class="comment">-- 三个角度的隔离：全局、会话、事务隔离</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">VARIABLES</span> <span class="keyword">like</span> <span class="string">"%iso%"</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br><span class="line">| Variable_name | Value           |</span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br><span class="line">| tx_isolation  | REPEATABLE-READ |</span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">global</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'%iso%'</span>;</span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br><span class="line">| Variable_name | Value           |</span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br><span class="line">| tx_isolation  | REPEATABLE-READ |</span><br><span class="line">+<span class="comment">---------------+-----------------+</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置事务隔离级别</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">read</span> uncommitted;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">read</span> committed;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> repeatable <span class="keyword">read</span>;</span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">SESSION</span> <span class="keyword">TRANSACTION</span> <span class="keyword">ISOLATION</span> <span class="keyword">LEVEL</span> <span class="keyword">serializable</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>事务操作</p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">-- 事务中一次读操作</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> text.tx;</span><br><span class="line"><span class="keyword">commit</span>;</span><br><span class="line"> </span><br><span class="line"> <span class="comment">-- 事务中回滚操作</span></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">transaction</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> text.tx;</span><br><span class="line"><span class="keyword">update</span> text.tx <span class="keyword">set</span> <span class="keyword">num</span> =<span class="number">10</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> text.tx(<span class="keyword">id</span>,<span class="keyword">num</span>) <span class="keyword">values</span>(<span class="number">9</span>,<span class="number">9</span>);</span><br><span class="line"><span class="keyword">rollback</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="https://stackoverflow.com/questions/36219508/read-committed-vs-repeatable-reads-in-mysql" target="_blank" rel="noopener">Read Committed Vs Repeatable Reads in MySQL?</a></li>
+<li><a href="http://mysql.taobao.org/monthly/2017/06/07/" target="_blank" rel="noopener">淘宝：MySQL · 源码分析 · InnoDB Repeatable Read隔离级别之大不同</a></li>
+<li><a href="https://www.cnblogs.com/zhoujinyi/p/3437475.html" target="_blank" rel="noopener">MySQL 四种事务隔离级的说明-提供不可重复读、幻读的具体实例</a></li>
+<li><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank" rel="noopener">MySQL InnoDB Locking</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/02/11/cache-things/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          缓存系统中面临的雪崩/穿透/一致性问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/01/10/Redis-LRU-algorithm/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Redis中内存淘汰算法实现</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

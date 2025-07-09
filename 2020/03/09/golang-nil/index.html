@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>理解Golang中的 nil | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="零值官方语言规范中关于零值的说明：spec#The_zereo_value 123456789bool      -&amp;gt; falsenumbers -&amp;gt; 0string    -&amp;gt; &quot;&quot;pointers -&amp;gt; nilslices -&amp;gt; nilmaps -&amp;gt; nilchannels -&amp;gt; nilfunctions -&amp;gt; nilinterfaces -&amp;g">
+<meta name="keywords" content="Golang">
+<meta property="og:type" content="article">
+<meta property="og:title" content="理解Golang中的 nil">
+<meta property="og:url" content="http://fivezh.github.io/2020/03/09/golang-nil/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="零值官方语言规范中关于零值的说明：spec#The_zereo_value 123456789bool      -&amp;gt; falsenumbers -&amp;gt; 0string    -&amp;gt; &quot;&quot;pointers -&amp;gt; nilslices -&amp;gt; nilmaps -&amp;gt; nilchannels -&amp;gt; nilfunctions -&amp;gt; nilinterfaces -&amp;g">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/nil.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/nil-useful.png">
+<meta property="og:image" content="http://fivezh.github.io/assets/post_images/kinds-of-nil.png">
+<meta property="og:updated_time" content="2020-03-21T16:00:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="理解Golang中的 nil">
+<meta name="twitter:description" content="零值官方语言规范中关于零值的说明：spec#The_zereo_value 123456789bool      -&amp;gt; falsenumbers -&amp;gt; 0string    -&amp;gt; &quot;&quot;pointers -&amp;gt; nilslices -&amp;gt; nilmaps -&amp;gt; nilchannels -&amp;gt; nilfunctions -&amp;gt; nilinterfaces -&amp;g">
+<meta name="twitter:image" content="http://fivezh.github.io/assets/post_images/nil.png">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-golang-nil" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2020/03/09/golang-nil/" class="article-date">
+  	<time datetime="2020-03-09T07:23:18.000Z" itemprop="datePublished">2020-03-09</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      理解Golang中的 nil
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/">Golang</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <h2 id="零值"><a href="#零值" class="headerlink" title="零值"></a>零值</h2><p>官方语言规范中关于零值的说明：<a href="https://golang.org/ref/spec#The_zero_value" target="_blank" rel="noopener">spec#The_zereo_value</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bool      -&gt; <span class="literal">false</span></span><br><span class="line">numbers -&gt; 0</span><br><span class="line">string    -&gt; <span class="string">""</span></span><br><span class="line">pointers -&gt; nil</span><br><span class="line">slices -&gt; nil</span><br><span class="line">maps -&gt; nil</span><br><span class="line">channels -&gt; nil</span><br><span class="line"><span class="built_in">functions</span> -&gt; nil</span><br><span class="line">interfaces -&gt; nil</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<p><img src="/assets/post_images/nil.png" alt="zero value"></p>
+<h2 id="什么是nil"><a href="#什么是nil" class="headerlink" title="什么是nil"></a>什么是<code>nil</code></h2><p>根据官方定义，nil是预定义标识，代表了<code>指针pointer</code>、<code>通道channel</code>、<code>函数func</code>、<code>接口interface</code>、<code>map</code>、<code>切片slice</code>类型变量的零值。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nil is a predeclared identifier representing the zero value <span class="keyword">for</span> a pointer, channel, func, interface, map, or slice <span class="built_in">type</span>.</span><br></pre></td></tr></table></figure>
+<p>也就是说，nil仅是下列6中类型的零值：</p>
+<ul>
+<li>pointer</li>
+<li>channel</li>
+<li>func</li>
+<li>interface</li>
+<li>map</li>
+<li>slice</li>
+</ul>
+<blockquote>
+<p>注意：struct类型零值不是nil，而是各字段值为对应类型的零值。且不能将struct类型和nil进行等值判断，语法校验不通过。</p>
+</blockquote>
+<p>如：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> T <span class="keyword">struct</span> &#123; i <span class="keyword">int</span>; f <span class="keyword">float64</span>; next *T &#125;</span><br><span class="line">t := <span class="built_in">new</span>(T) <span class="comment">// 此时，var t2 T效果相当，只是t为指针，而t2为类型变量</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 那么存在如下：</span></span><br><span class="line">t.i == <span class="number">0</span></span><br><span class="line">t.f == <span class="number">0.0</span></span><br><span class="line">t.next == <span class="literal">nil</span>  <span class="comment">// 指针类型的零值为nil</span></span><br></pre></td></tr></table></figure>
+<h2 id="详细看看各类型nil的情况"><a href="#详细看看各类型nil的情况" class="headerlink" title="详细看看各类型nil的情况"></a>详细看看各类型nil的情况</h2><h3 id="nil-pointer"><a href="#nil-pointer" class="headerlink" title="nil pointer"></a>nil pointer</h3><ul>
+<li>指针的零值是<code>nil</code></li>
+<li>只声明、未指向具体地址的指针，此时为<code>nil</code></li>
+<li><code>nil</code>指针依然可以正常调用指针对象的方法</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p *<span class="keyword">int</span></span><br><span class="line">p == <span class="literal">nil</span> <span class="comment">// true</span></span><br><span class="line">*p <span class="comment">// panic: invalid memory address or nil pointer dereference</span></span><br></pre></td></tr></table></figure>
+<p>在<code>Golang</code>中指针区别几乎和C/C++中功能相近（都是指向内存地址），区别在于：</p>
+<ul>
+<li>无需担心内存泄露，即内存安全</li>
+<li>GC垃圾回收</li>
+</ul>
+<h3 id="nil-slice"><a href="#nil-slice" class="headerlink" title="nil slice"></a><code>nil slice</code></h3><p>切片的零值是nil，所以只声明变量时，其缺省值为零值nil，这时也就是我们所说的<code>nil slice</code>。<br>nil切片不能直接访问元素值，但可通过<code>append()</code>追加元素。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// nil slices</span></span><br><span class="line"><span class="keyword">var</span> s []slice</span><br><span class="line"><span class="built_in">len</span>(s)  <span class="comment">// 0</span></span><br><span class="line"><span class="built_in">cap</span>(s)  <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> s  <span class="comment">// iterates zero times</span></span><br><span class="line">s[i]  <span class="comment">// panic: index out of range</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> a1 []<span class="keyword">int</span></span><br><span class="line">fmt.Printf(<span class="string">"%#v\n"</span>, a1) <span class="comment">// []int(nil)</span></span><br><span class="line">a2 := <span class="built_in">make</span>([]<span class="keyword">int</span>, <span class="number">0</span>)</span><br><span class="line">fmt.Printf(<span class="string">"%#v\n"</span>, a2) <span class="comment">// []int&#123;&#125;</span></span><br><span class="line">a3 := []<span class="keyword">int</span>&#123;&#125;</span><br><span class="line">fmt.Printf(<span class="string">"%#v\n"</span>, a3) <span class="comment">// []int&#123;&#125;，等价于make效果</span></span><br></pre></td></tr></table></figure>
+<h3 id="nil-map"><a href="#nil-map" class="headerlink" title="nil map"></a><code>nil map</code></h3><ul>
+<li>只声明一个map类型变量时，为<code>nil map</code></li>
+<li>此时为<strong>只读map</strong>，无法进行写操作，否则会触发panic</li>
+<li><code>nil map</code>和<code>empty map</code>区别：<ul>
+<li><code>nil map</code>：只声明未初始化，此时为只读map，不能写入操作，示例：<code>var m map[t]v</code></li>
+<li><code>empty map</code>：空map，已初始化，可写入，示例：<code>m := map[t]v{}</code>或<code>m := make(map[string]string, 0)</code></li>
+</ul>
+</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// nil maps</span></span><br><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[t]u <span class="comment">// nil map</span></span><br><span class="line">m2 := <span class="keyword">map</span>[t]u&#123;&#125; <span class="comment">// empty map</span></span><br><span class="line"><span class="built_in">len</span>(m)  <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> m <span class="comment">// iterates zero times</span></span><br><span class="line">v, ok := m[i] <span class="comment">// zero(u), false</span></span><br><span class="line">m[i] = x <span class="comment">// panic: assignment to entry in nil map</span></span><br></pre></td></tr></table></figure>
+<p>一个常见的应用场景，NewX返回特定类型对象：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewGet</span><span class="params">(url <span class="keyword">string</span>, headers <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span> <span class="params">(*http.Request, error)</span></span> &#123;</span><br><span class="line">  req, err := http.NewRequest(http.MethodGet, url, <span class="literal">nil</span>)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> k, v := <span class="keyword">range</span> headers &#123;</span><br><span class="line">    req.Header.Set(k, v)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> req, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义header</span></span><br><span class="line">NewGet(<span class="string">"http://google.com"</span>, <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;</span><br><span class="line">  <span class="string">"USER_AGENT"</span>: <span class="string">"golang/gopher"</span>,</span><br><span class="line">&#125;,)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 无自定义header时，传empty map</span></span><br><span class="line">NewGet(<span class="string">"http://google.com"</span>, <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;&#125;)</span><br><span class="line"><span class="comment">// 无自定义header，也可以传nil map</span></span><br><span class="line">NewGet(<span class="string">"http://google.com"</span>, <span class="literal">nil</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="nil-channel"><a href="#nil-channel" class="headerlink" title="nil channel"></a><code>nil channel</code></h3><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// nil channels</span></span><br><span class="line"><span class="keyword">var</span> c <span class="keyword">chan</span> t</span><br><span class="line">&lt;- c      <span class="comment">// blocks forever</span></span><br><span class="line">c &lt;- x    <span class="comment">// blocks forever</span></span><br><span class="line"><span class="built_in">close</span>(c)  <span class="comment">// panic: close of nil channel</span></span><br></pre></td></tr></table></figure>
+<h3 id="nil-func"><a href="#nil-func" class="headerlink" title="nil func"></a><code>nil func</code></h3><p><code>map</code>、<code>channel</code>、<code>function</code>的本质都是指向具体实现的指针，而对应类型的nil则是不指向任何地址。</p>
+<h3 id="nil-interface"><a href="#nil-interface" class="headerlink" title="nil interface"></a><code>nil interface</code></h3><p>interface底层由两部分组成：类型、值(type, value)，当二者均为nil时，此时interface才为nil。</p>
+<h4 id="nil-nil-is-nil"><a href="#nil-nil-is-nil" class="headerlink" title="(nil, nil) is nil"></a>(nil, nil) is <code>nil</code></h4><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s fmt.Stringer    <span class="comment">// Stringer (nil, nil)</span></span><br><span class="line">fmt.Println(s == <span class="literal">nil</span>) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p><strong>结论1</strong>：<code>interface (nil, nil) == nil</code>，类型和值均为nil的interface，等于nil</p>
+<h4 id="type-nil-is-not-nil"><a href="#type-nil-is-not-nil" class="headerlink" title="(type, nil) is not nil"></a>(type, nil) is not <code>nil</code></h4><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p *Person           <span class="comment">// nil of type *Person</span></span><br><span class="line"><span class="keyword">var</span> s fmt.Stringer = p  <span class="comment">// Stringer (*Person, nil)</span></span><br><span class="line">fmt.Printf(<span class="string">"%#v\n"</span>, s)  <span class="comment">// 注意，此时打印输出为(*Person)(nil)，无任何是interface的体现</span></span><br><span class="line">fmt.Println(s == <span class="literal">nil</span>)   <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+<h4 id="不要返回具体的错误类型，而应直接返回nil"><a href="#不要返回具体的错误类型，而应直接返回nil" class="headerlink" title="不要返回具体的错误类型，而应直接返回nil"></a>不要返回具体的错误类型，而应直接返回<code>nil</code></h4><p>下面展示返回类型为interface时的差异：</p>
+<p>错误示例：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">do</span><span class="params">()</span> <span class="title">error</span></span> &#123;   <span class="comment">// error(*doError, nil)</span></span><br><span class="line">  <span class="keyword">var</span> err *doError</span><br><span class="line">  <span class="keyword">return</span> err  <span class="comment">// nil of type *doError</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  err := do()             <span class="comment">// error(*doError, nil)</span></span><br><span class="line">  fmt.Println(err == <span class="literal">nil</span>) <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>正确示例：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">do</span><span class="params">()</span> *<span class="title">doError</span></span> &#123;   <span class="comment">// nil of type *doError</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  err := do()             <span class="comment">// nil of type *doError</span></span><br><span class="line">  fmt.Println(err == <span class="literal">nil</span>) <span class="comment">// true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再看下面这段代码，虽然<code>do()</code>返回nil，但<code>wrapDo()</code>返回依然是接口，也就是<code>类型为*doError，值为nil</code>的接口，此时拿到的返回值并不等于nil。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">do</span><span class="params">()</span> *<span class="title">doError</span></span> &#123;  <span class="comment">// nil of type *doError</span></span><br><span class="line">  <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">wrapDo</span><span class="params">()</span> <span class="title">error</span></span> &#123; <span class="comment">// error (*doError, nil)</span></span><br><span class="line">  <span class="keyword">return</span> do()       <span class="comment">// nil of type *doError</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">  err := wrapDo()   <span class="comment">// error  (*doError, nil)</span></span><br><span class="line">  fmt.Println(err == <span class="literal">nil</span>) <span class="comment">// false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="nil的有效利用"><a href="#nil的有效利用" class="headerlink" title="nil的有效利用"></a><code>nil</code>的有效利用</h2><ul>
+<li><code>nil</code>类型接收者是可以正确调用方法的 <code>nil reveivers are userful</code></li>
+<li><code>Keep nil (pointer) useful if possible, if not NewX()</code></li>
+<li><code>Use nil slices, they&#39;re often fast enough</code></li>
+<li><code>Use nil maps as read-only empty maps</code>，将nil map作为只读的空map（不能读nil map进行写入操作，否则会发生panic）</li>
+<li><code>Use nil channel to disable a select case</code>，nil channel来阻塞selct/case语句</li>
+<li><code>nil value can satisfy interface</code>，不同类型的nil值可满足interface，也就是可赋值给interface</li>
+<li><code>Use nil interface to signal defaul</code>，使用nil的interface来标识使用缺省处理</li>
+<li><code>nil is an important part Go</code></li>
+</ul>
+<p><img src="/assets/post_images/nil-useful.png" alt="nis-useful"></p>
+<h3 id="nil-pointer用法"><a href="#nil-pointer用法" class="headerlink" title="nil pointer用法"></a><code>nil pointer</code>用法</h3><ul>
+<li><code>nil pointer</code>用来和nil比较确认是否为零值</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> p *<span class="keyword">int</span></span><br><span class="line">p == <span class="literal">nil</span> <span class="comment">// true</span></span><br><span class="line">*p <span class="comment">// panic: runtime error: invalid memory address or nil pointer dereference</span></span><br></pre></td></tr></table></figure>
+<p>来看看，如何实现二叉树树的求和操作：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> tree &#123;</span><br><span class="line">  v <span class="keyword">int</span></span><br><span class="line">  l *tree</span><br><span class="line">  r *tree</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">Sum</span><span class="params">()</span> <span class="title">int</span></span></span><br></pre></td></tr></table></figure>
+<p>第一种方案，有两个问题：</p>
+<ul>
+<li>代码冗余，重复的<code>if v != nil {v.m()}</code></li>
+<li>当<code>t</code>为nil时，会发生<code>panic</code></li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> t *tree <span class="comment">// nil of type *tree</span></span><br><span class="line">sum := t.Sum() <span class="comment">// panic</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 实现方案1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">Sum</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">  sum := t.v</span><br><span class="line">  <span class="keyword">if</span> t.l != <span class="literal">nil</span> &#123;</span><br><span class="line">    sum += t.l.Sum()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> t.r != <span class="literal">nil</span> &#123;</span><br><span class="line">    sum += t.r.Sum()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sum</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>nil</code>接收者，也可以正确调用方法，所以可以利用这一点，改造出方案2：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方案2：代码简洁、可断性提高很多</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">Sum</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> v + t.l.Sum() + t.r.Sum()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过利用类型的nil，可以灵活实现是否为空的处理，已经便捷实现扩展函数：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">String</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> fmt.Sprint(t.l, t.v, t.r)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tree)</span> <span class="title">Find</span><span class="params">(v <span class="keyword">int</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> t == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> t.v == v || t.l.Find(v) || t.r.Find(v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="nil-slices用法"><a href="#nil-slices用法" class="headerlink" title="nil slices用法"></a><code>nil slices</code>用法</h3><ul>
+<li>不能对<code>nil slice</code>进行取值，否则会发生panic</li>
+<li>可通过<code>append</code>函数对<code>nil slice</code>进行增加元素操作</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> s []<span class="keyword">int</span></span><br><span class="line"><span class="built_in">len</span>(s) <span class="comment">// 0</span></span><br><span class="line"><span class="built_in">cap</span>(s) <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> s <span class="comment">// 执行0次</span></span><br><span class="line">s[i] <span class="comment">// panic: index out of range</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt;<span class="number">10</span>; i++ &#123;</span><br><span class="line">  fmt.Printf(<span class="string">"len: %2d, cap: %2d\n"</span>, <span class="built_in">len</span>(s), <span class="built_in">cap</span>(s))</span><br><span class="line">  s = <span class="built_in">append</span>(s, i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="nil-map用法"><a href="#nil-map用法" class="headerlink" title="nil map用法"></a><code>nil map</code>用法</h3><ul>
+<li><code>nil map</code>不能进行增加元素操作，因它还没有进行初始化</li>
+<li>将<code>nil map</code>作为只读的空map</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> m <span class="keyword">map</span>[t]u</span><br><span class="line"><span class="built_in">len</span>(m) <span class="comment">// 0</span></span><br><span class="line"><span class="keyword">for</span> <span class="keyword">range</span> m <span class="comment">// 执行0次</span></span><br><span class="line">v, ok := m[i] <span class="comment">// v=zero(u), ok=false</span></span><br><span class="line">m[i] = x      <span class="comment">// panic: assignment to entry in nil map</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 有个nil map有用的例子</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewGet</span><span class="params">(url <span class="keyword">string</span>, headers <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>)</span><span class="params">(*http.Request, error)</span></span>  &#123;</span><br><span class="line">  req, err := http.NewRequest(http.MethodGet, url, <span class="literal">nil</span>)</span><br><span class="line">  <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> k, v := <span class="keyword">range</span> headers &#123;</span><br><span class="line">    req.Header.Set(k, v)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> req, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用时，传递headers</span></span><br><span class="line">NewGet(</span><br><span class="line">  <span class="string">"http://google.com"</span>,</span><br><span class="line">  <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;</span><br><span class="line">    <span class="string">"USER_AGENT"</span>:<span class="string">"google/gopher"</span>,</span><br><span class="line">  &#125;,  <span class="comment">// go语言五十度灰，如果参数和)之间换行形式，参数尾部需追加,逗号</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用时，不传递headers，可以传递一个empty map空map</span></span><br><span class="line">NewGet(</span><br><span class="line">  <span class="string">"http://google.com"</span>,</span><br><span class="line">  <span class="keyword">map</span>[<span class="keyword">string</span>]<span class="keyword">string</span>&#123;&#125;, <span class="comment">// 传递空map，empty map</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用时，不传递headers，可以传递一个nil map</span></span><br><span class="line">NewGet(</span><br><span class="line">  <span class="string">"http://google.com"</span>,</span><br><span class="line">  <span class="literal">nil</span>, <span class="comment">// 传递nil map，也是合法的</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h3 id="nil-channel用法"><a href="#nil-channel用法" class="headerlink" title="nil channel用法"></a><code>nil channel</code>用法</h3><ul>
+<li>不能对<code>nil channel</code>进行<code>close()</code>操作，发触发<code>panic: close of nil channel</code></li>
+<li>不能对channel进行多次<code>close</code>，会触发 <code>panic: close of closed channel</code></li>
+<li>关闭channel，在select/case中将依然能获取到值，但nil channel将阻塞读操作来失效select/case中逻辑</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> c <span class="keyword">chan</span> t <span class="comment">// nil of type chan t</span></span><br><span class="line"><span class="comment">// nil channel操作时</span></span><br><span class="line">&lt;- c <span class="comment">// block forever，持续阻塞</span></span><br><span class="line">c &lt;- x <span class="comment">// block forever，持续阻塞</span></span><br><span class="line"><span class="built_in">close</span>(c) <span class="comment">// panic: close of nil channel，关闭nil channel发生panic</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于已关闭的channel，将发生如下现象</span></span><br><span class="line">v, ok := &lt;-c  <span class="comment">// zero(t), false 不会阻塞，返回零值和False</span></span><br><span class="line">c &lt;-x <span class="comment">// panic: send to close channel</span></span><br><span class="line"><span class="built_in">close</span>(x) <span class="comment">// panic: close of closed channel，备注原文中错误</span></span><br></pre></td></tr></table></figure>
+<p>现在假设要实现一个合并函数，实现从两个通道中获取数据，然后写入out输出通道：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(out <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>, a,b &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">  <span class="keyword">for</span> &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">      <span class="keyword">case</span> v:= &lt;-a: <span class="comment">// 当a/b通道关闭时，这里将持续获取到0</span></span><br><span class="line">        out &lt;-v</span><br><span class="line">      <span class="keyword">case</span> v:= &lt;-b</span><br><span class="line">        out &lt;-v</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对于a/b通道关闭的情况，改造代码如下:</span></span><br><span class="line"><span class="comment">// 此时不会获取到零值，但是可能会发生panic, deadlock</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(out <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>, a,b &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">  <span class="keyword">var</span> aClosed, bClosed <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> !aClosed || !bClosed &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> v,ok := &lt;-a: <span class="comment">// 此时通道关闭后，就不会再进行获取了</span></span><br><span class="line">      <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        aClosed = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      out &lt;-v</span><br><span class="line">    <span class="keyword">case</span> v,ok := &lt;-b:</span><br><span class="line">      <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        bClosed = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      out &lt;-v</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在通道不使用后应关闭：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(out <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>, a,b &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span>  &#123;</span><br><span class="line">  <span class="keyword">var</span> aClosed, bClosed <span class="keyword">bool</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> !aClosed || !bClosed &#123;</span><br><span class="line">    <span class="keyword">select</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> v,ok := &lt;-a: <span class="comment">// 此时通道关闭后，就不会再进行获取了</span></span><br><span class="line">      <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        aClosed = <span class="literal">true</span></span><br><span class="line">        fmt.Println(<span class="string">"a is closed"</span>)</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      out &lt;-v</span><br><span class="line">    <span class="keyword">case</span> v,ok := &lt;-b:</span><br><span class="line">      <span class="keyword">if</span> !ok &#123;</span><br><span class="line">        bClosed = <span class="literal">true</span></span><br><span class="line">        fmt.Println(<span class="string">"b is closed"</span>)</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">      &#125;</span><br><span class="line">      out &lt;-v</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">close</span>(out) <span class="comment">// 需要再不使用后进行close操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>终于搞定了，提交代码，转交给测试吧！你会发现CPU莫名燃烧了自我，为什么？因为外部逻辑如果关闭了a/b，此时上述代码中会有空转的逻辑，运行下，看看打印输出：</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a is closed</span><br><span class="line">a is closed</span><br><span class="line">a is closed</span><br><span class="line">a is closed</span><br><span class="line">a is closed <span class="comment">// 很多次无用的空转逻辑</span></span><br><span class="line">b is closed <span class="comment">// 最后一次，a/b都未空时才结束循环</span></span><br></pre></td></tr></table></figure>
+<p>可能看到这里已经有些蒙了，但要明白，无论是否关闭一个chanel，都可以从中读取到值，而如果不需要对channel取值操作了，那么可以将其改为nil，这样会永远阻塞读，防止再发生读操作；同时应在入口增加非nil判断。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">merge</span><span class="params">(out <span class="keyword">chan</span>&lt;- <span class="keyword">int</span>, a, b &lt;-<span class="keyword">chan</span> <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">	<span class="keyword">for</span> a != <span class="literal">nil</span> || b != <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">select</span> &#123;</span><br><span class="line">		<span class="keyword">case</span> v, ok := &lt;-a: <span class="comment">// 此时通道关闭后，就不会再进行获取了</span></span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				a = <span class="literal">nil</span></span><br><span class="line">				fmt.Println(<span class="string">"a is closed"</span>)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			out &lt;- v</span><br><span class="line">		<span class="keyword">case</span> v, ok := &lt;-b:</span><br><span class="line">			<span class="keyword">if</span> !ok &#123;</span><br><span class="line">				b = <span class="literal">nil</span></span><br><span class="line">				fmt.Println(<span class="string">"b is closed"</span>)</span><br><span class="line">				<span class="keyword">continue</span></span><br><span class="line">			&#125;</span><br><span class="line">			out &lt;- v</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">close</span>(out) <span class="comment">// 需要再不使用后进行close操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="nil-func用法"><a href="#nil-func用法" class="headerlink" title="nil func用法"></a><code>nil func</code>用法</h3><ul>
+<li>go中函数是一等公民</li>
+<li>函数可以作为struct结构体的字段，缺省值则为nil</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Foo <span class="keyword">struct</span> &#123;</span><br><span class="line">  f <span class="function"><span class="keyword">func</span><span class="params">()</span> <span class="title">error</span> // <span class="title">f</span> <span class="title">is</span> <span class="title">type</span> <span class="title">of</span> <span class="title">func</span><span class="params">()</span> <span class="title">error</span></span></span><br><span class="line"><span class="function">&#125;</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">// 常见用法，传输函数为<span class="title">nil</span>，增加缺省处理</span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="title">NewServer</span><span class="params">(logger <span class="keyword">func</span>(<span class="keyword">string</span>, ...<span class="keyword">interface</span>&#123;&#125;)</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> logger == <span class="literal">nil</span> &#123;</span><br><span class="line">    logger = log.Printf</span><br><span class="line">  &#125;</span><br><span class="line">  logger.Printf(<span class="string">"initializng %s"</span>, os.Getenv(<span class="string">"hostname"</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="nil-interface用法"><a href="#nil-interface用法" class="headerlink" title="nil interface用法"></a><code>nil interface</code>用法</h3><ul>
+<li>将<code>nil interface</code>作为一种信号来使用</li>
+<li>nil指针，不等于nil接口</li>
+</ul>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Summer intface &#123;</span><br><span class="line">  Sum() <span class="keyword">int</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> t *tree <span class="comment">// nil of type *tree</span></span><br><span class="line"><span class="keyword">var</span> s Summer = t <span class="comment">// nil指针，可以是合法的interface类型的值</span></span><br><span class="line"><span class="comment">// 此时，对接接口类型变量s而言，其类型为*tree，值为nil，也就是说(*tree, nil)行的interface</span></span><br><span class="line">fmt.Println(t==<span class="literal">nil</span>, s.Sum()) <span class="comment">// true, 0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ints []<span class="keyword">int</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(i *ints)</span> <span class="title">Sum</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">  s := <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> _, v := <span class="keyword">range</span> i&#123;</span><br><span class="line">    s += v</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i ints</span><br><span class="line"><span class="keyword">var</span> s Sumer = i <span class="comment">// nil value can satisfy interface</span></span><br><span class="line">fmt.Println(s==<span class="literal">nil</span>, s.Sum()) <span class="comment">// true, 0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过判断接口为nil，来给定缺省值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">doSum</span><span class="params">(s Summer)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">  <span class="keyword">if</span> s == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> s.Sum()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> t *tree</span><br><span class="line">doSum(t) <span class="comment">// interface的类型和值分别为：(*tree, nil)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> i ints</span><br><span class="line">doSum(i) <span class="comment">// (ints, nil)</span></span><br><span class="line"></span><br><span class="line">doSum(<span class="literal">nil</span>) <span class="comment">// (nil, nil)</span></span><br><span class="line"></span><br><span class="line">http.HandleFunc(<span class="string">"localhost:8080"</span>, <span class="literal">nil</span>) <span class="comment">// 传递nil，则使用缺省处理</span></span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><img src="/assets/post_images/kinds-of-nil.png" alt="Kinds of nil"></p>
+<p>slice的零值<code>nil slice</code>，通过<code>append()</code>函数可以给<code>nil slice</code>进行增加元素操作；而对于map则不然，一个<code>nil map</code>，是不能直接进行复制的，必须进行<code>make</code>操作进行初始化开辟内存空间。</p>
+<p>这是有一定混淆的。</p>
+<h2 id="参考阅读"><a href="#参考阅读" class="headerlink" title="参考阅读"></a>参考阅读</h2><ul>
+<li><a href="https://www.youtube.com/watch?v=ynoY2xz-F8s" target="_blank" rel="noopener">Video by Francesc老哥视频很赞，强烈推荐 - Understanding nil</a></li>
+<li><a href="https://www.gmarik.info/blog/2016/understanding-golang-nil-value/" target="_blank" rel="noopener">Gmarik - Understanding Go’s <code>nil</code> value</a></li>
+<li><a href="https://go101.org/article/nil.html" target="_blank" rel="noopener">go101 - nils in Go</a></li>
+<li><a href="https://www.jianshu.com/p/dd80f6be7969" target="_blank" rel="noopener">理解Go语言的nil</a></li>
+<li><a href="https://go101.org/article/nil.html" target="_blank" rel="noopener">go101-nil</a></li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/03/15/golang-new-make/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Golang new VS make
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/01/31/mysql-lock/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MySQL InnoDB 锁机制</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

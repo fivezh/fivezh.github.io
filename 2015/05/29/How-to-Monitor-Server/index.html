@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>How to Monitor Server Status | 如何监控服务器状态 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一、基本命令查看服务器状态/proc/目录原理：硬件状态信息在启动的过程中装载到虚拟目录/proc下文件中。  proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How to Monitor Server Status | 如何监控服务器状态">
+<meta property="og:url" content="http://fivezh.github.io/2015/05/29/How-to-Monitor-Server/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="一、基本命令查看服务器状态/proc/目录原理：硬件状态信息在启动的过程中装载到虚拟目录/proc下文件中。  proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://nmon.sourceforge.net/docs/nmon16a_flash_631.gif">
+<meta property="og:image" content="http://nmon.sourceforge.net/docs/nmon16b_Util.gif">
+<meta property="og:updated_time" content="2019-09-18T06:45:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="How to Monitor Server Status | 如何监控服务器状态">
+<meta name="twitter:description" content="一、基本命令查看服务器状态/proc/目录原理：硬件状态信息在启动的过程中装载到虚拟目录/proc下文件中。  proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。">
+<meta name="twitter:image" content="http://nmon.sourceforge.net/docs/nmon16a_flash_631.gif">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-How-to-Monitor-Server" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/05/29/How-to-Monitor-Server/" class="article-date">
+  	<time datetime="2015-05-29T14:54:31.000Z" itemprop="datePublished">2015-05-29</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      How to Monitor Server Status | 如何监控服务器状态
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <h1 id="一、基本命令查看服务器状态"><a href="#一、基本命令查看服务器状态" class="headerlink" title="一、基本命令查看服务器状态"></a>一、基本命令查看服务器状态</h1><p><em>/proc/目录原理</em>：硬件状态信息在启动的过程中装载到虚拟目录/proc下文件中。</p>
+<blockquote>
+<p>proc文件系统是一个伪文件系统，它只存在内存当中，而不占用外存空间。它以文件系统的方式为访问系统内核数据的操作提供接口。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="CPU硬件信息"><a href="#CPU硬件信息" class="headerlink" title="CPU硬件信息"></a>CPU硬件信息</h2><p><code>cat /proc/cpuinfo</code>：查看CPU硬件静态信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ cat /proc/cpuinfo </span><br><span class="line">processor : 0</span><br><span class="line">vendor_id : GenuineIntel</span><br><span class="line">cpu family  : 6</span><br><span class="line">model   : 69</span><br><span class="line">model name  : Intel(R) Core(TM) i5-4210U CPU @ 1.70GHz</span><br><span class="line">stepping  : 1</span><br><span class="line">microcode : 0x1d</span><br><span class="line">cpu MHz   : 2394.457</span><br><span class="line">cache size  : 3072 KB</span><br><span class="line">physical id : 0</span><br><span class="line">siblings  : 1</span><br><span class="line">core id   : 0</span><br><span class="line">cpu cores : 1</span><br><span class="line">apicid    : 0</span><br><span class="line">initial apicid  : 0</span><br><span class="line">fpu   : yes</span><br><span class="line">fpu_exception : yes</span><br><span class="line">cpuid level : 13</span><br><span class="line">wp    : yes</span><br><span class="line">flags   : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf eagerfpu pni pclmulqdq ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm ida arat epb xsaveopt pln pts dtherm fsgsbase tsc_adjust bmi1 avx2 smep bmi2 invpcid</span><br><span class="line">bogomips  : 4788.91</span><br><span class="line">clflush size  : 64</span><br><span class="line">cache_alignment : 64</span><br><span class="line">address sizes : 42 bits physical, 48 bits virtual</span><br><span class="line">power management:</span><br></pre></td></tr></table></figure></p>
+<p>主要参数项：</p>
+<blockquote>
+<p>physical id: 物理封装的处理器的id。<br>cpu cores: 位于当前逻辑核相同物理封装的处理器中的核数。<br>core id: 每个核心在当前CPU中id。<br>siblings: 位于相同物理封装的处理器中的逻辑处理器的数量。<br>processor: 逻辑处理器的id。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># physical id: 物理CPU封装数量</span><br><span class="line">cat /proc/cpuinfo|grep “physical id”|sort -u|wc –l</span><br><span class="line"># cpu cores: 每个物理地CPU内的核数</span><br><span class="line">cat /proc/cpuinfo |grep &quot;cpu cores&quot;|uniq|cut -d: -f2</span><br><span class="line"># core id: 该核在物理CPU中的编号</span><br><span class="line">cat /proc/cpuinfo|grep “core id”|sort -u</span><br><span class="line"># siblings: 同一物理CPU中逻辑处理器的个数</span><br><span class="line">cat /proc/cpuinfo |grep &quot;siblings&quot;</span><br><span class="line"># processor: 逻辑处理器的个数</span><br><span class="line">cat /proc/cpuinfo |grep &quot;processor&quot;|wc –l</span><br><span class="line"># 判断是否开启超线程: 比较siblings和cores是否一致</span><br><span class="line">如果siblings数量是cores的两倍，则为开启超线程；否则，为未开启或不支持超线程</span><br><span class="line">cat /proc/cpuinfo |grep &quot;siblings&quot;</span><br><span class="line">cat /proc/cpuinfo |grep &quot;cpu cores&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="内存硬件信息"><a href="#内存硬件信息" class="headerlink" title="内存硬件信息"></a>内存硬件信息</h2><p><code>cat /proc/meminfo</code>: 查看内存状态信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ cat /proc/meminfo </span><br><span class="line">MemTotal:        1003164 kB</span><br><span class="line">MemFree:          243768 kB</span><br><span class="line">MemAvailable:     683912 kB</span><br><span class="line">Buffers:             764 kB</span><br><span class="line">Cached:           534796 kB</span><br><span class="line">SwapCached:            0 kB</span><br><span class="line">Active:           254736 kB</span><br><span class="line">Inactive:         338540 kB</span><br><span class="line">Active(anon):      58104 kB</span><br><span class="line">Inactive(anon):     6388 kB</span><br><span class="line">Active(file):     196632 kB</span><br><span class="line">Inactive(file):   332152 kB</span><br><span class="line">Unevictable:           0 kB</span><br><span class="line">Mlocked:               0 kB</span><br><span class="line">SwapTotal:       2097148 kB</span><br><span class="line">SwapFree:        2097148 kB</span><br><span class="line">Dirty:             18612 kB</span><br><span class="line">Writeback:             0 kB</span><br><span class="line">AnonPages:         57756 kB</span><br><span class="line">Mapped:            21732 kB</span><br><span class="line">Shmem:              6776 kB</span><br><span class="line">Slab:              90112 kB</span><br><span class="line">SReclaimable:      47968 kB</span><br><span class="line">SUnreclaim:        42144 kB</span><br><span class="line">KernelStack:        7744 kB</span><br><span class="line">PageTables:         4008 kB</span><br><span class="line">NFS_Unstable:          0 kB</span><br><span class="line">Bounce:                0 kB</span><br><span class="line">WritebackTmp:          0 kB</span><br><span class="line">CommitLimit:     2598728 kB</span><br><span class="line">Committed_AS:     257172 kB</span><br><span class="line">VmallocTotal:   34359738367 kB</span><br><span class="line">VmallocUsed:      199252 kB</span><br><span class="line">VmallocChunk:   34359522160 kB</span><br><span class="line">HardwareCorrupted:     0 kB</span><br><span class="line">AnonHugePages:      8192 kB</span><br><span class="line">HugePages_Total:       0</span><br><span class="line">HugePages_Free:        0</span><br><span class="line">HugePages_Rsvd:        0</span><br><span class="line">HugePages_Surp:        0</span><br><span class="line">Hugepagesize:       2048 kB</span><br><span class="line">DirectMap4k:       53120 kB</span><br><span class="line">DirectMap2M:      995328 kB</span><br><span class="line">DirectMap1G:           0 kB</span><br></pre></td></tr></table></figure></p>
+<h2 id="CPU、内存占有率信息"><a href="#CPU、内存占有率信息" class="headerlink" title="CPU、内存占有率信息"></a>CPU、内存占有率信息</h2><p><code>top</code>: 实时显示进程的资源占用情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ top</span><br><span class="line">top - 19:47:39 up 27 min,  2 users,  load average: 0.01, 0.17, 0.15</span><br><span class="line">Tasks: 341 total,   2 running, 339 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  1.5 us,  1.5 sy,  0.0 ni, 95.5 id,  1.4 wa,  0.0 hi,  0.1 si,  0.0 st</span><br><span class="line">KiB Mem :  1003164 total,   240996 free,   134148 used,   628020 buff/cache</span><br><span class="line">KiB Swap:  2097148 total,  2097148 free,        0 used.   683368 avail Mem </span><br><span class="line"></span><br><span class="line">   PID USER      PR  NI    VIRT    RES    SHR S %CPU %MEM     TIME+ COMMAND     </span><br><span class="line">     1 root      20   0   56656   6452   3848 S  0.0  0.6   0:01.38 systemd     </span><br><span class="line">     2 root      20   0       0      0      0 S  0.0  0.0   0:00.00 kthreadd    </span><br><span class="line">     3 root      20   0       0      0      0 S  0.0  0.0   0:02.62 ksoftirqd/0 </span><br><span class="line">     5 root       0 -20       0      0      0 S  0.0  0.0   0:00.00 kworker/0:0H</span><br><span class="line">     7 root      rt   0       0      0      0 S  0.0  0.0   0:00.00 migration/0 </span><br><span class="line">     8 root      20   0       0      0      0 S  0.0  0.0   0:00.00 rcu_bh      </span><br><span class="line">     9 root      20   0       0      0      0 S  0.0  0.0   0:00.00 rcuob/0     </span><br><span class="line">    10 root      20   0       0      0      0 S  0.0  0.0   0:00.00 rcuob/1</span><br></pre></td></tr></table></figure></p>
+<p><code>free -m</code>: 内存使用情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ free -m</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:            979         130         238           6         610         667</span><br><span class="line">Swap:          2047           0        2047</span><br></pre></td></tr></table></figure></p>
+<p><code>vmstat</code>: 查看虚拟内存使用情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ vmstat</span><br><span class="line">procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----</span><br><span class="line"> r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st</span><br><span class="line"> 2  0      0 243960    764 624716    0    0   102   489  130  168  2  2 95  1  0</span><br></pre></td></tr></table></figure></p>
+<h2 id="超线程是否开启"><a href="#超线程是否开启" class="headerlink" title="超线程是否开启"></a>超线程是否开启</h2><ol>
+<li><p>比较cpuinfo中siblings和cores数是否一致，如siblings=2xcores则为开启超线程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/cpuinfo | grep &quot;siblings&quot;</span><br><span class="line">cat /proc/cpuinfo | grep &quot;cpu cores&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>查看cpuinfo下是否存在相同physical id和core id的逻辑处理器(processor)</p>
+</li>
+</ol>
+<h2 id="硬盘信息"><a href="#硬盘信息" class="headerlink" title="硬盘信息"></a>硬盘信息</h2><p><code>sudo df -h</code>: 查看文件系统占用情况及挂载点等信息, man df<br><code>sudo fdisk -l</code>: 查看磁盘分区及使用情况, man fdisk</p>
+<h2 id="IO信息"><a href="#IO信息" class="headerlink" title="IO信息"></a>IO信息</h2><p><code>lsof</code>: 查看打开文件和相关进程情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ lsof | more</span><br><span class="line">COMMAND    PID  TID    USER   FD      TYPE DEVICE  SIZE/OFF      NODE NAME</span><br><span class="line">systemd      1         root  cwd   unknown                            /proc/1/cwd (readlink: Permission denied)</span><br><span class="line">systemd      1         root  rtd   unknown                            /proc/1/root (readlink: Permission denied)</span><br><span class="line">systemd      1         root  txt   unknown                            /proc/1/exe (readlink: Permission denied)</span><br><span class="line">systemd      1         root NOFD                                      /proc/1/fd (opendir: Permission denied)</span><br><span class="line">kthreadd     2         root  cwd   unknown                            /proc/2/cwd (readlink: Permission denied)</span><br><span class="line">kthreadd     2         root  rtd   unknown                            /proc/2/root (readlink: Permission denied)</span><br><span class="line">kthreadd     2         root  txt   unknown                            /proc/2/exe (readlink: Permission denied)</span><br></pre></td></tr></table></figure></p>
+<p><code>iotop</code>: 记录进程IO使用率，第三方需安装<br><a href="http://www.tecmint.com/install-iotop-monitor-linux-disk-io-in-rhel-centos-and-fedora/" target="_blank" rel="noopener">Install Iotop in Linux</a><br><code>iostat</code>: 查看分区IO使用情况，第三方需安装</p>
+<h2 id="网络信息"><a href="#网络信息" class="headerlink" title="网络信息"></a>网络信息</h2><p><code>netstat -an</code>: 查看网络连接情况<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ netstat -an | more</span><br><span class="line">Active Internet connections (servers and established)</span><br><span class="line">Proto Recv-Q Send-Q Local Address           Foreign Address         State      </span><br><span class="line">tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN     </span><br><span class="line">tcp        0      0 192.168.8.5:22          192.168.8.1:5769        ESTABLISHED</span><br><span class="line">tcp        0     52 192.168.8.5:22          192.168.8.1:63401       ESTABLISHED</span><br><span class="line">tcp6       0      0 :::22                   :::*                    LISTEN     </span><br><span class="line">tcp6       0      0 ::1:25                  :::*                    LISTEN     </span><br><span class="line">Active UNIX domain sockets (servers and established)</span><br><span class="line">Proto RefCnt Flags       Type       State         I-Node   Path</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     15943    /var/run/dbus/system_bus_socket</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     19654    private/bounce</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     19657    private/defer</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     19660    private/trace</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     19663    private/verify</span><br><span class="line">unix  2      [ ACC ]     STREAM     LISTENING     19669    private/proxymap</span><br></pre></td></tr></table></figure></p>
+<p><code>dmesg | grep -i eth</code>: 查看网卡型号信息<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ dmesg | grep -i eth</span><br><span class="line">[    2.110507] e1000 0000:02:01.0 eth0: (PCI:66MHz:32-bit) 00:0c:29:1a:01:9c</span><br><span class="line">[    2.110513] e1000 0000:02:01.0 eth0: Intel(R) PRO/1000 Network Connection</span><br><span class="line">[    2.113662] systemd-udevd[487]: renamed network interface eth0 to eno16777736</span><br></pre></td></tr></table></figure></p>
+<h2 id="额外信息"><a href="#额外信息" class="headerlink" title="额外信息"></a>额外信息</h2><p><code>getconf LONG_BIT或file /bin/ls</code>: 查看32、64位操作系统<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ getconf LONG_BIT</span><br><span class="line">64</span><br><span class="line">[fivezh@master ~]$ file /bin/ls</span><br><span class="line">/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=0xa0cbb02fea1cb40346262515965696d361dbf5ba, stripped</span><br></pre></td></tr></table></figure></p>
+<p><code>dmidecode | grep &quot;Product Name&quot;</code>: 查看服务器型号<br>DMI(Desktop Management Interface)是Linux下遵循SMBIOS/DMI标准的收集系统信息的管理系统，其输出的信息包括 BIOS、系统、主板、处理器、内存、缓存等。<br>查看服务器型号：dmidecode | grep ‘Product Name’<br>查看主板的序列号：dmidecode |grep ‘Serial Number’<br>查看系统序列号：dmidecode -s system-serial-number<br>查看内存信息：dmidecode -t memory<br>查看OEM信息：dmidecode -t 11<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[fivezh@master ~]$ sudo dmidecode | grep &quot;Product Name&quot; </span><br><span class="line">  Product Name: VMware Virtual Platform</span><br><span class="line">  Product Name: 440BX Desktop Reference Platform</span><br></pre></td></tr></table></figure></p>
+<h2 id="其他工具："><a href="#其他工具：" class="headerlink" title="其他工具："></a>其他工具：</h2><p>Htop</p>
+<h2 id="nmon"><a href="#nmon" class="headerlink" title="nmon"></a>nmon</h2><blockquote>
+<p>nmon for Linux - nmon is short for Nigel’s performance Monitor for Linux. This systems administrator, tuner, benchmark tool gives you a huge amount of important performance information in one go. </p>
+</blockquote>
+<p><img src="http://nmon.sourceforge.net/docs/nmon16a_flash_631.gif" alt="nmon"><br>nmon是Linux下监控系统资源的统一化管理工具，支持CPU, 内存, 文件系统, 虚拟内存, 资源, NFS，内核, Top等，还支持监控数据导出文件，并通过<a href="http://www.ibm.com/developerworks/cn/aix/library/nmon_analyser/index.html" target="_blank" rel="noopener">nmon analyser</a>生成报表数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">x  Use these keys to toggle statistics on/off:                                                                                      x</span><br><span class="line">x     c = CPU        l = CPU Long-term   - = Faster screen updates                                                                  x</span><br><span class="line">x     m = Memory     j = Filesystems     + = Slower screen updates                                                                  x</span><br><span class="line">x     d = Disks      n = Network         V = Virtual Memory                                                                         x</span><br><span class="line">x     r = Resource   N = NFS             v = Verbose hints                                                                          x</span><br><span class="line">x     k = kernel     t = Top-processes   . = only busy disks/procs                                                                  x</span><br><span class="line">x     h = more options                   q = Quit</span><br></pre></td></tr></table></figure>
+<p>nmon命令参数:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Hint: nmon [-h] [-s &lt;seconds&gt;] [-c &lt;count&gt;] [-f -d &lt;disks&gt; -t -r &lt;name&gt;] [-x]</span><br><span class="line"></span><br><span class="line">-h            FULL help information</span><br><span class="line">Interactive-Mode:</span><br><span class="line">read startup banner and type: &quot;h&quot; once it is running</span><br><span class="line">For Data-Collect-Mode (-f)</span><br><span class="line">-f            spreadsheet output format [note: default -s300 -c288]</span><br><span class="line">optional</span><br><span class="line">-s &lt;seconds&gt;  between refreshing the screen [default 2]</span><br><span class="line">-c &lt;number&gt;   of refreshes [default millions]</span><br><span class="line">-d &lt;disks&gt;    to increase the number of disks [default 256]</span><br><span class="line">-t                  spreadsheet includes top processes</span><br><span class="line">-x            capacity planning (15 min for 1 day = -fdt -s 900 -c 96)</span><br><span class="line"></span><br><span class="line">Version - nmon 14i</span><br></pre></td></tr></table></figure></p>
+<p>代码示例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[five@nagios-server ~]$ nmon -s3 -c10 -f</span><br><span class="line">[five@nagios-server ~]$ ls</span><br><span class="line">nagios-server_160411_1857.nmon</span><br><span class="line">[five@nagios-server ~]$ tail -f nagios-server_160411_1857.nmon</span><br><span class="line">可以看到tail -f中数据文件的变化，通过nmon analyser对该文件分析。</span><br><span class="line"></span><br><span class="line"> mon -s 300 -c 288 -f -m /tmp</span><br><span class="line">-s 300:表示每300秒采集一次数据，</span><br><span class="line">-c 288 :表示采集288次，300*288=86400秒，刚好是1天的数据，这样运行一次这个程序就会生成一个一天的数据文件，</span><br><span class="line">-m /tmp: 表示生成的数据文件的路径</span><br><span class="line">-f ：表示生成的数据文件名中有时间</span><br><span class="line"></span><br><span class="line"># 通过crontab作为自动监控脚本</span><br><span class="line">[root@dhdb sh]# more nmon.sh </span><br><span class="line">#author: skate</span><br><span class="line">#function: monitor system information</span><br><span class="line">#time:2011/08/05</span><br><span class="line"></span><br><span class="line">NPATH=/tmp/</span><br><span class="line"># monitoring per 120 senonds</span><br><span class="line">nmon -s 120 -c 720 -f -m $NPATH</span><br><span class="line"></span><br><span class="line"># monitoring per 300 senonds</span><br><span class="line">#nmon -s 300 -c 288 -f -m $NPATH</span><br><span class="line"></span><br><span class="line">#delete file before 365 day</span><br><span class="line">#find /tmp -name *.nmon  -mtime +365 -exec rm &#123;&#125; \;</span><br><span class="line">~</span><br><span class="line"></span><br><span class="line">[root@dhdb sh]# crontab -l</span><br><span class="line">0 0 * * * sh /oracle/sh/nmon.sh &gt;/dev/null 2&gt;&amp;1</span><br></pre></td></tr></table></figure></p>
+<p><img src="http://nmon.sourceforge.net/docs/nmon16b_Util.gif" alt="nmon16b"></p>
+<h1 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h1><ol>
+<li><a href="http://www.tecmint.com/command-line-tools-to-monitor-linux-performance/" target="_blank" rel="noopener">20 Command Line Tools to Monitor Linux Performance</a> </li>
+<li><a href="http://blog.csdn.net/zdwzzu2006/article/details/7747977" target="_blank" rel="noopener">Linux下/proc目录简介</a></li>
+<li><a href="http://blog.itpub.net/23135684/viewspace-626439/" target="_blank" rel="noopener">Linux下使用NMON监控、分析系统性能</a></li>
+</ol>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/06/06/Impression-of-various-equipment-manifacturers/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Impression of various equipment manifacturers | 几家产品厂商印象
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/05/07/LeetCode-231-Power-of-Two/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">LeetCode 231 Power of Two | 判断数是否为2的幂</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

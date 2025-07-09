@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>PHP中常见疏漏之处 | 小武的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文旨在整理 PHP 使用过程中常见容易忽略而导致错误之处，后续会持续补充更新。 同时，也是更深层次理解 PHP 实现原理、设计出发点，其中一些可发现开发者为了满足灵活扩展而专门进行的设计，善用则佳，乱用则损。  PS：没有最好的语言，只有最合适的工具。">
+<meta name="keywords" content="PHP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP中常见疏漏之处">
+<meta property="og:url" content="http://fivezh.github.io/2019/10/29/php-badstyle/index.html">
+<meta property="og:site_name" content="小武的博客">
+<meta property="og:description" content="本文旨在整理 PHP 使用过程中常见容易忽略而导致错误之处，后续会持续补充更新。 同时，也是更深层次理解 PHP 实现原理、设计出发点，其中一些可发现开发者为了满足灵活扩展而专门进行的设计，善用则佳，乱用则损。  PS：没有最好的语言，只有最合适的工具。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-10-29T14:24:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PHP中常见疏漏之处">
+<meta name="twitter:description" content="本文旨在整理 PHP 使用过程中常见容易忽略而导致错误之处，后续会持续补充更新。 同时，也是更深层次理解 PHP 实现原理、设计出发点，其中一些可发现开发者为了满足灵活扩展而专门进行的设计，善用则佳，乱用则损。  PS：没有最好的语言，只有最合适的工具。">
+  
+    <link rel="alternative" href="/atom.xml" title="小武的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.ico">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?e13dc5f6f08ad2424704273ceda90b8e";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+</head>
+</html>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">小武</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">记录、分享、成长</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+						<li>关于我</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/C/" style="font-size: 10px;">C</a> <a href="/tags/Cache/" style="font-size: 10px;">Cache</a> <a href="/tags/Clickhouse/" style="font-size: 10px;">Clickhouse</a> <a href="/tags/Composer/" style="font-size: 10px;">Composer</a> <a href="/tags/Database/" style="font-size: 10px;">Database</a> <a href="/tags/Flask/" style="font-size: 10px;">Flask</a> <a href="/tags/Golang/" style="font-size: 18.33px;">Golang</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Http/" style="font-size: 10px;">Http</a> <a href="/tags/Java/" style="font-size: 11.67px;">Java</a> <a href="/tags/Laravel/" style="font-size: 10px;">Laravel</a> <a href="/tags/LeetCode/" style="font-size: 20px;">LeetCode</a> <a href="/tags/Life/" style="font-size: 13.33px;">Life</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Lumen/" style="font-size: 11.67px;">Lumen</a> <a href="/tags/Memcached/" style="font-size: 10px;">Memcached</a> <a href="/tags/Movie/" style="font-size: 10px;">Movie</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Nagios/" style="font-size: 11.67px;">Nagios</a> <a href="/tags/Nginx/" style="font-size: 11.67px;">Nginx</a> <a href="/tags/OpenCode/" style="font-size: 10px;">OpenCode</a> <a href="/tags/PHP/" style="font-size: 18.33px;">PHP</a> <a href="/tags/PHP7/" style="font-size: 11.67px;">PHP7</a> <a href="/tags/Python/" style="font-size: 16.67px;">Python</a> <a href="/tags/Redis/" style="font-size: 15px;">Redis</a> <a href="/tags/Scapy/" style="font-size: 10px;">Scapy</a> <a href="/tags/Scapy-http/" style="font-size: 10px;">Scapy_http</a> <a href="/tags/Sublime/" style="font-size: 10px;">Sublime</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">KISS: Keep It Simple &amp; Stupid.</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">小武</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img lazy-src="/avatar.jpg" class="js-avatar">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">小武</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">记录、分享、成长</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/fivezh" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-php-badstyle" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/10/29/php-badstyle/" class="article-date">
+  	<time datetime="2019-10-29T14:08:35.000Z" itemprop="datePublished">2019-10-29</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PHP中常见疏漏之处
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PHP/">PHP</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+<!-- Table of Contents -->
+
+        <p>本文旨在整理 PHP 使用过程中常见容易忽略而导致错误之处，后续会持续补充更新。</p>
+<p>同时，也是更深层次理解 PHP 实现原理、设计出发点，其中一些可发现开发者为了满足灵活扩展而专门进行的设计，善用则佳，乱用则损。</p>
+<blockquote>
+<p>PS：没有最好的语言，只有最合适的工具。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="类名、方法名不区分大小写"><a href="#类名、方法名不区分大小写" class="headerlink" title="类名、方法名不区分大小写"></a>类名、方法名不区分大小写</h2><p>结论：不区分大小写的有如下场景，类名、函数(方法)名不区分大小写，可能要让别人耻笑了。</p>
+<ul>
+<li>类名</li>
+<li>函数、方法名</li>
+<li>魔术常量：<code>__LINE__</code>、<code>__FILE__</code>、<code>__DIR__</code>、<code>__FUNCTION__</code>、<code>__CLASS__</code>、<code>__METHOD__</code>、 <code>__NAMESPACE__</code>等</li>
+<li>NULL、TRUE、FALSE</li>
+<li>类型强制转换中的类型关键词</li>
+</ul>
+<blockquote>
+<p>Note: Function names are case-insensitive, though it is usually good form to call functions as they appear in their declaration.</p>
+</blockquote>
+<p>声明：</p>
+<ul>
+<li>强烈建议遵从统一大小写规范，避免困扰及其他语言切换理解成本。</li>
+<li>脚本语言以其灵活、解释执行的特性具有诸多优势，但应充分了解其弊端</li>
+</ul>
+<p>参考阅读：<a href="https://www.kancloud.cn/chandler/css-code-guide/50866" target="_blank" rel="noopener">PHP大小写敏感问题整理</a></p>
+<h2 id="array-merge-中出现null的影响"><a href="#array-merge-中出现null的影响" class="headerlink" title="array_merge()中出现null的影响"></a><code>array_merge()</code>中出现<code>null</code>的影响</h2><p>结论：<code>array_merge()</code>要求每个参数必须为数组，其中任一参数非数组将导致Warning和结果为NULL<br>最佳实践：<code>array_merge()</code>前进行非空判断或强制类型转换<br>反思：弱类型语言，在处理上切记小心类型差异的影响。在PHP7之后的发展趋势上，PHP在逐步增强类型规范、约束。</p>
+<p>代码示例：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$foo = <span class="string">'foo'</span>;</span><br><span class="line">$bar = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"></span><br><span class="line">$res = array_merge($foo, $bar); <span class="comment">// NULL</span></span><br><span class="line">$res = array_merge(<span class="keyword">null</span>, $bar); <span class="comment">// NULL</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 最佳实践：如不确定是否数组，则强制类型转换</span></span><br><span class="line">$res = array_merge((<span class="keyword">array</span>)$foo, (<span class="keyword">array</span>)$bar); <span class="comment">// ['foo', 'a', 'b', 'c']</span></span><br><span class="line">$res = array_merge((<span class="keyword">array</span>)<span class="keyword">null</span>, (<span class="keyword">array</span>)$bar); <span class="comment">// ['a', 'b', 'c']</span></span><br></pre></td></tr></table></figure>
+<h2 id="array-merge和-的区别"><a href="#array-merge和-的区别" class="headerlink" title="array_merge和+的区别"></a><code>array_merge</code>和<code>+</code>的区别</h2><p>二者相同作用：合并一个或多个数组，将一个数组附件到前一个数组之后。<br>区别：键名相同时，如何处理？（后者覆盖前者、保留前者、后者追加，一共有着3种情形）</p>
+<ul>
+<li><code>array_merge</code>：键名相同，字符串键名时后者覆盖前者，数字键则追加至尾部。</li>
+<li><code>+</code>：相同键名时，仅保留第一个数组中元素，后者重复键值忽略(不区分键类型是数值or字符串)</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数字索引的例子</span></span><br><span class="line"><span class="comment">// +操作符，重复数字索引：后者重复元素忽略，例子中3=&gt;a3和3=&gt;b2的索引值重复</span></span><br><span class="line">$array1 = <span class="keyword">array</span>(<span class="number">0</span> =&gt; <span class="string">'zero_a'</span>, <span class="number">2</span> =&gt; <span class="string">'two_a'</span>, <span class="number">3</span> =&gt; <span class="string">'three_a'</span>);</span><br><span class="line">$array2 = <span class="keyword">array</span>(<span class="number">1</span> =&gt; <span class="string">'one_b'</span>, <span class="number">3</span> =&gt; <span class="string">'three_b'</span>, <span class="number">4</span> =&gt; <span class="string">'four_b'</span>);</span><br><span class="line">$result = $array1 + $array2;</span><br><span class="line">var_export($result);</span><br><span class="line"><span class="comment">/* 输出结果为：</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  0 =&gt; 'zero_a',</span></span><br><span class="line"><span class="comment">  2 =&gt; 'two_a',</span></span><br><span class="line"><span class="comment">  3 =&gt; 'three_a', // 重复时，+保留前者</span></span><br><span class="line"><span class="comment">  1 =&gt; 'one_b',</span></span><br><span class="line"><span class="comment">  4 =&gt; 'four_b',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">$result = array_merge($array1, $array2);</span><br><span class="line">var_export($result);</span><br><span class="line"><span class="comment">/* 结果为：数字索引时，array_merge会重建索引，重复索引键值追加</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  0 =&gt; 'zero_a',</span></span><br><span class="line"><span class="comment">  1 =&gt; 'two_a',</span></span><br><span class="line"><span class="comment">  2 =&gt; 'three_a',</span></span><br><span class="line"><span class="comment">  3 =&gt; 'one_b',</span></span><br><span class="line"><span class="comment">  4 =&gt; 'three_b', // 重复时，array_merge追加，并重建索引</span></span><br><span class="line"><span class="comment">  5 =&gt; 'four_b',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 索引数组，索引键为字符串</span></span><br><span class="line">$array1 = <span class="keyword">array</span>(<span class="string">'a'</span> =&gt; <span class="string">'zero_a'</span>, <span class="string">'c'</span> =&gt; <span class="string">'two_a'</span>, <span class="string">'d'</span> =&gt; <span class="string">'three_a'</span>);</span><br><span class="line">$array2 = <span class="keyword">array</span>(<span class="string">'b'</span> =&gt; <span class="string">'one_b'</span>, <span class="string">'d'</span> =&gt; <span class="string">'three_b'</span>, <span class="string">'e'</span> =&gt; <span class="string">'four_b'</span>);</span><br><span class="line">$result = $array1 + $array2;</span><br><span class="line">var_export($result);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  'a' =&gt; 'zero_a',</span></span><br><span class="line"><span class="comment">  'c' =&gt; 'two_a',</span></span><br><span class="line"><span class="comment">  'd' =&gt; 'three_a', // 重复时，+保留前者</span></span><br><span class="line"><span class="comment">  'b' =&gt; 'one_b',</span></span><br><span class="line"><span class="comment">  'e' =&gt; 'four_b',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"></span><br><span class="line">$result = array_merge($array1, $array2);</span><br><span class="line">var_export($result);</span><br><span class="line"><span class="comment">/* 二者执行结果一致，均为：</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  'a' =&gt; 'zero_a',</span></span><br><span class="line"><span class="comment">  'c' =&gt; 'two_a',</span></span><br><span class="line"><span class="comment">  'd' =&gt; 'three_b', // 重复时，array_merge后者覆盖前者</span></span><br><span class="line"><span class="comment">  'b' =&gt; 'one_b',</span></span><br><span class="line"><span class="comment">  'e' =&gt; 'four_b',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<p>参考阅读：<a href="https://www.php.net/manual/zh/function.array-merge.php" target="_blank" rel="noopener">function.array-merge</a></p>
+<h2 id="索引数组的索引值"><a href="#索引数组的索引值" class="headerlink" title="索引数组的索引值"></a>索引数组的索引值</h2><ul>
+<li>索引可以非连续，非连续索引的影响：<code>json_encode()</code>返回结果数组 or 对象</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$foo = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"><span class="keyword">unset</span>($foo[<span class="number">1</span>]);</span><br><span class="line">var_export($foo);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  0 =&gt; 'a',</span></span><br><span class="line"><span class="comment">  2 =&gt; 'c',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>如何重建数组索引，恢复连续自增索引值<ul>
+<li><code>array_values()</code></li>
+<li><code>array_slice($foo, 0)</code></li>
+<li>二者效率是否有差异？原理有和区别？</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$foo = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"><span class="keyword">unset</span>($foo[<span class="number">1</span>]);</span><br><span class="line">$bar = array_values($foo); <span class="comment">// 方式1</span></span><br><span class="line">$bar = array_slice($foo, <span class="number">0</span>); <span class="comment">// 方式2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 两种形式的结果均为</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">array (</span></span><br><span class="line"><span class="comment">  0 =&gt; 'a',</span></span><br><span class="line"><span class="comment">  1 =&gt; 'c',</span></span><br><span class="line"><span class="comment">)</span></span><br><span class="line"><span class="comment">*/</span></span><br></pre></td></tr></table></figure>
+<h2 id="json-encode-返回JSON数组还是对象"><a href="#json-encode-返回JSON数组还是对象" class="headerlink" title="json_encode()返回JSON数组还是对象"></a><code>json_encode()</code>返回JSON数组还是对象</h2><p>如果 PHP 服务向前端或 Java/Golang 等强类型语言服务提供接口时，经常面临吐槽。<br>返回数据字段有时是数组，有时却是对象，对强类型语言而言就是灾难。</p>
+<p>首先，搞清JSON 中数组Array、对象 Object 的各自定义(详见：<a href="http://www.json.org/json-zh.html" target="_blank" rel="noopener">json.org</a>)：</p>
+<ul>
+<li>Array：值的有序集合，以<code>[</code>开始，以<code>]</code>结束</li>
+<li>Object：无序的<code>名称/值</code>对的集合，以<code>{</code>开始，以<code>}</code>结束</li>
+</ul>
+<p>PHP 中常用<code>json_encode ( mixed $value [, int $options = 0 [, int $depth = 512 ]] ) : string</code>函数进行特定类型的序列化输出。第二个参数<code>options</code>传递不同<code>JSON 常量</code>来控制序列化输出结果。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br></pre></td></tr></table></figure>
+<p><code>json_encode()</code>总结：</p>
+<ul>
+<li>缺省第二参数时<ul>
+<li>空数组时，<code>json_encode()</code>后输出<code>数组 Array</code></li>
+<li>索引数组（键为数字），且索引键<strong>连续</strong>，<code>json_encode()</code>后输出<code>数组 Array</code></li>
+<li>索引数组（键为数字），但索引键<strong>非连续</strong>，<code>json_encode()</code>后输出<code>对象 Object</code></li>
+<li>关联数组（键为字符串），<code>json_encode()</code>后输出<code>对象 Object</code></li>
+</ul>
+</li>
+<li>如需强制结果返回对象<ul>
+<li>将<code>json_encode($value, JSON_FORCE_OBJECT)</code>，将结果强制返回对象</li>
+</ul>
+</li>
+<li>如需强制结果返回数组<ul>
+<li>索引数组的结果强制返回数组，重建索引保证索引连续，则<code>json_encode</code>后结果为 JSON 数组</li>
+<li>关联数组，结果仅返回数组则丢失 key 信息，需根据数据结构明确是否合理，如坚持需要可通过<code>array_values()</code>仅取值、忽略键信息</li>
+</ul>
+</li>
+</ul>
+<p>实例：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 空数组，返回空数组</span></span><br><span class="line">$foo = [];</span><br><span class="line">var_dump(json_encode($foo)); <span class="comment">// string(2) "[]"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 索引连续，返回数组；如需对象，则使用JSON_FORCE_OBJECT参数</span></span><br><span class="line">$foo = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line">var_dump(json_encode($foo)); <span class="comment">// string(13) "["a","b","c"]"</span></span><br><span class="line">var_dump(json_encode($foo, JSON_FORCE_OBJECT)); <span class="comment">// string(25) "&#123;"0":"a","1":"b","2":"c"&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 索引非连续，返回对象</span></span><br><span class="line"><span class="keyword">unset</span>($foo[<span class="number">1</span>]);</span><br><span class="line">var_dump(json_encode($foo)); <span class="comment">// string(17) "&#123;"0":"a","2":"c"&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 关联数组必然返回对象</span></span><br><span class="line">$foo = [<span class="string">'a'</span> =&gt; <span class="string">'aa'</span>, <span class="string">'b'</span> =&gt; <span class="string">'bb'</span>, <span class="string">'c'</span> =&gt; <span class="string">'cc'</span>];</span><br><span class="line">var_dump(json_encode($foo)); <span class="comment">// string(28) "&#123;"a":"aa","b":"bb","c":"cc"&#125;"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 关联数组如必须返回数组，则丢失 key 信息</span></span><br><span class="line">var_dump(json_encode(array_values($foo))); <span class="comment">// string(16) "["aa","bb","cc"]"</span></span><br></pre></td></tr></table></figure>
+<h2 id="array-foo-和-array-foo的区别"><a href="#array-foo-和-array-foo的区别" class="headerlink" title="array($foo)和(array)$foo的区别"></a><code>array($foo)</code>和<code>(array)$foo</code>的区别</h2><ul>
+<li><code>array()</code>是数组声明，和[]等价</li>
+<li><code>(array)</code>是强制类型转换</li>
+</ul>
+<p>在非空变量上，二者作用相当；应特别注意，当<code>$foo=null</code>时，二者区别：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$in = <span class="keyword">null</span>;</span><br><span class="line">$foo = <span class="keyword">array</span>($in); <span class="comment">// 仅包含一个null的数组，[0 =&gt; null]</span></span><br><span class="line">$bar = (<span class="keyword">array</span>)$in; <span class="comment">// 强制类型转换，空数组，[]</span></span><br></pre></td></tr></table></figure>
+<h2 id="全角、半角字符"><a href="#全角、半角字符" class="headerlink" title="全角、半角字符"></a>全角、半角字符</h2><p>在进行字符替换时，常用来将多个空格处理成单个、或过滤空格。<br>但在全角状态下空格的识别，较为少见，但是比较容易忽略的。</p>
+<h3 id="匹配时，容易忽略的「全角空格」"><a href="#匹配时，容易忽略的「全角空格」" class="headerlink" title="匹配时，容易忽略的「全角空格」"></a>匹配时，容易忽略的「全角空格」</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 预期：替换所有空格</span></span><br><span class="line">$foo = <span class="string">"你 好，世 界   "</span>;</span><br><span class="line">$res = preg_replace(<span class="string">'/(　|\\n|\\r|\s)+/'</span>, <span class="string">''</span>, $foo);</span><br><span class="line"><span class="comment">// string(15) "你好，世界"</span></span><br><span class="line"><span class="comment">// 成功处理，将多个空格替换为单个</span></span><br><span class="line"></span><br><span class="line">$foo = <span class="string">"你　好，世　界　　"</span>;</span><br><span class="line">$res = preg_replace(<span class="string">'/(　|\\n|\\r|\s)+/'</span>, <span class="string">''</span>, $foo);</span><br><span class="line"><span class="comment">// string(27) "你　好，世　界　　"</span></span><br><span class="line"><span class="comment">// 未能处理，无法匹配和替换「全角空格」</span></span><br></pre></td></tr></table></figure>
+<h3 id="有问题的正则遇到全角符号"><a href="#有问题的正则遇到全角符号" class="headerlink" title="有问题的正则遇到全角符号"></a>有问题的正则遇到全角符号</h3><ul>
+<li>正则中<code>[]</code>表示多个可选的字符，但只允许单个字符，全角空格为三字符（<code>\xE3\x80\x80</code>），则会按三个分别分别匹配、替换</li>
+<li>这样就会误替换部分中文中的字符为空，导致乱码</li>
+<li>preg中u(PCRE_UTF8)修饰符，可支持utf8编码处理，从而支持多字节匹配问题</li>
+<li>PS：虽然preg中的u修饰符可解决上述case，但应更加准确适用正则及其对应含义。</li>
+</ul>
+<blockquote>
+<p>正则中[]的概念：[abc] A single character of: a, b or c</p>
+</blockquote>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注意，原始字符串中包含「全角空格」，正则中[]内也有此「全角空格」</span></span><br><span class="line">$foo = <span class="string">"　　一个、两个，三四个。"</span>;</span><br><span class="line">$res = preg_replace(<span class="string">'/([　\s]|\\n|\\r)+/'</span>, <span class="string">''</span>, $foo);</span><br><span class="line"><span class="comment">// 结果为：string(25) "�个�两个，三四个�"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// utf-8编码下的匹配</span></span><br><span class="line">$foo = <span class="string">"　　一个、两个，三四个。"</span>;</span><br><span class="line">$res = preg_replace(<span class="string">'/([　\s]|\\n|\\r)+/u'</span>, <span class="string">''</span>, $foo);</span><br><span class="line"><span class="comment">// string(30) "一个、两个，三四个。"</span></span><br></pre></td></tr></table></figure>
+<h2 id="字符编码"><a href="#字符编码" class="headerlink" title="字符编码"></a>字符编码</h2><p>详见另一篇文章：<a href="http://fivezh.github.io/2019/09/06/chaset-encoding-things/">PHP中编码检测</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/01/04/MySQL-0-1-problems/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          MySQL中-1操作负值超出unsigned阈值
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/10/17/uber-go-style-guide/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">[译]Uber Go 语言代码风格指南</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread"></div>
+    <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'fivezh'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2025 小武
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false
+	}
+</script>
+<!-- <script src="https://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script> -->
+<script src="https://cdn.bootcdn.net/ajax/libs/require.js/2.1.6/require.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
