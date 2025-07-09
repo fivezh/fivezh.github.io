@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>xdebug远程调试 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="开发环境： Windows笔记本：日常开发使用机器，安装PHPStrom Linux远程服务器：安装php-fpm/nginx等所有开发依赖环境，IP: 172.16.0.182 【注意】，Windows通过vpn访问到Linux服务器，也就是说Windows-&amp;gt;Linux是可以通过IP直接访问的，而Linux-&amp;gt;Windows无法直接连通，因为对Linux而言，Windows开发机的">
@@ -46,7 +46,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -121,7 +121,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -186,7 +186,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -246,30 +246,30 @@ var _hmt = _hmt || [];
 </li>
 <li><p>Windows上配置phpStorm</p>
 <p>2.1 SFTP同步远程代码</p>
-<p><img src="/assets/post_images/assets/post_images/sftp.png" alt></p>
+<p><img src="/assets/post_images/assets/post_images/sftp.png" alt=""></p>
 <p>2.2 设置PHP-Servers为远程Linux服务器，调试模式为Xdebug</p>
 <p><img src="/assets/post_images/xdebug-settings-servers.png" alt="servers设置"></p>
 <p>2.3 新建调试配置：Run-&gt; Edit Debug Configuration</p>
-<p><img src="/assets/post_images/edit-debug-configuration.png" alt></p>
+<p><img src="/assets/post_images/edit-debug-configuration.png" alt=""></p>
 </li>
 <li><p>Windows上开启Xshell端口映射（隧道-&gt;TCP/IP转移）</p>
 <p>将Linux的9001端口请求转发至Windows的9001端口上，这里通过Xshell的隧道方式实现：<strong>类型选择Remote(Incomming)</strong> </p>
-<p><img src="/assets/post_images/xshell-tunnel.png" alt></p>
+<p><img src="/assets/post_images/xshell-tunnel.png" alt=""></p>
 <p>在xshell中通过ssh连接Linux远程服务器后，查看-&gt;隧道窗格-&gt;转移规则，可见远程9001已和本地的9001建立连接</p>
-<p><img src="/assets/post_images/xshell-tunnel-connecting.png" alt></p>
+<p><img src="/assets/post_images/xshell-tunnel-connecting.png" alt=""></p>
 </li>
 <li><p>Windows开启调试，访问远程服务器代码的url：<code>http://172.16.0.182:8088/</code></p>
 <ul>
 <li>选择新建的Xdebug配置项</li>
 <li>点击绿虫子调试按钮（Shift+F9）开启调试</li>
 </ul>
-<p><img src="/assets/post_images/start-debug.png" alt></p>
+<p><img src="/assets/post_images/start-debug.png" alt=""></p>
 <ul>
 <li><p>点击调试按钮后，会自动打开浏览器访问：<code>http://172.16.0.182:8088/?XDEBUG_SESSION_START=17461</code></p>
 <p>这里<code>XDEBUG_SESSION_START=17461</code>会在cookie中设置<code>XDEBUG_SESSION=17461</code>，而phpStorm一直在监听17461的idekey来访问，如下图：</p>
-<p><img src="/assets/post_images/xdebug-waiting.png" alt></p>
+<p><img src="/assets/post_images/xdebug-waiting.png" alt=""></p>
 <p>访问到断点时会进入ide的debug模式，Enjoy~</p>
-<p><img src="/assets/post_images/debugging.png" alt></p>
+<p><img src="/assets/post_images/debugging.png" alt=""></p>
 </li>
 </ul>
 </li>

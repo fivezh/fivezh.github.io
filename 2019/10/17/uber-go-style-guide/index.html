@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>[译]Uber Go 语言代码风格指南 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="原文地址：https://github.com/uber-go/guide/blob/master/style.md 译文出处：https://github.com/uber-go/guide 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w38_uber_go_style_guide.md 译者：咔叽咔叽 校对者：five">
@@ -38,7 +38,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -113,7 +113,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -178,7 +178,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -407,7 +407,7 @@ fine. -->
 <table><br><thead><tr><th>Bad</th><th>Good</th></tr></thead><br><tbody><br><tr><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Operation <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">  Add Operation = <span class="literal">iota</span> + <span class="number">1</span></span><br><span class="line">  Subtract</span><br><span class="line">  Multiply</span><br><span class="line">  ENV_VAR = <span class="string">"MY_ENV"</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure><br><br></td><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Operation <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">  Add Operation = <span class="literal">iota</span> + <span class="number">1</span></span><br><span class="line">  Subtract</span><br><span class="line">  Multiply</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> ENV_VAR = <span class="string">"MY_ENV"</span></span><br></pre></td></tr></table></figure><br><br></td></tr><br></tbody></table>
 
 <p>分组不受限制。例如，我们可以在函数内部使用它们。</p>
-<table><br><thead><tr><th>Bad</th><th>Good</th></tr></thead><br><tbody><br><tr><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> red = color.New(<span class="number">0xff0000</span>)</span><br><span class="line">  <span class="keyword">var</span> green = color.New(<span class="number">0x00ff00</span>)</span><br><span class="line">  <span class="keyword">var</span> blue = color.New(<span class="number">0x0000ff</span>)</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br></td><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> (</span><br><span class="line">    red   = color.New(<span class="number">0xff0000</span>)</span><br><span class="line">    green = color.New(<span class="number">0x00ff00</span>)</span><br><span class="line">    blue  = color.New(<span class="number">0x0000ff</span>)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br></td></tr><br></tbody></table>
+<table><br><thead><tr><th>Bad</th><th>Good</th></tr></thead><br><tbody><br><tr><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> red = color.New(<span class="number">0xff</span>0000)</span><br><span class="line">  <span class="keyword">var</span> green = color.New(<span class="number">0x00ff</span>00)</span><br><span class="line">  <span class="keyword">var</span> blue = color.New(<span class="number">0x0000ff</span>)</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br></td><td><br><br><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">f</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">  <span class="keyword">var</span> (</span><br><span class="line">    red   = color.New(<span class="number">0xff</span>0000)</span><br><span class="line">    green = color.New(<span class="number">0x00ff</span>00)</span><br><span class="line">    blue  = color.New(<span class="number">0x0000ff</span>)</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br><br></td></tr><br></tbody></table>
 
 <h3 id="包的分组导入的顺序"><a href="#包的分组导入的顺序" class="headerlink" title="包的分组导入的顺序"></a>包的分组导入的顺序</h3><p>有两个导入分组：</p>
 <ul>

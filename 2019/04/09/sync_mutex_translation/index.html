@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>[译]sync.RWMutex - 解决并发读写问题 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="原文地址：https://medium.com/golangspec/sync-rwmutex-ca6c6c3208a0 原文作者：Michał Łowicki 译文出处：https://medium.com 本文永久链接：https://github.com/gocn/translator/blob/master/2019/w13_sync_mutex_translation.md 译者：fi">
@@ -41,7 +41,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -116,7 +116,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -181,7 +181,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -237,7 +237,7 @@ var _hmt = _hmt || [];
 <li>校对者：<a href="https://github.com/watermelo" target="_blank" rel="noopener">咔叽咔叽</a></li>
 </ul>
 <a id="more"></a>
-<p><img src="https://cdn-images-1.medium.com/max/1000/1*qmHZVxZmPP9w5iMqN7GWMw.jpeg" alt></p>
+<p><img src="https://cdn-images-1.medium.com/max/1000/1*qmHZVxZmPP9w5iMqN7GWMw.jpeg" alt=""></p>
 <p>当多个线程访问共享数据时，会出现并发读写问题（<a href="https://en.wikipedia.org/wiki/readers%E2%80%93writers_problem" target="_blank" rel="noopener">reader-writer problems</a>）。有两种访问数据的线程类型：</p>
 <ul>
 <li>读线程 reader：只进行数据读取</li>
@@ -261,7 +261,7 @@ var _hmt = _hmt || [];
 </blockquote>
 <p>同样重要且将进一步讨论的是：writer 调用到<code>Lock()</code>时，将会使新的 reader/writer 被阻塞。当存在 reader 加了 RLock 时，writer 会等待这一组 reader 完成正在执行的任务，当这一组任务完成后，writer 将开始执行。从输出可以很明显的看到，每一行的 R 都会递减一个，直到没有 R 之后将打印一个 W。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">RRRRR</span><br><span class="line">RRRR</span><br><span class="line">RRR</span><br><span class="line">RR</span><br><span class="line">R</span><br><span class="line"></span><br><span class="line">W</span><br><span class="line">...</span><br></pre></td></tr></table></figure></p>
 <p>一旦 writer 结束，之前被阻塞的 reader 将恢复执行，然后下一个 writer 也将开始启动。值得一提的是，如果一个 writer 完成，并且有 reader 和 writer 都在等待，那么首个 reader 将解除阻塞，然后才轮到 writer。这种交替执行的方式使得 writer 需等待当前这组 reader 完成，所以无论 reader 还是 writer 都不会有无限等待的情况。</p>
-<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><img src="https://cdn-images-1.medium.com/max/1000/1*Gg_vmyWlU35r3w_L4r4SYw.jpeg" alt></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p><img src="https://cdn-images-1.medium.com/max/1000/1*Gg_vmyWlU35r3w_L4r4SYw.jpeg" alt=""></p>
 <blockquote>
 <p>注意，本文针对的<code>RWMutex</code>实现(<a href="https://github.com/golang/go/blob/718d6c5880fe3507b1d224789b29bc2410fc9da5/src/sync/rwmutex.go" target="_blank" rel="noopener">Go commit: 718d6c58</a>)在 Go 不同版本中可能随时有修改。<br><code>RWMutex</code>为 reader 提供两个方法（<code>RLock</code>和<code>RUnlock</code>）、也为 writer 提供了两个方法（<code>Lock</code>和<code>Unlock</code>）</p>
 </blockquote>

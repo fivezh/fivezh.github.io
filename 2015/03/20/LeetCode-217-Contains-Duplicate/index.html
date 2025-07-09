@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>[LeetCode] 217.Contains-Duplicate | 数组包含相同元素判断 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="题目来源：LeetCode: 217. Contains Duplicate  Given an array of integers, find if the array contains any duplicates. Your function should return true if any value appears at least twice in the array, and it">
@@ -38,7 +38,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -113,7 +113,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -178,7 +178,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -235,7 +235,7 @@ var _hmt = _hmt || [];
 <li>逐一将元素插入Set或HashTable，判断是否已重复, 时间复杂度: O(n)</li>
 </ul>
 <a id="more"></a>
-<h1 id="源码1：将元素逐一加入Set集合中，判断是否已存在"><a href="#源码1：将元素逐一加入Set集合中，判断是否已存在" class="headerlink" title="源码1：将元素逐一加入Set集合中，判断是否已存在"></a>源码1：将元素逐一加入Set集合中，判断是否已存在</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">containsDuplicate</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: bool</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> len(nums) == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line">        <span class="keyword">from</span> sets <span class="keyword">import</span> Set</span><br><span class="line">        record = Set()</span><br><span class="line">        <span class="keyword">for</span> num <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> num <span class="keyword">in</span> record:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                record.add(num)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<h1 id="源码1：将元素逐一加入Set集合中，判断是否已存在"><a href="#源码1：将元素逐一加入Set集合中，判断是否已存在" class="headerlink" title="源码1：将元素逐一加入Set集合中，判断是否已存在"></a>源码1：将元素逐一加入Set集合中，判断是否已存在</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">containsDuplicate</span><span class="params">(self, nums)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        :type nums: List[int]</span></span><br><span class="line"><span class="string">        :rtype: bool</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> len(nums) == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">False</span></span><br><span class="line">        <span class="keyword">from</span> sets <span class="keyword">import</span> Set</span><br><span class="line">        record = Set()</span><br><span class="line">        <span class="keyword">for</span> num <span class="keyword">in</span> nums:</span><br><span class="line">            <span class="keyword">if</span> num <span class="keyword">in</span> record:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">True</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                record.add(num)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">False</span></span><br></pre></td></tr></table></figure>
 <p><strong>运行结果</strong>：</p>
 <blockquote>
 <p>16 / 16 test cases passed.<br>Status: Accepted<br>Runtime: 80 ms<br>Submitted: 0 minutes ago</p>

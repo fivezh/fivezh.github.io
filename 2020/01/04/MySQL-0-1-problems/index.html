@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>MySQL中-1操作负值超出unsigned阈值 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="背景：业务上存在逆向操作的场景下，需注意计数值在并发处理下可能的负值情况。">
@@ -41,7 +41,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -116,7 +116,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -181,7 +181,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -244,7 +244,7 @@ var _hmt = _hmt || [];
 <li><code>INT</code>：4字节，有符号型范围[-2147483648, 2147483647]，无符号型范围[0, 4294967295]；这就是常用有符号整型<code>signed int</code>最大值为21亿多，无符号42亿多</li>
 <li><code>BIGINT</code>：8字节，有符号[-2^63, 2^63-1]，无符号[0, 2^64-1]</li>
 </ul>
-<h3 id="1-2-不同算术运算符处理"><a href="#1-2-不同算术运算符处理" class="headerlink" title="1.2 不同算术运算符处理"></a>1.2 不同算术运算符处理</h3><p><img src="/assets/post_images/MySQL-arithmetic.png" alt></p>
+<h3 id="1-2-不同算术运算符处理"><a href="#1-2-不同算术运算符处理" class="headerlink" title="1.2 不同算术运算符处理"></a>1.2 不同算术运算符处理</h3><p><img src="/assets/post_images/MySQL-arithmetic.png" alt=""></p>
 <p>MySQL 中算术运算的结果按如下规则处理：</p>
 <ul>
 <li>对<code>-</code>, <code>+</code>, <code>*</code>三种运算符，如两个操作数为<code>int</code>整型，则结果按64位的<code>bigint</code>保<br>存，防止结果溢出</li>

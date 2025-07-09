@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>阿里云多种消息服务的差异及选型 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="背景：消息中间件日益在应用系统中必不可少，阿里云提供多种消息MessageQueue服务，有历史原因也有产品线不统一或尽可能提供用户更多选择的原因。笔者根据实际使用，总结下阿里云消息服务的历史、不同消息服务的差异、最后给出推荐选用原则。">
@@ -39,7 +39,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -114,7 +114,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -179,7 +179,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -284,7 +284,7 @@ var _hmt = _hmt || [];
 <li>完全兼容 AMQP 标准协议和 RabbitMQ 开源生态</li>
 <li>目前阿里云版仅提供Java版SDK</li>
 </ul>
-<h2 id="云服务：MNS和ONS中消息队列RocketMQ的对比"><a href="#云服务：MNS和ONS中消息队列RocketMQ的对比" class="headerlink" title="云服务：MNS和ONS中消息队列RocketMQ的对比"></a>云服务：MNS和ONS中消息队列RocketMQ的对比</h2><p><img src="/assets/post_images/MNS_ONS.png" alt><br>引用阿里中间件团队的<a href="http://jm.taobao.org/2016/04/01/kafka-vs-rabbitmq-vs-rocketmq-message-send-performance/" target="_blank" rel="noopener">RocketMQ、RabbitMQ、Kafka同步发送性能对比</a>：Kafka &gt; RocketMQ &gt; RabbitMQ</p>
+<h2 id="云服务：MNS和ONS中消息队列RocketMQ的对比"><a href="#云服务：MNS和ONS中消息队列RocketMQ的对比" class="headerlink" title="云服务：MNS和ONS中消息队列RocketMQ的对比"></a>云服务：MNS和ONS中消息队列RocketMQ的对比</h2><p><img src="/assets/post_images/MNS_ONS.png" alt=""><br>引用阿里中间件团队的<a href="http://jm.taobao.org/2016/04/01/kafka-vs-rabbitmq-vs-rocketmq-message-send-performance/" target="_blank" rel="noopener">RocketMQ、RabbitMQ、Kafka同步发送性能对比</a>：Kafka &gt; RocketMQ &gt; RabbitMQ</p>
 <h2 id="推荐选用原则"><a href="#推荐选用原则" class="headerlink" title="推荐选用原则"></a>推荐选用原则</h2><p>分析业务实际需求、潜在需求，对消息系统的功能性要求有哪些，主要考虑的特性：</p>
 <table>
 <thead>

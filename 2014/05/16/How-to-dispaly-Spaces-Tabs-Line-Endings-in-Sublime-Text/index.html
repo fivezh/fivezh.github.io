@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head><meta name="generator" content="Hexo 3.9.0">
+<head>
   <meta charset="utf-8">
   
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>Sublime如何配置显示空格、制表符、回车换行符 | 小武的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="White space characters include carriage returns, line feeds, spaces, and tabs.CR: Carriage Returns, 回车，常常标记为\rLF: Line Feeds，换行，常常标记为\nSpaces，空格Tabs，制表符    DOS及Windows下：CR LF（\r\n）回车换行表示切换至新的一行Linux及">
@@ -40,7 +40,7 @@ var _hmt = _hmt || [];
 
 
 </head>
-</html>
+
 <body>
   <div id="container">
     <div class="left-col">
@@ -115,7 +115,7 @@ var _hmt = _hmt || [];
 					        
 								<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 					        
-								<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+								<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 					        
 						</div>
 					</nav>
@@ -180,7 +180,7 @@ var _hmt = _hmt || [];
 			        
 						<a class="weibo" target="_blank" href="http://weibo.com/fivezh" title="weibo">weibo</a>
 			        
-						<a class="rss" target="_blank" href="http://feed43.com/fivezh_github_io.xml" title="rss">rss</a>
+						<a class="rss" target="_blank" href="https://github.com/fivezh/atom.xml" title="rss">rss</a>
 			        
 				</div>
 			</nav>
@@ -246,7 +246,7 @@ var _hmt = _hmt || [];
 </ol>
 <p>更多详细请参考：<a href="https://github.com/facelessuser/RawLineEdit" target="_blank" rel="noopener">https://github.com/facelessuser/RawLineEdit</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// Use a glyph for a visual representation  </span><br><span class="line">   // for newlines  </span><br><span class="line">   &quot;use_newline_glyph&quot;: true,</span><br><span class="line"></span><br><span class="line">   // Use the raw line edit theme to allow  </span><br><span class="line">   // a view that highlights only new lines  </span><br><span class="line">   // and carriage returns for easy visualization.  </span><br><span class="line">   // (Colors customizable via your color scheme file)  </span><br><span class="line">   &quot;use_raw_line_edit_theme&quot;: true,</span><br><span class="line"></span><br><span class="line">// View only mode: pops up a output panel showing line endings.</span><br><span class="line">   // No editing possible.</span><br><span class="line">   &quot;view_only&quot;: false</span><br></pre></td></tr></table></figure></p>
 <p>4.通过Tools - Command Palette （Ctrl + Shift + P），键入RawLineEdit后回车确定切换至RawLineEdit视图，再次键入RawLineEdit切换至普通视图。<br><strong>注意：</strong>参数<code>&quot;view_only&quot;: false</code>的设置会使得在RawLineEdit视图下时无法编辑，必须再次进行RawLineEdit Toggle切换至普通视图进行编辑。</p>
-<p>普通视图与RawLineEdit视图下的对比：<br><img src="https://dl.dropboxusercontent.com/u/342698/RawLineEdit/RawLineEdit.png" alt></p>
+<p>普通视图与RawLineEdit视图下的对比：<br><img src="https://dl.dropboxusercontent.com/u/342698/RawLineEdit/RawLineEdit.png" alt=""></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>目前在官网论坛也有过一些关于要求Sublime支持显示CR、LF功能的帖子，但目前为止Sublime Text 3059无法直接显示行末的CR、LF符号。<br>虽然有插件的方案，在一定程度上解决回车CR及换行LF符号的显示，但体验一般，额外操作带来不少困扰。</p>
 <p>关注Sublime，如果有可行方案，会更新此文。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><ol>
